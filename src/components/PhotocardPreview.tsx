@@ -81,28 +81,13 @@ export default function PhotocardPreview({
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center">
             {data.logo && (
-              <div className={`bg-white rounded-lg border border-gray-200 ${
-                fullSize ? 'p-3 min-w-[80px] min-h-[40px]' : 'p-2 min-w-[60px] min-h-[30px]'
-              }`}>
+              <div className="bg-white rounded-lg border border-gray-200 p-2 min-w-[60px] min-h-[30px]">
                 <img
                   src={getProxiedImageUrl(data.logo)}
                   alt="Site logo"
-                  className={`object-contain w-auto h-auto ${
-                    fullSize ? 'max-w-[150px] max-h-12' : 'max-w-[100px] max-h-8'
-                  }`}
-                  onError={(e) => {
-                    console.log('Logo failed to load:', data.logo);
-                    console.log('Proxied URL:', getProxiedImageUrl(data.logo));
-                    // Don't hide the image, just show a placeholder
-                    (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCA0MCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjI0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMiAxNkwyOCA4TTEyIDhMMjggMTYiIHN0cm9rZT0iIzlDQTNBRiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9zdmc+';
-                  }}
+                  className="object-contain w-auto h-auto max-w-[100px] max-h-8"
                   onLoad={() => {
                     console.log('Logo loaded successfully:', data.logo);
-                  }}
-                  style={{
-                    display: 'block',
-                    maxWidth: fullSize ? '150px' : '100px',
-                    maxHeight: fullSize ? '48px' : '32px'
                   }}
                 />
               </div>
