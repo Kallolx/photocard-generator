@@ -15,6 +15,11 @@ interface UrlComponentProps {
   onBackgroundChange: (bg: any) => void;
   onMultipleUrlsSubmit?: (urls: string[]) => void;
   multiplePhotocards?: any[];
+  frameBorderColor?: string;
+  frameBorderThickness?: number;
+  onFrameChange?: (color: string, thickness: number) => void;
+  adBannerImage?: string | null;
+  onAdBannerChange?: (image: string | null) => void;
 }
 
 export default function UrlComponent({
@@ -27,7 +32,12 @@ export default function UrlComponent({
   background,
   onBackgroundChange,
   onMultipleUrlsSubmit,
-  multiplePhotocards
+  multiplePhotocards,
+  frameBorderColor,
+  frameBorderThickness,
+  onFrameChange,
+  adBannerImage,
+  onAdBannerChange
 }: UrlComponentProps) {
   const [url, setUrl] = useState('');
   const [urls, setUrls] = useState<string[]>(['']);
@@ -62,9 +72,9 @@ export default function UrlComponent({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Mode Selector */}
-      <div className="bg-gray-200 p-1">
+      <div className="bg-gray-200 p-1 border border-gray-400">
         <div className="flex items-center gap-1">
           <button
             onClick={() => setMode('single')}
@@ -92,7 +102,7 @@ export default function UrlComponent({
       </div>
 
       {/* URL Input Section */}
-      <div className="bg-gray-200 p-6">
+      <div className="bg-gray-200 p-6 border border-gray-400">
         <div className="flex items-center gap-2 mb-4">
           <div className="p-2 bg-blue-600">
             <Link2 className="w-4 h-4 text-white" />
@@ -223,6 +233,11 @@ export default function UrlComponent({
       <CustomizationPanel 
         background={background}
         onBackgroundChange={onBackgroundChange}
+        frameBorderColor={frameBorderColor}
+        frameBorderThickness={frameBorderThickness}
+        onFrameChange={onFrameChange}
+        adBannerImage={adBannerImage}
+        onAdBannerChange={onAdBannerChange}
       />
     </div>
   );

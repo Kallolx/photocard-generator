@@ -34,3 +34,14 @@ body {
 .font-noto-bengali {
   font-family: var(--font-noto-bengali);
 }
+
+/* Utility to hide native scrollbars while preserving scroll functionality */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
+}

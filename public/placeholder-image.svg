@@ -1,7 +1,0 @@
-<!-- Placeholder SVG for fallback image -->
-<svg width="400" height="225" viewBox="0 0 400 225" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="400" height="225" fill="#F3F4F6"/>
-  <path d="M200 95L220 115L180 155L140 115L160 95L200 95Z" fill="#D1D5DB"/>
-  <circle cx="200" cy="112.5" r="67.5" stroke="#D1D5DB" stroke-width="2" fill="none"/>
-  <text x="200" y="140" font-family="Arial, sans-serif" font-size="12" fill="#9CA3AF" text-anchor="middle">No Image Available</text>
-</svg>
