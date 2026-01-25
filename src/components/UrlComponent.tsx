@@ -78,7 +78,7 @@ export default function UrlComponent({
         <div className="flex items-center gap-1">
           <button
             onClick={() => setMode('single')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 ${
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium transition-all duration-200 ${
               mode === 'single'
                 ? 'bg-white text-slate-900 shadow-sm'
                 : 'text-slate-600 hover:text-slate-800 hover:bg-gray-100'
@@ -89,14 +89,14 @@ export default function UrlComponent({
           </button>
           <button
             onClick={() => setMode('multiple')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium transition-all duration-200 ${
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium transition-all duration-200 ${
               mode === 'multiple'
                 ? 'bg-white text-slate-900 shadow-sm'
                 : 'text-slate-600 hover:text-slate-800 hover:bg-gray-100'
             }`}
           >
             <Grid3X3 className="w-4 h-4" />
-            <span>Bulk</span>
+            <span>Batch</span>
           </button>
         </div>
       </div>

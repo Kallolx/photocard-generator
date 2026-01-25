@@ -17,7 +17,7 @@ export default function Home() {
     color: '#dc2626'
   });
   const [frameBorderColor, setFrameBorderColor] = useState('#FFFFFF');
-  const [frameBorderThickness, setFrameBorderThickness] = useState(2);
+  const [frameBorderThickness, setFrameBorderThickness] = useState(5);
   const [mode, setMode] = useState<'single' | 'multiple'>('single');
   const [clearUrl, setClearUrl] = useState(false);
   const [multiplePhotocards, setMultiplePhotocards] = useState<MultiplePhotocardData[]>([]);

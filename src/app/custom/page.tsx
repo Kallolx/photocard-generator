@@ -17,7 +17,7 @@ export default function CustomPage() {
     color: '#dc2626'
   });
   const [frameBorderColor, setFrameBorderColor] = useState('#FFFFFF');
-  const [frameBorderThickness, setFrameBorderThickness] = useState(2);
+  const [frameBorderThickness, setFrameBorderThickness] = useState(5);
   const [socialMedia, setSocialMedia] = useState<Array<{platform: string, username: string}>>([
     { platform: '', username: '' },
     { platform: '', username: '' },
@@ -145,7 +145,7 @@ export default function CustomPage() {
                       <Upload className="w-4 h-4 text-slate-500" />
                     )}
                     <span className={`font-medium ${logo ? 'text-sm text-slate-900' : 'text-sm text-slate-600'}`}>
-                      {logo ? 'Change' : 'Upload Logo'}
+                      {logo ? 'Change Logo' : 'Upload Logo'}
                     </span>
                   </div>
                 </label>
@@ -166,7 +166,7 @@ export default function CustomPage() {
                       <Upload className="w-4 h-4 text-slate-500" />
                     )}
                     <span className={`font-medium ${newsImage ? 'text-sm text-slate-900' : 'text-sm text-slate-600'}`}>
-                      {newsImage ? 'Change' : 'Upload Image'}
+                      {newsImage ? 'Change Image' : 'Upload Image'}
                     </span>
                   </div>
                 </label>

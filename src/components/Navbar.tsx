@@ -13,8 +13,6 @@ export default function Navbar() {
   const navLinks = [
     { label: 'URL', href: '/' },
     { label: 'CUSTOM', href: '/custom' },
-    { label: 'PLAN', href: '#' },
-    { label: 'SUPPORT', href: '#' }
   ];
 
   return (
@@ -33,7 +31,7 @@ export default function Navbar() {
             <Link
               key={link.label}
               href={link.href}
-              className={`text-sm font-medium transition-colors hover:text-gray-900 ${
+              className={`text-lg font-medium transition-colors hover:text-gray-900 ${
                 pathname === link.href
                   ? 'text-gray-900 border-b-2 border-gray-900 pb-1' 
                   : 'text-gray-600'
