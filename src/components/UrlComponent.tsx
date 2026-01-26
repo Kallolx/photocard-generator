@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { Link2, User, Grid3X3 } from 'lucide-react';
-import CustomizationPanel from '@/components/CustomizationPanel';
 
 interface UrlComponentProps {
   mode: 'single' | 'multiple';
@@ -229,16 +228,6 @@ export default function UrlComponent({
         )}
       </div>
 
-      {/* Customization Panel */}
-      <CustomizationPanel 
-        background={background}
-        onBackgroundChange={onBackgroundChange}
-        frameBorderColor={frameBorderColor}
-        frameBorderThickness={frameBorderThickness}
-        onFrameChange={onFrameChange}
-        adBannerImage={adBannerImage}
-        onAdBannerChange={onAdBannerChange}
-      />
     </div>
   );
 }

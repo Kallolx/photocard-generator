@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { BackgroundOptions } from '@/types';
-import { Plus, Lock, RefreshCw, X, Upload } from 'lucide-react';
+import { useState } from "react";
+import { BackgroundOptions } from "@/types";
+import { Plus, Lock, RefreshCw, X, Upload } from "lucide-react";
 
 interface CustomizationPanelProps {
   background: BackgroundOptions;
@@ -12,78 +12,79 @@ interface CustomizationPanelProps {
   onFrameChange?: (color: string, thickness: number) => void;
   adBannerImage?: string | null;
   onAdBannerChange?: (image: string | null) => void;
+  theme?: string;
+  onThemeChange?: (theme: string) => void;
 }
 
 const SOLID_COLORS = [
-  { color: '#E53E3E', name: 'Soft Red' },
-  { color: '#D53F8C', name: 'Muted Pink' },
-  { color: '#DD6B20', name: 'Warm Orange' },
-  { color: '#975A16', name: 'Earth Brown' },
-  { color: '#7e7e7f', name: 'Light Gray' },
-  { color: '#38A169', name: 'Calm Green' },
-  { color: '#3182CE', name: 'Sky Blue' },
-  { color: '#805AD5', name: 'Soft Purple' },
-  { color: '#319795', name: 'Teal' },
-  { color: '#2D3748', name: 'Dark Slate' }
+  { color: "#E53E3E", name: "Soft Red" },
+  { color: "#D53F8C", name: "Muted Pink" },
+  { color: "#DD6B20", name: "Warm Orange" },
+  { color: "#975A16", name: "Earth Brown" },
+  { color: "#38A169", name: "Calm Green" },
 ];
 
 const GRADIENTS = [
-  { from: '#C53030', to: '#FC8181', name: 'Soft Red Glow' },
-  { from: '#B83280', to: '#F687B3', name: 'Rose Pink' },
-  { from: '#C05621', to: '#F6AD55', name: 'Warm Sunset' },
-  { from: '#2B6CB0', to: '#63B3ED', name: 'Calm Blue Sky' },
-  { from: '#2F855A', to: '#68D391', name: 'Fresh Green' },
-  { from: '#553C9A', to: '#B794F4', name: 'Lavender Dream' },
-  { from: '#285E61', to: '#81E6D9', name: 'Aqua Mint' },
-  { from: '#1A202C', to: '#4A5568', name: 'Midnight Slate' },
-  { from: '#4A5568', to: '#CBD5E0', name: 'Soft Graphite' },
-  { from: '#744210', to: '#FBD38D', name: 'Golden Sand' }
+  { from: "#C53030", to: "#FC8181", name: "Soft Red Glow" },
+  { from: "#B83280", to: "#F687B3", name: "Rose Pink" },
+  { from: "#C05621", to: "#F6AD55", name: "Warm Sunset" },
+  { from: "#2B6CB0", to: "#63B3ED", name: "Calm Blue Sky" },
+  { from: "#2F855A", to: "#68D391", name: "Fresh Green" },
 ];
-
 
 const FRAME_COLORS = [
-  { color: '#FFFFFF', name: 'Pure White' },
-  { color: '#F1F5F9', name: 'Soft Gray' },
-  { color: '#CBD5E1', name: 'Cool Gray' },
-  { color: '#22C55E', name: 'Soft Green' },
-  { color: '#3B82F6', name: 'Clean Blue' },
-  { color: '#9333EA', name: 'Royal Purple' },
-  { color: '#EF4444', name: 'Soft Red' },
-  { color: '#F59E0B', name: 'Warm Amber' },
-  { color: '#0F172A', name: 'Deep Slate' },
-  { color: '#000000', name: 'Pure Black' }
+  { color: "#FFFFFF", name: "Pure White" },
+  { color: "#F1F5F9", name: "Soft Gray" },
+  { color: "#CBD5E1", name: "Cool Gray" },
+  { color: "#22C55E", name: "Soft Green" },
+  { color: "#3B82F6", name: "Clean Blue" },
 ];
-
 
 const THEMES = [
-  { id: 'classic', name: 'Classic', locked: false },
-  { id: 'split', name: 'Split', locked: true },
-  { id: 'horizontal', name: 'Horizontal', locked: true },
-  { id: 'minimal', name: 'Minimal', locked: true },
-  { id: 'modern', name: 'Modern', locked: true },
-  { id: 'vintage', name: 'Vintage', locked: true },
-  { id: 'bold', name: 'Bold', locked: true },
-  { id: 'elegant', name: 'Elegant', locked: true },
-  { id: 'creative', name: 'Creative', locked: true }
+  {
+    id: "classic",
+    name: "Classic",
+    locked: false,
+    thumbnail: "/themes/cus-1.png",
+  },
+  {
+    id: "modern",
+    name: "Modern",
+    locked: false,
+    thumbnail: "/themes/cus-2.png",
+  },
 ];
 
-type Tab = 'Background' | 'Theme' | 'Fonts' | 'Frame' | 'Ad Banner';
+type Tab = "Background" | "Theme" | "Fonts" | "Frame" | "Ad Banner";
 
-export default function CustomizationPanel({ 
-  background, 
+export default function CustomizationPanel({
+  background,
   onBackgroundChange,
-  frameBorderColor: initialFrameBorderColor = '#FFFFFF',
+  frameBorderColor: initialFrameBorderColor = "#FFFFFF",
   frameBorderThickness: initialFrameBorderThickness = 2,
   onFrameChange,
   adBannerImage,
-  onAdBannerChange
+  onAdBannerChange,
+  theme = "classic",
+  onThemeChange,
 }: CustomizationPanelProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('Background');
-  const [selectedTheme, setSelectedTheme] = useState('classic');
+  const [activeTab, setActiveTab] = useState<Tab>("Background");
+  const [selectedTheme, setSelectedTheme] = useState(theme);
   const [showFontModal, setShowFontModal] = useState(false);
-  const [selectedFontType, setSelectedFontType] = useState<'weekDate' | 'headline' | null>(null);
-  const [frameBorderColor, setFrameBorderColor] = useState(initialFrameBorderColor);
-  const [frameBorderThickness, setFrameBorderThickness] = useState(initialFrameBorderThickness);
+  const [selectedFontType, setSelectedFontType] = useState<
+    "weekDate" | "headline" | null
+  >(null);
+  const [frameBorderColor, setFrameBorderColor] = useState(
+    initialFrameBorderColor,
+  );
+  const [frameBorderThickness, setFrameBorderThickness] = useState(
+    initialFrameBorderThickness,
+  );
+
+  const handleThemeChange = (themeId: string) => {
+    setSelectedTheme(themeId);
+    onThemeChange?.(themeId);
+  };
 
   const handleFrameColorChange = (color: string) => {
     setFrameBorderColor(color);
@@ -95,7 +96,7 @@ export default function CustomizationPanel({
     onFrameChange?.(frameBorderColor, thickness);
   };
 
-  const tabs: Tab[] = ['Background', 'Theme', 'Fonts', 'Frame', 'Ad Banner'];
+  const tabs: Tab[] = ["Background", "Theme", "Fonts", "Frame", "Ad Banner"];
 
   return (
     <div className="bg-gray-200 p-6 border border-gray-400">
@@ -108,8 +109,8 @@ export default function CustomizationPanel({
               onClick={() => setActiveTab(tab)}
               className={`pb-3 text-sm font-medium transition-colors relative whitespace-nowrap ${
                 activeTab === tab
-                  ? 'text-slate-900'
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? "text-slate-900"
+                  : "text-slate-500 hover:text-slate-700"
               }`}
             >
               {tab}
@@ -124,31 +125,38 @@ export default function CustomizationPanel({
       {/* Tab Content */}
       <div className="space-y-3">
         {/* Background Tab */}
-        {activeTab === 'Background' && (
+        {activeTab === "Background" && (
           <>
             {/* Solid Colors Section */}
             <div>
               <h3 className="text-sm font-medium text-slate-900 mb-3">
-                Solid Colors <span className="text-xs text-slate-600">({SOLID_COLORS.length} colors)</span>
+                Solid Colors{" "}
+                <span className="text-xs text-slate-600">
+                  ({SOLID_COLORS.length} colors)
+                </span>
               </h3>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                 {SOLID_COLORS.map((item) => (
                   <button
                     key={item.color}
-                    onClick={() => onBackgroundChange({ type: 'solid', color: item.color })}
+                    onClick={() =>
+                      onBackgroundChange({ type: "solid", color: item.color })
+                    }
                     className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
-                      background.type === 'solid' && background.color === item.color
-                        ? 'border-white'
-                        : 'border-gray-400 hover:scale-95'
+                      background.type === "solid" &&
+                      background.color === item.color
+                        ? "border-white"
+                        : "border-gray-400 hover:scale-95"
                     }`}
                     style={{ backgroundColor: item.color }}
                     title={item.name}
                   >
-                    {background.type === 'solid' && background.color === item.color && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-red-500 text-white text-[10px] text-center py-0.5">
-                        selected
-                      </div>
-                    )}
+                    {background.type === "solid" &&
+                      background.color === item.color && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-red-500 text-white text-[10px] text-center py-0.5">
+                          selected
+                        </div>
+                      )}
                   </button>
                 ))}
               </div>
@@ -157,37 +165,42 @@ export default function CustomizationPanel({
             {/* Gradients Section */}
             <div>
               <h3 className="text-sm font-medium text-slate-900 mb-3">
-                Gradients <span className="text-xs text-slate-600">({GRADIENTS.length} colors)</span>
-                </h3>
+                Gradients{" "}
+                <span className="text-xs text-slate-600">
+                  ({GRADIENTS.length} colors)
+                </span>
+              </h3>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                 {GRADIENTS.map((grad, index) => (
                   <button
                     key={index}
-                    onClick={() => onBackgroundChange({ 
-                      type: 'gradient', 
-                      color: '', 
-                      gradientFrom: grad.from, 
-                      gradientTo: grad.to 
-                    })}
+                    onClick={() =>
+                      onBackgroundChange({
+                        type: "gradient",
+                        color: "",
+                        gradientFrom: grad.from,
+                        gradientTo: grad.to,
+                      })
+                    }
                     className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
-                      background.type === 'gradient' && 
-                      background.gradientFrom === grad.from && 
+                      background.type === "gradient" &&
+                      background.gradientFrom === grad.from &&
                       background.gradientTo === grad.to
-                        ? 'border-white'
-                        : 'border-gray-400 hover:scale-95'
+                        ? "border-white"
+                        : "border-gray-400 hover:scale-95"
                     }`}
                     style={{
-                      backgroundImage: `linear-gradient(135deg, ${grad.from}, ${grad.to})`
+                      backgroundImage: `linear-gradient(135deg, ${grad.from}, ${grad.to})`,
                     }}
                     title={grad.name}
                   >
-                    {background.type === 'gradient' && 
-                     background.gradientFrom === grad.from && 
-                     background.gradientTo === grad.to && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/35 text-white text-[10px] text-center py-1">
-                        selected
-                      </div>
-                    )}
+                    {background.type === "gradient" &&
+                      background.gradientFrom === grad.from &&
+                      background.gradientTo === grad.to && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/35 text-white text-[10px] text-center py-1">
+                          selected
+                        </div>
+                      )}
                   </button>
                 ))}
               </div>
@@ -196,65 +209,71 @@ export default function CustomizationPanel({
         )}
 
         {/* Theme Tab */}
-        {activeTab === 'Theme' && (
+        {activeTab === "Theme" && (
           <div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               {THEMES.map((theme) => (
-                <button
-                  key={theme.id}
-                  onClick={() => !theme.locked && setSelectedTheme(theme.id)}
-                  disabled={theme.locked}
-                  className={`relative h-24 transition-all ${
-                    selectedTheme === theme.id && !theme.locked
-                      ? 'ring-2 ring-red-500 ring-offset-2'
-                      : ''
-                  } ${
-                    theme.locked 
-                      ? 'bg-gray-300 cursor-not-allowed opacity-60' 
-                      : 'bg-gray-400 hover:bg-gray-500'
-                  }`}
-                >
-                  {/* Theme Preview Placeholder */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {theme.locked && (
-                      <Lock className="w-6 h-6 text-gray-600" />
+                <div key={theme.id} className="flex flex-col">
+                  <button
+                    onClick={() => !theme.locked && handleThemeChange(theme.id)}
+                    disabled={theme.locked}
+                    className={`w-full transition-all duration-200 rounded-lg overflow-hidden border-2 ${
+                      selectedTheme === theme.id && !theme.locked
+                        ? "border-red-500 shadow-lg shadow-red-500/30 scale-[1.02]"
+                        : "border-gray-300 hover:border-gray-400 hover:shadow-md"
+                    } ${theme.locked ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+                  >
+                    <div className="relative w-full h-36 bg-gray-100">
+                      <img
+                        src={theme.thumbnail}
+                        alt={theme.name}
+                        className="w-full h-full object-contain"
+                      />
+
+                      {theme.locked && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-sm">
+                          <Lock className="w-8 h-8 text-white drop-shadow-lg" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Theme Name with Selected Indicator */}
+                  <div
+                    className={`mt-2 py-2 px-3 rounded-md text-center text-sm font-semibold transition-all duration-200 ${
+                      selectedTheme === theme.id && !theme.locked
+                        ? "bg-red-500 text-white shadow-md"
+                        : "bg-transparent text-slate-700"
+                    }`}
+                  >
+                    {theme.name}
+                    {selectedTheme === theme.id && !theme.locked && (
+                      <span className="ml-1">✓</span>
                     )}
                   </div>
-                  
-                  {/* Theme Name */}
-                  <div className={`absolute bottom-2 left-2 text-xs font-medium ${
-                    selectedTheme === theme.id && !theme.locked
-                      ? 'bg-red-500 text-white px-2 py-0.5 rounded'
-                      : 'text-slate-700'
-                  }`}>
-                    {theme.name}
-                  </div>
-                  
-                  {/* Selected Indicator */}
-                  {selectedTheme === theme.id && !theme.locked && (
-                    <div className="absolute bottom-2 left-2 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded">
-                      selected
-                    </div>
-                  )}
-                </button>
+                </div>
               ))}
             </div>
           </div>
         )}
 
         {/* Fonts Tab - Placeholder */}
-        {activeTab === 'Fonts' && (
+        {activeTab === "Fonts" && (
           <div className="space-y-4">
             {/* Week & Date Font */}
             <div>
-              <h3 className="text-sm font-medium text-slate-900 mb-2">Week & Date :</h3>
+              <h3 className="text-sm font-medium text-slate-900 mb-2">
+                Week & Date :
+              </h3>
               <div className="bg-gray-300 px-3 py-2 flex items-center justify-between">
                 <div className="flex-1 text-left">
-                  <span className="font-noto-bengali text-gray-700 text-lg">আমার সোনার বাংলা</span>
+                  <span className="font-noto-bengali text-gray-700 text-lg">
+                    আমার সোনার বাংলা
+                  </span>
                 </div>
                 <button
                   onClick={() => {
-                    setSelectedFontType('weekDate');
+                    setSelectedFontType("weekDate");
                     setShowFontModal(true);
                   }}
                   className="flex items-center gap-2 px-3 py-2 bg-gray-300 hover:bg-gray-200 rounded-md transition-colors text-slate-600 text-xs"
@@ -267,14 +286,18 @@ export default function CustomizationPanel({
 
             {/* Headline Font */}
             <div>
-              <h3 className="text-sm font-medium text-slate-900 mb-2">Headline :</h3>
+              <h3 className="text-sm font-medium text-slate-900 mb-2">
+                Headline :
+              </h3>
               <div className="bg-gray-300 px-3 py-2 flex items-center justify-between">
                 <div className="flex-1 text-left">
-                  <span className="font-noto-bengali text-gray-700 text-lg">আমার সোনার বাংলা</span>
+                  <span className="font-noto-bengali text-gray-700 text-lg">
+                    আমার সোনার বাংলা
+                  </span>
                 </div>
                 <button
                   onClick={() => {
-                    setSelectedFontType('headline');
+                    setSelectedFontType("headline");
                     setShowFontModal(true);
                   }}
                   className="flex items-center gap-2 px-3 py-2 bg-gray-300 hover:bg-gray-200 rounded-md transition-colors text-slate-600 text-xs"
@@ -291,7 +314,10 @@ export default function CustomizationPanel({
                 <div className="bg-white rounded-lg p-6 max-w-md w-full">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-slate-900 tracking-tighter">
-                      Select Font - {selectedFontType === 'weekDate' ? 'Week & Date' : 'Headline'}
+                      Select Font -{" "}
+                      {selectedFontType === "weekDate"
+                        ? "Week & Date"
+                        : "Headline"}
                     </h3>
                     <button
                       onClick={() => setShowFontModal(false)}
@@ -302,37 +328,47 @@ export default function CustomizationPanel({
                   </div>
                   <div className="space-y-2">
                     {/* Font options would go here */}
-                      <button
-                        onClick={() => {
-                          // placeholder: apply font selection for Week/Headline in future
-                          setShowFontModal(false);
-                        }}
-                        className="w-full p-3 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-between"
-                      >
-                        <div className="flex-1 text-left">
-                          <span className="font-noto-bengali text-gray-600 block">আমার সোনার বাংলা</span>
-                        </div>
-                        <div className="ml-4 text-sm text-slate-600">Noto Serif Bengali</div>
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setShowFontModal(false);
-                        }}
-                        className="w-full p-3 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-between"
-                      >
-                        <div className="flex-1 text-left">
-                          <span className="font-dm-sans text-gray-600 block">আমার সোনার বাংলা</span>
-                        </div>
-                        <div className="ml-4 text-sm text-slate-600">DM Sans</div>
-                      </button>
-
-                      <div className="w-full p-3 bg-gray-100 transition-colors flex items-center justify-between opacity-50 cursor-not-allowed">
-                        <div className="flex-1 text-left">
-                          <span className="text-base text-slate-600 block">Font preview</span>
-                        </div>
-                        <div className="ml-4 text-sm text-slate-600">More fonts coming soon...</div>
+                    <button
+                      onClick={() => {
+                        // placeholder: apply font selection for Week/Headline in future
+                        setShowFontModal(false);
+                      }}
+                      className="w-full p-3 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-between"
+                    >
+                      <div className="flex-1 text-left">
+                        <span className="font-noto-bengali text-gray-600 block">
+                          আমার সোনার বাংলা
+                        </span>
                       </div>
+                      <div className="ml-4 text-sm text-slate-600">
+                        Noto Serif Bengali
+                      </div>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setShowFontModal(false);
+                      }}
+                      className="w-full p-3 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-between"
+                    >
+                      <div className="flex-1 text-left">
+                        <span className="font-dm-sans text-gray-600 block">
+                          আমার সোনার বাংলা
+                        </span>
+                      </div>
+                      <div className="ml-4 text-sm text-slate-600">DM Sans</div>
+                    </button>
+
+                    <div className="w-full p-3 bg-gray-100 transition-colors flex items-center justify-between opacity-50 cursor-not-allowed">
+                      <div className="flex-1 text-left">
+                        <span className="text-base text-slate-600 block">
+                          Font preview
+                        </span>
+                      </div>
+                      <div className="ml-4 text-sm text-slate-600">
+                        More fonts coming soon...
+                      </div>
+                    </div>
                   </div>
                   <button
                     onClick={() => setShowFontModal(false)}
@@ -347,12 +383,15 @@ export default function CustomizationPanel({
         )}
 
         {/* Frame Tab */}
-        {activeTab === 'Frame' && (
+        {activeTab === "Frame" && (
           <div className="space-y-4">
             {/* Border Color */}
             <div>
               <h3 className="text-sm font-medium text-slate-900 mb-3">
-                Border Color <span className="text-xs text-slate-600">({FRAME_COLORS.length} colors)</span>
+                Border Color{" "}
+                <span className="text-xs text-slate-600">
+                  ({FRAME_COLORS.length} colors)
+                </span>
               </h3>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
                 {FRAME_COLORS.map((item) => (
@@ -361,8 +400,8 @@ export default function CustomizationPanel({
                     onClick={() => handleFrameColorChange(item.color)}
                     className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
                       frameBorderColor === item.color
-                        ? 'border-white'
-                        : 'border-gray-400 hover:scale-95'
+                        ? "border-white"
+                        : "border-gray-400 hover:scale-95"
                     }`}
                     style={{ backgroundColor: item.color }}
                     title={item.name}
@@ -385,17 +424,21 @@ export default function CustomizationPanel({
 
             {/* Border Thickness */}
             <div>
-              <h3 className="text-sm font-medium text-slate-900 mb-3">Border Thickness</h3>
+              <h3 className="text-sm font-medium text-slate-900 mb-3">
+                Border Thickness
+              </h3>
               <div className="flex items-center gap-4">
                 <input
                   type="range"
                   min="0"
                   max="10"
                   value={frameBorderThickness}
-                  onChange={(e) => handleFrameThicknessChange(Number(e.target.value))}
+                  onChange={(e) =>
+                    handleFrameThicknessChange(Number(e.target.value))
+                  }
                   className="flex-1 h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, #94a3b8 0%, #94a3b8 ${frameBorderThickness * 10}%, #d1d5db ${frameBorderThickness * 10}%, #d1d5db 100%)`
+                    background: `linear-gradient(to right, #94a3b8 0%, #94a3b8 ${frameBorderThickness * 10}%, #d1d5db ${frameBorderThickness * 10}%, #d1d5db 100%)`,
                   }}
                 />
                 <div className="w-8 text-right text-md font-medium text-slate-700">
@@ -407,7 +450,7 @@ export default function CustomizationPanel({
         )}
 
         {/* Ad Banner Tab */}
-        {activeTab === 'Ad Banner' && (
+        {activeTab === "Ad Banner" && (
           <div className="space-y-4">
             {/* Upload Section */}
             {!adBannerImage ? (
@@ -438,7 +481,9 @@ export default function CustomizationPanel({
             {adBannerImage && (
               <>
                 <div>
-                  <h3 className="text-xs font-medium text-slate-700 mb-3">Ad banner Preview</h3>
+                  <h3 className="text-xs font-medium text-slate-700 mb-3">
+                    Ad banner Preview
+                  </h3>
                   <div className="bg-gray-300 p-4">
                     <img
                       src={adBannerImage}

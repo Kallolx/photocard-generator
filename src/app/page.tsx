@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import UrlComponent from '@/components/UrlComponent';
-import PhotocardPreview from '@/components/PhotocardPreview';
+import ClassicUrlCard from '@/components/cards/url-cards/ClassicUrlCard';
+import ModernUrlCard from '@/components/cards/url-cards/ModernUrlCard';
 import DownloadControls from '@/components/DownloadControls';
+import CustomizationPanel from '@/components/CustomizationPanel';
 import { PhotocardData, BackgroundOptions, MultiplePhotocardData, UrlData } from '@/types';
 
 export default function Home() {
@@ -17,7 +19,7 @@ export default function Home() {
     color: '#dc2626'
   });
   const [frameBorderColor, setFrameBorderColor] = useState('#FFFFFF');
-  const [frameBorderThickness, setFrameBorderThickness] = useState(5);
+  const [frameBorderThickness, setFrameBorderThickness] = useState(0);
   const [mode, setMode] = useState<'single' | 'multiple'>('single');
   const [clearUrl, setClearUrl] = useState(false);
   const [multiplePhotocards, setMultiplePhotocards] = useState<MultiplePhotocardData[]>([]);
@@ -26,6 +28,7 @@ export default function Home() {
   const [isResizing, setIsResizing] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
   const [adBannerImage, setAdBannerImage] = useState<string | null>(null);
+  const [theme, setTheme] = useState<string>('classic');
 
   // Mock data for preview
   const mockData: PhotocardData = {
@@ -87,6 +90,25 @@ export default function Home() {
   const handleFrameChange = (color: string, thickness: number) => {
     setFrameBorderColor(color);
     setFrameBorderThickness(thickness);
+  };
+
+  // Render the appropriate card based on theme
+  const renderCard = (cardData: PhotocardData, cardId: string, isFullSize = false) => {
+    const cardProps = {
+      data: cardData,
+      isGenerating: isLoading,
+      background,
+      id: cardId,
+      fullSize: isFullSize,
+      frameBorderColor,
+      frameBorderThickness,
+    };
+
+    return theme === 'modern' ? (
+      <ModernUrlCard {...cardProps} />
+    ) : (
+      <ClassicUrlCard {...cardProps} />
+    );
   };
 
   const handleMouseDown = () => {
@@ -291,6 +313,21 @@ export default function Home() {
             adBannerImage={adBannerImage}
             onAdBannerChange={setAdBannerImage}
           />
+
+          {/* Customization Panel */}
+          <div className="mt-6">
+            <CustomizationPanel 
+              background={background}
+              onBackgroundChange={setBackground}
+              frameBorderColor={frameBorderColor}
+              frameBorderThickness={frameBorderThickness}
+              onFrameChange={handleFrameChange}
+              adBannerImage={adBannerImage}
+              onAdBannerChange={setAdBannerImage}
+              theme={theme}
+              onThemeChange={setTheme}
+            />
+          </div>
         </div>
 
         {/* Resize Handle - Desktop only */}
@@ -313,15 +350,7 @@ export default function Home() {
                 <div className="hidden md:block w-full flex justify-center">
                   <div className="flex flex-col items-center">
                     <div className="flex-shrink-0 mt-12">
-                      <PhotocardPreview 
-                        data={photocardData || mockData} 
-                        isGenerating={isLoading}
-                        background={background}
-                        id="photocard-desktop"
-                        frameBorderColor={frameBorderColor}
-                        frameBorderThickness={frameBorderThickness}
-                        adBannerImage={adBannerImage}
-                      />
+                      {renderCard(photocardData || mockData, 'photocard-desktop')}
                     </div>
                     
                     {/* Download controls - only show when there's real data */}
@@ -662,28 +691,14 @@ export default function Home() {
                                 </svg>
                               </button>
                               
-                              <PhotocardPreview 
-                                data={mockData} 
-                                background={background}
-                                id="photocard-empty-state-modal"
-                                frameBorderColor={frameBorderColor}
-                                frameBorderThickness={frameBorderThickness}
-                                adBannerImage={adBannerImage}
-                              />
+                              {renderCard(mockData, 'photocard-empty-state-modal')}
                             </div>
                           </div>
                         </div>
                       </div>
                     ) : (
                       <div className="flex-shrink-0 mt-12">
-                        <PhotocardPreview 
-                          data={mockData} 
-                          background={background}
-                          id="photocard-empty-state"
-                          frameBorderColor={frameBorderColor}
-                          frameBorderThickness={frameBorderThickness}
-                          adBannerImage={adBannerImage}
-                        />
+                        {renderCard(mockData, 'photocard-empty-state')}
                       </div>
                     )}
                   </div>
@@ -743,15 +758,7 @@ export default function Home() {
 
               {/* Full-size photocard */}
               <div className="mt-12">
-                <PhotocardPreview 
-                  data={completedPhotocards[selectedPhotocardIndex].data} 
-                  background={background}
-                  id="photocard"
-                  fullSize={true}
-                  frameBorderColor={frameBorderColor}
-                  frameBorderThickness={frameBorderThickness}
-                  adBannerImage={adBannerImage}
-                />
+                {renderCard(completedPhotocards[selectedPhotocardIndex].data, 'photocard', true)}
               </div>
 
               {/* Download button for individual card */}

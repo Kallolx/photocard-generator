@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
-import PhotocardPreview from '@/components/PhotocardPreview';
+import ClassicCustomCard from '@/components/cards/custom-cards/ClassicCustomCard';
+import ModernCustomCard from '@/components/cards/custom-cards/ModernCustomCard';
 import DownloadControls from '@/components/DownloadControls';
 import CustomizationPanel from '@/components/CustomizationPanel';
 import { PhotocardData, BackgroundOptions } from '@/types';
@@ -17,7 +18,7 @@ export default function CustomPage() {
     color: '#dc2626'
   });
   const [frameBorderColor, setFrameBorderColor] = useState('#FFFFFF');
-  const [frameBorderThickness, setFrameBorderThickness] = useState(5);
+  const [frameBorderThickness, setFrameBorderThickness] = useState(0);
   const [socialMedia, setSocialMedia] = useState<Array<{platform: string, username: string}>>([
     { platform: '', username: '' },
     { platform: '', username: '' },
@@ -27,10 +28,39 @@ export default function CustomPage() {
   const [isResizing, setIsResizing] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
   const [adBannerImage, setAdBannerImage] = useState<string | null>(null);
+  const [theme, setTheme] = useState<string>('classic');
+  const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
 
   const handleFrameChange = (color: string, thickness: number) => {
     setFrameBorderColor(color);
     setFrameBorderThickness(thickness);
+  };
+
+  // Render the appropriate card based on theme
+  const renderCard = (cardData: PhotocardData, cardId: string, isFullSize = false) => {
+    const validSocialMedia = socialMedia.filter(s => s.platform && s.username);
+    const website = validSocialMedia.find(s => s.platform === 'website')?.username || '';
+    const footerText = validSocialMedia.find(s => s.platform === 'text')?.username || '';
+    const socialOnly = validSocialMedia.filter(s => s.platform !== 'website' && s.platform !== 'text');
+    
+    const cardProps = {
+      data: cardData,
+      background,
+      id: cardId,
+      fullSize: isFullSize,
+      frameBorderColor,
+      frameBorderThickness,
+      socialMedia: socialOnly,
+      adBannerImage,
+      website,
+      footerText,
+    };
+
+    return theme === 'modern' ? (
+      <ModernCustomCard {...cardProps} />
+    ) : (
+      <ClassicCustomCard {...cardProps} />
+    );
   };
 
   const handleMouseDown = () => {
@@ -184,15 +214,29 @@ export default function CustomPage() {
               />
             </div>
 
-            {/* Social Media Links */}
+            {/* Social Media Links - Collapsible */}
             <div className="bg-gray-200 p-2 border border-gray-400">
-              <h3 className="text-sm font-semibold text-slate-900 mb-4">Social Media (Max 3)</h3>
-              <div className="space-y-3">
+              <button
+                onClick={() => setSocialMediaExpanded(!socialMediaExpanded)}
+                className="w-full mx-auto flex items-center justify-between mb-2 hover:bg-gray-300 px-2 py-1 rounded transition-colors"
+              >
+                <h3 className="text-sm font-semibold text-slate-900">Footer</h3>
+                <svg
+                  className={`w-5 h-5 text-slate-700 transition-transform ${socialMediaExpanded ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {socialMediaExpanded && (
+                <div className="space-y-3">
                 {socialMedia.map((social, index) => (
                   <div key={index} className="space-y-3">
                     {/* Platform Icons Selection */}
-                    <div className="flex gap-2 items-center">
-                      {['facebook', 'twitter', 'instagram', 'youtube', 'linkedin', 'tiktok'].map((platform) => (
+                    <div className="flex gap-2 items-center flex-wrap">
+                      {['facebook', 'twitter', 'instagram', 'youtube', 'linkedin', 'tiktok', 'website', 'text'].map((platform) => (
                         <button
                           key={platform}
                           type="button"
@@ -238,6 +282,16 @@ export default function CustomPage() {
                               <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
                             </svg>
                           )}
+                          {platform === 'website' && (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                            </svg>
+                          )}
+                          {platform === 'text' && (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          )}
                         </button>
                       ))}
                     </div>
@@ -250,13 +304,19 @@ export default function CustomPage() {
                         newSocial[index].username = e.target.value;
                         setSocialMedia(newSocial);
                       }}
-                      placeholder={social.platform ? "Enter username" : "Select platform first"}
+                      placeholder={
+                        !social.platform ? "Select option first" :
+                        social.platform === 'website' ? "Enter website URL" :
+                        social.platform === 'text' ? "Enter footer text" :
+                        "Enter username"
+                      }
                       disabled={!social.platform}
                       className="w-full px-3 py-2 bg-gray-300 text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-70 text-base rounded"
                     />
                   </div>
                 ))}
               </div>
+              )}
             </div>
           </div>
 
@@ -270,6 +330,8 @@ export default function CustomPage() {
               onFrameChange={handleFrameChange}
               adBannerImage={adBannerImage}
               onAdBannerChange={setAdBannerImage}
+              theme={theme}
+              onThemeChange={setTheme}
             />
           </div>
         </div>
@@ -348,7 +410,7 @@ export default function CustomPage() {
 
                     {/* Download controls below thumbnail */}
                     <div className="flex justify-center">
-                      <DownloadControls isVisible={true} targetId="photocard-custom" />
+                      <DownloadControls isVisible={!!(logo || newsImage || title)} targetId="photocard-custom" />
                     </div>
                   </div>
 
@@ -377,17 +439,7 @@ export default function CustomPage() {
                           </svg>
                         </button>
                         
-                        <PhotocardPreview 
-                          data={photocardData} 
-                          background={background}
-                          id="photocard-custom-modal"
-                          frameBorderColor={frameBorderColor}
-                          frameBorderThickness={frameBorderThickness}
-                          hideFooter={true}
-                          socialMedia={socialMedia.filter(s => s.platform && s.username)}
-                          hideQuote={true}
-                          adBannerImage={adBannerImage}
-                        />
+                        {renderCard(photocardData, 'photocard-custom-modal', true)}
                       </div>
                     </div>
                   </div>
@@ -396,22 +448,12 @@ export default function CustomPage() {
                 /* Desktop Full View */
                 <div className="flex flex-col items-center">
                   <div className="flex-shrink-0 mt-12">
-                    <PhotocardPreview 
-                      data={photocardData} 
-                      background={background}
-                      id="photocard-custom"
-                      frameBorderColor={frameBorderColor}
-                      frameBorderThickness={frameBorderThickness}
-                      hideFooter={true}
-                      socialMedia={socialMedia.filter(s => s.platform && s.username)}
-                      hideQuote={true}
-                      adBannerImage={adBannerImage}
-                    />
+                    {renderCard(photocardData, 'photocard-custom')}
                   </div>
                   
                   {/* Download controls */}
                   <div className="mt-6">
-                    <DownloadControls isVisible={true} targetId="photocard-custom" />
+                    <DownloadControls isVisible={!!(logo || newsImage || title)} targetId="photocard-custom" />
                   </div>
                 </div>
               )}
