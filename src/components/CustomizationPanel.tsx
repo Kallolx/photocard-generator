@@ -208,8 +208,8 @@ export default function CustomizationPanel({
           </>
         )}
 
-        {/* Theme Tab */}
-        {activeTab === "Theme" && (
+{/* Theme Tab */}
+        {activeTab === 'Theme' && (
           <div>
             <div className="grid grid-cols-2 gap-4">
               {THEMES.map((theme) => (
@@ -217,11 +217,11 @@ export default function CustomizationPanel({
                   <button
                     onClick={() => !theme.locked && handleThemeChange(theme.id)}
                     disabled={theme.locked}
-                    className={`w-full transition-all duration-200 rounded-lg overflow-hidden border-2 ${
+                    className={`w-full transition-all duration-200 border-2 overflow-hidden ${
                       selectedTheme === theme.id && !theme.locked
-                        ? "border-red-500 shadow-lg shadow-red-500/30 scale-[1.02]"
-                        : "border-gray-300 hover:border-gray-400 hover:shadow-md"
-                    } ${theme.locked ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+                        ? 'border-red-500 shadow-lg shadow-red-500/30'
+                        : 'border-gray-300 hover:border-gray-400 hover:shadow-md'
+                    } ${theme.locked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
                   >
                     <div className="relative w-full h-36 bg-gray-100">
                       <img
@@ -235,21 +235,19 @@ export default function CustomizationPanel({
                           <Lock className="w-8 h-8 text-white drop-shadow-lg" />
                         </div>
                       )}
+
+                      {/* Selected indicator at bottom inside the image area */}
+                      {selectedTheme === theme.id && !theme.locked && (
+                        <div className="absolute bottom-0 left-0 right-0 w-full bg-red-500 py-0.5 text-center">
+                          <span className="text-white text-sm font-semibold">Selected</span>
+                        </div>
+                      )}
                     </div>
                   </button>
 
-                  {/* Theme Name with Selected Indicator */}
-                  <div
-                    className={`mt-2 py-2 px-3 rounded-md text-center text-sm font-semibold transition-all duration-200 ${
-                      selectedTheme === theme.id && !theme.locked
-                        ? "bg-red-500 text-white shadow-md"
-                        : "bg-transparent text-slate-700"
-                    }`}
-                  >
+                  {/* Theme Name outside box below */}
+                  <div className="mt-2 text-center text-sm font-medium text-slate-700">
                     {theme.name}
-                    {selectedTheme === theme.id && !theme.locked && (
-                      <span className="ml-1">✓</span>
-                    )}
                   </div>
                 </div>
               ))}
