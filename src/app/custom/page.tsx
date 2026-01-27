@@ -127,7 +127,7 @@ export default function CustomPage() {
 
   // Create photocard data from custom inputs
   const photocardData: PhotocardData = {
-    title: title || 'আপনার শিরোনাম এখানে লিখুন',
+    title: title || 'এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে',
     image: newsImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=225&fit=crop&crop=center',
     logo: logo || 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png',
     favicon: '',
@@ -142,7 +142,7 @@ export default function CustomPage() {
   };
 
   return (
-    <div className="h-screen bg-white flex flex-col">
+    <div className="h-screen bg-[#faf8f5] flex flex-col">
       {/* Navbar */}
       <Navbar />
 
@@ -150,17 +150,17 @@ export default function CustomPage() {
       <div className="flex flex-1 flex-col md:flex-row md:min-h-0 relative">
         {/* Left Sidebar */}
         <div 
-          className="w-full bg-gray-100 p-4 md:p-6 md:overflow-y-auto"
+          className="w-full bg-[#f5f0e8] p-4 md:p-6 md:overflow-y-auto"
           style={isDesktop ? { width: `${leftPanelWidth}%` } : undefined}
         >
           {/* Custom Input Section */}
           <div className="space-y-3">
             {/* Compact Uploads - Side by Side */}
-            <div className="bg-gray-200 p-2 border border-gray-400">
-              <h3 className="text-sm font-semibold text-slate-900 mb-2">Uploads</h3>
+            <div className="bg-[#e8dcc8] p-2 border-2 border-[#d4c4b0]">
+              <h3 className="text-sm font-lora font-bold text-[#2c2419] mb-2">Uploads</h3>
               <div className="grid grid-cols-2 gap-2">
                 {/* Logo Upload */}
-                <label className="flex flex-col items-center justify-center min-h-[56px] border border-dashed border-gray-400 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer p-2">
+                <label className="flex flex-col items-center justify-center min-h-[56px] border-2 border-dashed border-[#d4c4b0] bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors cursor-pointer p-2">
                   <input
                     type="file"
                     accept="image/*"
@@ -170,18 +170,18 @@ export default function CustomPage() {
                   {/* Icon + label (bigger) */}
                   <div className="flex items-center gap-2">
                     {logo ? (
-                      <Edit className="w-4 h-4 text-slate-700" />
+                      <Edit className="w-4 h-4 text-[#8b6834]" />
                     ) : (
-                      <Upload className="w-4 h-4 text-slate-500" />
+                      <Upload className="w-4 h-4 text-[#5d4e37]" />
                     )}
-                    <span className={`font-medium ${logo ? 'text-sm text-slate-900' : 'text-sm text-slate-600'}`}>
+                    <span className={`font-inter font-medium ${logo ? 'text-sm text-[#2c2419]' : 'text-sm text-[#5d4e37]'}`}>
                       {logo ? 'Change Logo' : 'Upload Logo'}
                     </span>
                   </div>
                 </label>
 
                 {/* News Image Upload */}
-                <label className="flex flex-col items-center justify-center min-h-[56px] border border-dashed border-gray-400 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer p-2">
+                <label className="flex flex-col items-center justify-center min-h-[56px] border-2 border-dashed border-[#d4c4b0] bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors cursor-pointer p-2">
                   <input
                     type="file"
                     accept="image/*"
@@ -191,11 +191,11 @@ export default function CustomPage() {
                   {/* Icon + label (bigger) */}
                   <div className="flex items-center gap-2">
                     {newsImage ? (
-                      <Edit className="w-4 h-4 text-slate-700" />
+                      <Edit className="w-4 h-4 text-[#8b6834]" />
                     ) : (
-                      <Upload className="w-4 h-4 text-slate-500" />
+                      <Upload className="w-4 h-4 text-[#5d4e37]" />
                     )}
-                    <span className={`font-medium ${newsImage ? 'text-sm text-slate-900' : 'text-sm text-slate-600'}`}>
+                    <span className={`font-inter font-medium ${newsImage ? 'text-sm text-[#2c2419]' : 'text-sm text-[#5d4e37]'}`}>
                       {newsImage ? 'Change Image' : 'Upload Image'}
                     </span>
                   </div>
@@ -204,25 +204,25 @@ export default function CustomPage() {
             </div>
 
             {/* Title Input */}
-            <div className="bg-gray-200 p-2 border border-gray-400">
-              <h3 className="text-sm font-semibold text-slate-900 mb-2">Title</h3>
+            <div className="bg-[#e8dcc8] p-2 border-2 border-[#d4c4b0]">
+              <h3 className="text-sm font-lora font-bold text-[#2c2419] mb-2">Title</h3>
               <textarea
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="আপনার শিরোনাম এখানে লিখুন..."
-                className="w-full px-2 py-1.5 bg-gray-300 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 min-h-[60px] resize-none font-noto-bengali text-md"
+                className="w-full px-2 py-1.5 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] focus:outline-none focus:ring-2 focus:ring-[#8b6834] min-h-[60px] resize-none font-noto-bengali text-md"
               />
             </div>
 
             {/* Social Media Links - Collapsible */}
-            <div className="bg-gray-200 p-2 border border-gray-400">
+            <div className="bg-[#e8dcc8] p-2 border-2 border-[#d4c4b0]">
               <button
                 onClick={() => setSocialMediaExpanded(!socialMediaExpanded)}
-                className="w-full mx-auto flex items-center justify-between mb-2 hover:bg-gray-300 px-2 py-1 rounded transition-colors"
-              >
-                <h3 className="text-sm font-semibold text-slate-900">Footer</h3>
+                className="w-full mx-auto flex items-center justify-between mb-2 hover:bg-[#d4c4b0] px-2 py-1 transition-colors">
+              
+                <h3 className="text-sm font-lora font-bold text-[#2c2419]">Footer</h3>
                 <svg
-                  className={`w-5 h-5 text-slate-700 transition-transform ${socialMediaExpanded ? 'rotate-180' : ''}`}
+                  className={`w-5 h-5 text-[#5d4e37] transition-transform ${socialMediaExpanded ? 'rotate-180' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -247,8 +247,8 @@ export default function CustomPage() {
                           }}
                           className={`p-2 w-10 h-10 flex items-center justify-center transition-all ${
                             social.platform === platform
-                              ? 'bg-blue-600 text-white shadow-md'
-                              : 'bg-gray-50 text-gray-600 hover:bg-gray-200'
+                              ? 'bg-[#8b6834] text-[#faf8f5] shadow-md'
+                              : 'bg-[#faf8f5] text-[#5d4e37] hover:bg-[#f5f0e8]'
                           }`}
                           title={platform.charAt(0).toUpperCase() + platform.slice(1)}
                         >
@@ -311,7 +311,7 @@ export default function CustomPage() {
                         "Enter username"
                       }
                       disabled={!social.platform}
-                      className="w-full px-3 py-2 bg-gray-300 text-black placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-70 text-base rounded"
+                      className="w-full px-3 py-2 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter focus:outline-none focus:ring-2 focus:ring-[#8b6834] disabled:opacity-70 text-base"
                     />
                   </div>
                 ))}
@@ -338,7 +338,7 @@ export default function CustomPage() {
 
         {/* Resize Handle - Desktop only */}
         <div
-          className="hidden md:block w-1 bg-gray-300 hover:bg-blue-500 cursor-col-resize active:bg-blue-600 transition-colors"
+          className="hidden md:block w-1 bg-[#d4c4b0] hover:bg-[#8b6834] cursor-col-resize active:bg-[#6b4e25] transition-colors"
           onMouseDown={handleMouseDown}
           style={{
             cursor: isResizing ? 'col-resize' : 'col-resize',
@@ -347,7 +347,7 @@ export default function CustomPage() {
         />
 
         {/* Right Preview Area */}
-        <div className="flex-1 bg-white md:overflow-y-auto md:min-h-0">
+        <div className="flex-1 bg-[#faf8f5] md:overflow-y-auto md:min-h-0">
           <div className="flex items-start justify-center md:justify-start md:pl-12 p-4 md:pr-8 md:py-8">
             <div className="w-full flex justify-center">
               {!isDesktop ? (
@@ -361,21 +361,21 @@ export default function CustomPage() {
                         if (modal) modal.classList.remove('hidden');
                       }}
                     >
-                      <div className="bg-white shadow-lg hover:shadow-xl border border-gray-100 overflow-hidden relative group-hover:border-blue-200 transition-all duration-300">
+                      <div className="bg-[#faf8f5] shadow-lg hover:shadow-xl border-2 border-[#d4c4b0] overflow-hidden relative group-hover:border-[#8b6834] transition-all duration-300">
                         {/* Thumbnail header with gradient */}
                         <div className={`h-3 relative ${
                           background?.type === 'gradient' 
                             ? 'bg-gradient-to-r'
-                            : 'bg-blue-500'
+                            : 'bg-[#8b6834]'
                         }`} style={background?.type === 'gradient' ? {
-                          backgroundImage: `linear-gradient(90deg, ${background.gradientFrom || '#3b82f6'}, ${background.gradientTo || '#8b5cf6'})`
-                        } : { backgroundColor: background?.color || '#3b82f6' }}></div>
+                          backgroundImage: `linear-gradient(90deg, ${background.gradientFrom || '#8b6834'}, ${background.gradientTo || '#c19a6b'})`
+                        } : { backgroundColor: background?.color || '#8b6834' }}></div>
                         
                         {/* Thumbnail content */}
                         <div className="p-4">
                           {/* Image */}
                           {photocardData.image && (
-                            <div className="bg-gray-100 aspect-video mb-3 overflow-hidden">
+                            <div className="bg-[#f5f0e8] aspect-video mb-3 overflow-hidden">
                               <img
                                 src={photocardData.image}
                                 alt="Thumbnail"
@@ -385,18 +385,18 @@ export default function CustomPage() {
                           )}
                           
                           {/* Title */}
-                          <h4 className="text-slate-800 font-noto-bengali text-sm font-medium mb-2 line-clamp-2 leading-tight">
+                          <h4 className="text-[#2c2419] font-noto-bengali text-sm font-medium mb-2 line-clamp-2 leading-tight">
                             {photocardData.title}
                           </h4>
                           
                           {/* Date */}
-                          <p className="text-xs font-noto-bengali text-gray-500 mb-3">
+                          <p className="text-xs font-noto-bengali text-[#5d4e37] mb-3">
                             {photocardData.date}
                           </p>
                           
                           {/* Tap to view */}
-                          <div className="flex items-center justify-center py-2 bg-gray-50 group-hover:bg-blue-50 transition-colors duration-300">
-                            <span className="text-xs font-medium text-gray-600 group-hover:text-blue-600 flex items-center gap-2 font-dm-sans">
+                          <div className="flex items-center justify-center py-2 bg-[#f5f0e8] group-hover:bg-[#e8dcc8] transition-colors duration-300">
+                            <span className="text-xs font-medium text-[#5d4e37] group-hover:text-[#8b6834] flex items-center gap-2 font-inter">
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />

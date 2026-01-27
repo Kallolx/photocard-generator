@@ -66,7 +66,7 @@ export default function ModernCustomCard({
   };
 
   const getBackgroundStyle = () => {
-    if (!background) return { backgroundColor: '#dc2626' };
+    if (!background) return { backgroundColor: '#8b6834' };
     
     if (background.type === 'gradient' && background.gradientFrom && background.gradientTo) {
       return {
@@ -78,7 +78,7 @@ export default function ModernCustomCard({
   };
 
   const getFooterBackgroundStyle = () => {
-    if (!background) return { backgroundColor: '#991b1b' };
+    if (!background) return { backgroundColor: '#6b4e25' };
     
     if (background.type === 'gradient' && background.gradientFrom && background.gradientTo) {
       const darkerFrom = darkenColor(background.gradientFrom, 25);
@@ -93,7 +93,7 @@ export default function ModernCustomCard({
 
   // Get the background color for the colored text
   const getHighlightColor = () => {
-    if (!background) return '#dc2626';
+    if (!background) return '#8b6834';
     if (background.type === 'gradient' && background.gradientFrom) {
       return background.gradientFrom;
     }

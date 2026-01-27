@@ -77,7 +77,7 @@ export default function ClassicUrlCard({
   };
 
   const getBackgroundStyle = () => {
-    if (!background) return { backgroundColor: '#dc2626' }; // default red
+    if (!background) return { backgroundColor: '#8b6834' }; // default brown
     
     if (background.type === 'gradient' && background.gradientFrom && background.gradientTo) {
       return {
@@ -90,7 +90,7 @@ export default function ClassicUrlCard({
 
   // Get the background color for highlighted text (used in CTA)
   const getHighlightColor = () => {
-    if (!background) return '#dc2626';
+    if (!background) return '#8b6834';
     if (background.type === 'gradient' && background.gradientFrom) return background.gradientFrom;
     return background.color;
   };

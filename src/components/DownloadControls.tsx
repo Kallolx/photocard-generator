@@ -122,28 +122,28 @@ export default function DownloadControls({ isVisible, targetId = "photocard" }: 
             <button
               onClick={() => handleDownload()}
               disabled={isDownloading}
-              className="flex-1 bg-gray-900 text-white py-2 px-3 rounded-l-lg text-sm font-medium font-dm-sans hover:bg-gray-800 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1"
-            >
+              className="flex-1 bg-[#2c2419] text-[#faf8f5] py-2 px-3 text-sm font-medium font-inter hover:bg-[#8b6834] focus:ring-2 focus:ring-[#8b6834] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1">
+            
               <Download className="w-4 h-4" />
               {isDownloading ? 'Saving...' : 'PNG'}
             </button>
             <button
               onClick={() => setShowFormats(!showFormats)}
-              className="bg-gray-900 text-white py-2 px-2 rounded-r-lg hover:bg-gray-800 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors border-l border-gray-700"
-            >
+              className="bg-[#2c2419] text-[#faf8f5] py-2 px-2 hover:bg-[#8b6834] focus:ring-2 focus:ring-[#8b6834] focus:ring-offset-2 transition-colors border-l-2 border-[#5d4e37]">
+            
               <ChevronDown className="w-4 h-4" />
             </button>
           </div>
           
           {/* Format Dropdown */}
           {showFormats && (
-            <div className="absolute bottom-full mb-1 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+            <div className="absolute bottom-full mb-1 left-0 right-0 bg-[#faf8f5] border-2 border-[#d4c4b0] shadow-lg z-50">
               {downloadFormats.map((format, index) => (
                 <button
                   key={index}
                   onClick={() => handleDownload(format.extension, format.quality)}
                   disabled={isDownloading}
-                  className="w-full px-3 py-2 text-sm font-medium font-dm-sans text-gray-700 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg disabled:opacity-50 transition-colors"
+                  className="w-full px-3 py-2 text-sm font-medium font-inter text-[#2c2419] hover:bg-[#e8dcc8] disabled:opacity-50 transition-colors"
                 >
                   {format.name}
                 </button>
@@ -154,8 +154,8 @@ export default function DownloadControls({ isVisible, targetId = "photocard" }: 
 
         <button
           onClick={handleShare}
-          className="bg-blue-600 text-white py-2 px-3 rounded-lg text-sm font-medium font-dm-sans hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center justify-center gap-1"
-        >
+          className="bg-[#8b6834] text-[#faf8f5] py-2 px-3 text-sm font-medium font-inter hover:bg-[#6b4e25] focus:ring-2 focus:ring-[#8b6834] focus:ring-offset-2 transition-colors flex items-center justify-center gap-1">
+        
           <Share2 className="w-4 h-4" />
           Share
         </button>

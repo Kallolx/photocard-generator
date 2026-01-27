@@ -69,7 +69,7 @@ export default function ClassicCustomCard({
   };
 
   const getBackgroundStyle = () => {
-    if (!background) return { backgroundColor: '#dc2626' }; // default red
+    if (!background) return { backgroundColor: '#8b6834' }; // default brown
     
     if (background.type === 'gradient' && background.gradientFrom && background.gradientTo) {
       return {
@@ -81,7 +81,7 @@ export default function ClassicCustomCard({
   };
 
   const getFooterBackgroundStyle = () => {
-    if (!background) return { backgroundColor: '#991b1b' }; // darker red
+    if (!background) return { backgroundColor: '#6b4e25' }; // darker brown
     
     if (background.type === 'gradient' && background.gradientFrom && background.gradientTo) {
       // For gradients, darken both colors
@@ -98,7 +98,7 @@ export default function ClassicCustomCard({
 
   // Get the background color for the colored text
   const getHighlightColor = () => {
-    if (!background) return '#dc2626'; // default red
+    if (!background) return '#8b6834'; // default brown
     
     if (background.type === 'gradient' && background.gradientFrom) {
       return background.gradientFrom;

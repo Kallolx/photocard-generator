@@ -99,23 +99,23 @@ export default function CustomizationPanel({
   const tabs: Tab[] = ["Background", "Theme", "Fonts", "Frame", "Ad Banner"];
 
   return (
-    <div className="bg-gray-200 p-6 border border-gray-400">
+    <div className="bg-[#f5f0e8] p-6 border-2 border-[#d4c4b0]">
       {/* Tab Navigation - Scrollable on small devices */}
-      <div className="border-b border-gray-300 mb-6 -mx-6 px-6 overflow-x-auto no-scrollbar">
+      <div className="border-b-2 border-[#d4c4b0] mb-6 -mx-6 px-6 overflow-x-auto no-scrollbar">
         <div className="flex gap-6 min-w-max">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-3 text-sm font-medium transition-colors relative whitespace-nowrap ${
+              className={`pb-3 text-sm font-medium font-inter transition-colors relative whitespace-nowrap ${
                 activeTab === tab
-                  ? "text-slate-900"
-                  : "text-slate-500 hover:text-slate-700"
+                  ? "text-[#2c2419]"
+                  : "text-[#5d4e37] hover:text-[#8b6834]"
               }`}
             >
               {tab}
               {activeTab === tab && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-slate-900" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8b6834]" />
               )}
             </button>
           ))}
@@ -129,9 +129,9 @@ export default function CustomizationPanel({
           <>
             {/* Solid Colors Section */}
             <div>
-              <h3 className="text-sm font-medium text-slate-900 mb-3">
-                Solid Colors{" "}
-                <span className="text-xs text-slate-600">
+              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                Solid Colors{' '}
+                <span className="text-xs text-[#5d4e37]">
                   ({SOLID_COLORS.length} colors)
                 </span>
               </h3>
@@ -145,15 +145,15 @@ export default function CustomizationPanel({
                     className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
                       background.type === "solid" &&
                       background.color === item.color
-                        ? "border-white"
-                        : "border-gray-400 hover:scale-95"
+                        ? "border-[#8b6834] shadow-md"
+                        : "border-[#d4c4b0] hover:scale-95"
                     }`}
                     style={{ backgroundColor: item.color }}
                     title={item.name}
                   >
                     {background.type === "solid" &&
                       background.color === item.color && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-red-500 text-white text-[10px] text-center py-0.5">
+                        <div className="absolute bottom-0 left-0 right-0 bg-[#8b6834] text-[#faf8f5] text-[10px] font-inter text-center py-0.5">
                           selected
                         </div>
                       )}
@@ -164,9 +164,9 @@ export default function CustomizationPanel({
 
             {/* Gradients Section */}
             <div>
-              <h3 className="text-sm font-medium text-slate-900 mb-3">
-                Gradients{" "}
-                <span className="text-xs text-slate-600">
+              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                Gradients{' '}
+                <span className="text-xs text-[#5d4e37]">
                   ({GRADIENTS.length} colors)
                 </span>
               </h3>
@@ -186,8 +186,8 @@ export default function CustomizationPanel({
                       background.type === "gradient" &&
                       background.gradientFrom === grad.from &&
                       background.gradientTo === grad.to
-                        ? "border-white"
-                        : "border-gray-400 hover:scale-95"
+                        ? "border-[#8b6834] shadow-md"
+                        : "border-[#d4c4b0] hover:scale-95"
                     }`}
                     style={{
                       backgroundImage: `linear-gradient(135deg, ${grad.from}, ${grad.to})`,
@@ -197,7 +197,7 @@ export default function CustomizationPanel({
                     {background.type === "gradient" &&
                       background.gradientFrom === grad.from &&
                       background.gradientTo === grad.to && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/35 text-white text-[10px] text-center py-1">
+                        <div className="absolute bottom-0 left-0 right-0 bg-[#2c2419]/70 text-[#faf8f5] text-[10px] font-inter text-center py-1">
                           selected
                         </div>
                       )}
@@ -219,11 +219,11 @@ export default function CustomizationPanel({
                     disabled={theme.locked}
                     className={`w-full transition-all duration-200 border-2 overflow-hidden ${
                       selectedTheme === theme.id && !theme.locked
-                        ? 'border-red-500 shadow-lg shadow-red-500/30'
-                        : 'border-gray-300 hover:border-gray-400 hover:shadow-md'
+                        ? 'border-[#8b6834] shadow-lg shadow-[#8b6834]/30'
+                        : 'border-[#d4c4b0] hover:border-[#8b6834] hover:shadow-md'
                     } ${theme.locked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
                   >
-                    <div className="relative w-full h-36 bg-gray-100">
+                    <div className="relative w-full h-36 bg-[#f5f0e8]">
                       <img
                         src={theme.thumbnail}
                         alt={theme.name}
@@ -238,15 +238,15 @@ export default function CustomizationPanel({
 
                       {/* Selected indicator at bottom inside the image area */}
                       {selectedTheme === theme.id && !theme.locked && (
-                        <div className="absolute bottom-0 left-0 right-0 w-full bg-red-500 py-0.5 text-center">
-                          <span className="text-white text-sm font-semibold">Selected</span>
+                        <div className="absolute bottom-0 left-0 right-0 w-full bg-[#8b6834] py-0.5 text-center">
+                          <span className="text-[#faf8f5] text-sm font-inter font-semibold">Selected</span>
                         </div>
                       )}
                     </div>
                   </button>
 
                   {/* Theme Name outside box below */}
-                  <div className="mt-2 text-center text-sm font-medium text-slate-700">
+                  <div className="mt-2 text-center text-sm font-medium font-inter text-[#2c2419]">
                     {theme.name}
                   </div>
                 </div>
@@ -260,12 +260,12 @@ export default function CustomizationPanel({
           <div className="space-y-4">
             {/* Week & Date Font */}
             <div>
-              <h3 className="text-sm font-medium text-slate-900 mb-2">
+              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-2">
                 Week & Date :
               </h3>
-              <div className="bg-gray-300 px-3 py-2 flex items-center justify-between">
+              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] px-3 py-2 flex items-center justify-between">
                 <div className="flex-1 text-left">
-                  <span className="font-noto-bengali text-gray-700 text-lg">
+                  <span className="font-noto-bengali text-[#2c2419] text-lg">
                     আমার সোনার বাংলা
                   </span>
                 </div>
@@ -284,12 +284,12 @@ export default function CustomizationPanel({
 
             {/* Headline Font */}
             <div>
-              <h3 className="text-sm font-medium text-slate-900 mb-2">
+              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-2">
                 Headline :
               </h3>
-              <div className="bg-gray-300 px-3 py-2 flex items-center justify-between">
+              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] px-3 py-2 flex items-center justify-between">
                 <div className="flex-1 text-left">
-                  <span className="font-noto-bengali text-gray-700 text-lg">
+                  <span className="font-noto-bengali text-[#2c2419] text-lg">
                     আমার সোনার বাংলা
                   </span>
                 </div>
@@ -309,9 +309,9 @@ export default function CustomizationPanel({
             {/* Font Selection Modal (Placeholder) */}
             {showFontModal && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                <div className="bg-[#faf8f5] border-2 border-[#d4c4b0] p-6 max-w-md w-full">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-slate-900 tracking-tighter">
+                    <h3 className="text-lg font-lora font-bold text-[#2c2419]">
                       Select Font -{" "}
                       {selectedFontType === "weekDate"
                         ? "Week & Date"
@@ -319,8 +319,8 @@ export default function CustomizationPanel({
                     </h3>
                     <button
                       onClick={() => setShowFontModal(false)}
-                      className="text-slate-500 hover:text-slate-900"
-                    >
+                      className="text-[#5d4e37] hover:text-[#2c2419]">
+                    
                       <X className="w-5 h-5" />
                     </button>
                   </div>
@@ -331,14 +331,14 @@ export default function CustomizationPanel({
                         // placeholder: apply font selection for Week/Headline in future
                         setShowFontModal(false);
                       }}
-                      className="w-full p-3 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-between"
-                    >
+                      className="w-full p-3 bg-[#f5f0e8] hover:bg-[#e8dcc8] transition-colors flex items-center justify-between">
+                    
                       <div className="flex-1 text-left">
-                        <span className="font-noto-bengali text-gray-600 block">
+                        <span className="font-noto-bengali text-[#2c2419] block">
                           আমার সোনার বাংলা
                         </span>
                       </div>
-                      <div className="ml-4 text-sm text-slate-600">
+                      <div className="ml-4 text-sm font-inter text-[#5d4e37]">
                         Noto Serif Bengali
                       </div>
                     </button>
@@ -347,31 +347,31 @@ export default function CustomizationPanel({
                       onClick={() => {
                         setShowFontModal(false);
                       }}
-                      className="w-full p-3 bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-between"
-                    >
+                      className="w-full p-3 bg-[#f5f0e8] hover:bg-[#e8dcc8] transition-colors flex items-center justify-between">
+                    
                       <div className="flex-1 text-left">
-                        <span className="font-dm-sans text-gray-600 block">
+                        <span className="font-dm-sans text-[#2c2419] block">
                           আমার সোনার বাংলা
                         </span>
                       </div>
-                      <div className="ml-4 text-sm text-slate-600">DM Sans</div>
+                      <div className="ml-4 text-sm font-inter text-[#5d4e37]">DM Sans</div>
                     </button>
 
-                    <div className="w-full p-3 bg-gray-100 transition-colors flex items-center justify-between opacity-50 cursor-not-allowed">
+                    <div className="w-full p-3 bg-[#f5f0e8] transition-colors flex items-center justify-between opacity-50 cursor-not-allowed">
                       <div className="flex-1 text-left">
-                        <span className="text-base text-slate-600 block">
+                        <span className="text-base font-inter text-[#5d4e37] block">
                           Font preview
                         </span>
                       </div>
-                      <div className="ml-4 text-sm text-slate-600">
+                      <div className="ml-4 text-sm font-inter text-[#5d4e37]">
                         More fonts coming soon...
                       </div>
                     </div>
                   </div>
                   <button
                     onClick={() => setShowFontModal(false)}
-                    className="w-full mt-4 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 transition-colors"
-                  >
+                    className="w-full mt-4 px-4 py-2 bg-[#2c2419] text-[#faf8f5] font-inter font-medium hover:bg-[#8b6834] transition-colors">
+                  
                     Close
                   </button>
                 </div>
@@ -385,9 +385,9 @@ export default function CustomizationPanel({
           <div className="space-y-4">
             {/* Border Color */}
             <div>
-              <h3 className="text-sm font-medium text-slate-900 mb-3">
-                Border Color{" "}
-                <span className="text-xs text-slate-600">
+              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                Border Color{' '}
+                <span className="text-xs text-[#5d4e37]">
                   ({FRAME_COLORS.length} colors)
                 </span>
               </h3>
@@ -398,24 +398,24 @@ export default function CustomizationPanel({
                     onClick={() => handleFrameColorChange(item.color)}
                     className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
                       frameBorderColor === item.color
-                        ? "border-white"
-                        : "border-gray-400 hover:scale-95"
+                        ? "border-[#8b6834] shadow-md"
+                        : "border-[#d4c4b0] hover:scale-95"
                     }`}
                     style={{ backgroundColor: item.color }}
                     title={item.name}
                   >
                     {frameBorderColor === item.color && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-red-500 text-white text-[10px] text-center py-0.5">
+                      <div className="absolute bottom-0 left-0 right-0 bg-[#8b6834] text-[#faf8f5] text-[10px] font-inter text-center py-0.5">
                         selected
                       </div>
                     )}
                   </button>
                 ))}
                 <button
-                  className="w-14 h-14 flex-shrink-0 border-2 border-gray-400 bg-gray-300 hover:bg-gray-400 transition-colors flex items-center justify-center"
+                  className="w-14 h-14 flex-shrink-0 border-2 border-[#d4c4b0] bg-[#e8dcc8] hover:bg-[#d4c4b0] transition-colors flex items-center justify-center"
                   title="Add custom color"
                 >
-                  <Plus className="w-5 h-5 text-gray-600" />
+                  <Plus className="w-5 h-5 text-[#5d4e37]" />
                 </button>
               </div>
             </div>
@@ -434,12 +434,12 @@ export default function CustomizationPanel({
                   onChange={(e) =>
                     handleFrameThicknessChange(Number(e.target.value))
                   }
-                  className="flex-1 h-1 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+                  className="flex-1 h-1 bg-[#e8dcc8] appearance-none cursor-pointer\"
                   style={{
-                    background: `linear-gradient(to right, #94a3b8 0%, #94a3b8 ${frameBorderThickness * 10}%, #d1d5db ${frameBorderThickness * 10}%, #d1d5db 100%)`,
+                    background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${frameBorderThickness * 10}%, #e8dcc8 ${frameBorderThickness * 10}%, #e8dcc8 100%)`,
                   }}
                 />
-                <div className="w-8 text-right text-md font-medium text-slate-700">
+                <div className="w-8 text-right text-md font-medium font-inter text-[#2c2419]">
                   {frameBorderThickness}
                 </div>
               </div>

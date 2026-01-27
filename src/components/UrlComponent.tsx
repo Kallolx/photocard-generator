@@ -73,14 +73,14 @@ export default function UrlComponent({
   return (
     <div className="space-y-3">
       {/* Mode Selector */}
-      <div className="bg-gray-200 p-1 border border-gray-400">
+      <div className="bg-[#f5f0e8] p-1 border-2 border-[#d4c4b0]">
         <div className="flex items-center gap-1">
           <button
             onClick={() => setMode('single')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium transition-all duration-200 ${
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium font-inter transition-all duration-200 ${
               mode === 'single'
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-600 hover:text-slate-800 hover:bg-gray-100'
+                ? 'bg-white text-[#2c2419] shadow-sm'
+                : 'text-[#5d4e37] hover:text-[#8b6834] hover:bg-[#e8dcc8]'
             }`}
           >
             <User className="w-4 h-4" />
@@ -88,10 +88,10 @@ export default function UrlComponent({
           </button>
           <button
             onClick={() => setMode('multiple')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium transition-all duration-200 ${
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium font-inter transition-all duration-200 ${
               mode === 'multiple'
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-600 hover:text-slate-800 hover:bg-gray-100'
+                ? 'bg-white text-[#2c2419] shadow-sm'
+                : 'text-[#5d4e37] hover:text-[#8b6834] hover:bg-[#e8dcc8]'
             }`}
           >
             <Grid3X3 className="w-4 h-4" />
@@ -101,12 +101,12 @@ export default function UrlComponent({
       </div>
 
       {/* URL Input Section */}
-      <div className="bg-gray-200 p-6 border border-gray-400">
+      <div className="bg-[#f5f0e8] p-6 border-2 border-[#d4c4b0]">
         <div className="flex items-center gap-2 mb-4">
-          <div className="p-2 bg-blue-600">
+          <div className="p-2 bg-[#8b6834]">
             <Link2 className="w-4 h-4 text-white" />
           </div>
-          <h2 className="text-base md:text-lg font-semibold text-slate-800">
+          <h2 className="text-base md:text-lg font-lora font-bold text-[#2c2419]">
             {mode === 'single' ? 'Article URL' : 'Multiple URLs'}
           </h2>
         </div>
@@ -119,7 +119,7 @@ export default function UrlComponent({
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com/article"
-                className="w-full px-4 py-3 bg-gray-300 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 bg-[#e8dcc8] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter focus:outline-none focus:ring-2 focus:ring-[#8b6834]"
                 disabled={isLoading}
               />
               
@@ -127,7 +127,7 @@ export default function UrlComponent({
               <div className="flex items-center gap-3">
                 {/* Success Message - Left Side */}
                 {photocardData && (
-                  <div className="flex-1 flex items-center gap-2 text-green-700 text-xs sm:text-sm font-medium">
+                  <div className="flex-1 flex items-center gap-2 text-[#38A169] text-xs sm:text-sm font-medium font-inter">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
@@ -139,7 +139,7 @@ export default function UrlComponent({
                 <button
                   onClick={handleSingleSubmit}
                   disabled={!url.trim() || isLoading}
-                  className="px-6 py-3 bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors ml-auto"
+                  className="px-6 py-3 bg-[#8b6834] text-[#faf8f5] text-sm font-medium font-inter hover:bg-[#6b4e25] disabled:bg-[#a08d74] disabled:cursor-not-allowed transition-colors ml-auto"
                 >
                   {isLoading ? 'Loading...' : 'Generate'}
                 </button>
@@ -162,13 +162,13 @@ export default function UrlComponent({
                     value={url}
                     onChange={(e) => updateUrl(index, e.target.value)}
                     placeholder={`URL ${index + 1}`}
-                    className="flex-1 px-4 py-3 bg-gray-300 text-gray-900 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-4 py-3 bg-[#e8dcc8] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter focus:outline-none focus:ring-2 focus:ring-[#8b6834]"
                     disabled={isLoading}
                   />
                   {urls.length > 1 && (
                     <button
                       onClick={() => removeUrlField(index)}
-                      className="px-3 py-3 bg-red-500 text-white hover:bg-red-600 transition-colors"
+                      className="px-3 py-3 bg-[#8b6834] text-[#faf8f5] hover:bg-[#6b4e25] transition-colors"
                       disabled={isLoading}
                     >
                       ×
@@ -180,7 +180,7 @@ export default function UrlComponent({
               <div className="flex gap-3">
                 <button
                   onClick={addUrlField}
-                  className="flex-1 px-4 py-3 bg-gray-500 text-white hover:bg-gray-600 transition-colors"
+                  className="flex-1 px-4 py-3 bg-[#5d4e37] text-[#faf8f5] font-inter font-medium hover:bg-[#8b6834] transition-colors"
                   disabled={isLoading}
                 >
                   + Add URL
@@ -188,7 +188,7 @@ export default function UrlComponent({
                 <button
                   onClick={handleMultipleSubmit}
                   disabled={urls.filter(u => u.trim()).length === 0 || isLoading}
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 px-6 py-3 bg-[#8b6834] text-[#faf8f5] font-medium font-inter hover:bg-[#6b4e25] disabled:bg-[#a08d74] disabled:cursor-not-allowed transition-colors"
                 >
                   {isLoading ? 'Loading...' : 'Generate All'}
                 </button>
@@ -206,14 +206,14 @@ export default function UrlComponent({
                 {multiplePhotocards.map((photocard) => (
                   <div key={photocard.id} className="p-3 bg-slate-50">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-slate-600 truncate flex-1">
+                      <span className="text-sm font-inter text-[#5d4e37] truncate flex-1">
                         {photocard.data.url || 'Processing...'}
                       </span>
-                      <div className={`px-2 py-1 text-xs font-medium ${
-                        photocard.status === 'completed' ? 'bg-green-100 text-green-700' :
-                        photocard.status === 'loading' ? 'bg-blue-100 text-blue-700' :
-                        photocard.status === 'error' ? 'bg-red-100 text-red-700' :
-                        'bg-gray-100 text-gray-700'
+                      <div className={`px-2 py-1 text-xs font-medium font-inter ${
+                        photocard.status === 'completed' ? 'bg-[#d4edda] text-[#38A169]' :
+                        photocard.status === 'loading' ? 'bg-[#e8dcc8] text-[#8b6834]' :
+                        photocard.status === 'error' ? 'bg-[#f5e5d3] text-[#8b6834]' :
+                        'bg-[#f5f0e8] text-[#5d4e37]'
                       }`}>
                         {photocard.status === 'loading' ? 'Loading...' :
                          photocard.status === 'completed' ? 'Done' :
