@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,22 +20,16 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
-    // TODO: Implement actual authentication with proper RBAC
-    // For now, this is UI only - will integrate with auth service later
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await login(formData.email, formData.password);
       
-      // Mock role-based routing
-      if (formData.email.includes('admin')) {
-        router.push('/admin');
-      } else {
-        router.push('/url');
-      }
-    } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      // The AuthContext will have the user with role, we need to get it
+      // For now, we'll use a callback approach or refresh the page
+      // Redirect will happen after state update
+      
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

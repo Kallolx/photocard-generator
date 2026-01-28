@@ -6,13 +6,18 @@ import ClassicCustomCard from '@/components/cards/custom-cards/ClassicCustomCard
 import ModernCustomCard from '@/components/cards/custom-cards/ModernCustomCard';
 import DownloadControls from '@/components/DownloadControls';
 import CustomizationPanel from '@/components/CustomizationPanel';
+import CreditDisplay from '@/components/CreditDisplay';
 import { PhotocardData, BackgroundOptions } from '@/types';
-import { Upload, Edit } from 'lucide-react';
+import { Upload, Edit, Lock } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import UpgradeModal from '@/components/UpgradeModal';
 
 export default function CustomPage() {
   const [logo, setLogo] = useState<string>('');
   const [newsImage, setNewsImage] = useState<string>('');
   const [title, setTitle] = useState('');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const { user, features } = useAuth();
   const [background, setBackground] = useState<BackgroundOptions>({
     type: 'solid',
     color: '#dc2626'
@@ -148,6 +153,29 @@ export default function CustomPage() {
 
       {/* Main Content Layout */}
       <div className="flex flex-1 flex-col md:flex-row md:min-h-0 relative">
+        {/* Lock Overlay for Free/Basic Users */}
+        {!features?.customCards && (
+          <div className="absolute inset-0 z-50 bg-[#2c2419]/80 backdrop-blur-sm flex items-center justify-center">
+            <div className="bg-[#faf8f5] p-8 border-4 border-[#8b6834] max-w-md mx-4 text-center">
+              <div className="w-16 h-16 bg-[#8b6834] rounded-full flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-8 h-8 text-[#faf8f5]" />
+              </div>
+              <h3 className="text-2xl font-lora font-bold text-[#2c2419] mb-3">
+                Custom Cards Locked
+              </h3>
+              <p className="text-[#5d4e37] font-inter mb-6">
+                Custom cards are available for Basic and Premium users. Upgrade your plan to unlock this feature.
+              </p>
+              <button
+                onClick={() => setShowUpgradeModal(true)}
+                className="px-8 py-3 bg-[#8b6834] text-[#faf8f5] font-inter font-medium hover:bg-[#6b4e25] transition-colors"
+              >
+                Upgrade Now
+              </button>
+            </div>
+          </div>
+        )}
+        
         {/* Left Sidebar */}
         <div 
           className="w-full bg-[#f5f0e8] p-4 md:p-6 md:overflow-y-auto"
@@ -461,6 +489,14 @@ export default function CustomPage() {
           </div>
         </div>
       </div>
+      
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        feature="Custom Cards"
+        requiredPlan="Basic"
+      />
     </div>
   );
 }

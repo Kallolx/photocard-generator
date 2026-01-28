@@ -1,8 +1,8 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -13,67 +13,49 @@ interface ProtectedRouteProps {
 
 /**
  * ProtectedRoute Component
- * 
- * This component guards routes based on authentication and authorization.
- * Currently returns children directly for UI development.
- * 
- * TODO: Implement actual route protection when auth is ready:
- * 1. Check if user is authenticated
- * 2. Check if user has required role
- * 3. Redirect unauthorized users
- * 4. Show loading state during auth check
- * 5. Handle auth state persistence
- * 
- * Example usage:
- * <ProtectedRoute requireAuth={true}>
- *   <Dashboard />
- * </ProtectedRoute>
- * 
- * <ProtectedRoute requireAdmin={true} redirectTo="/auth/login">
- *   <AdminPanel />
- * </ProtectedRoute>
+ * Guards routes based on authentication and authorization.
  */
 export default function ProtectedRoute({
   children,
-  requireAuth = false,
+  requireAuth = true,
   requireAdmin = false,
   redirectTo = '/auth/login',
 }: ProtectedRouteProps) {
   const router = useRouter();
-  const { isAuthenticated, isAdmin } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
 
-  // TODO: Implement actual protection logic
-  // For now, render children to allow UI development
-  
-  /*
-  // Future implementation:
-  
   useEffect(() => {
-    if (requireAuth && !isAuthenticated) {
-      router.push(redirectTo);
-      return;
+    if (!isLoading) {
+      if (requireAuth && !isAuthenticated) {
+        router.push(redirectTo);
+        return;
+      }
+      
+      if (requireAdmin && user?.role !== 'admin') {
+        router.push('/url');
+        return;
+      }
     }
-    
-    if (requireAdmin && !isAdmin) {
-      router.push('/unauthorized');
-      return;
-    }
-  }, [isAuthenticated, isAdmin, requireAuth, requireAdmin, redirectTo, router]);
+  }, [isAuthenticated, user, isLoading, requireAuth, requireAdmin, redirectTo, router]);
 
-  if (requireAuth && !isAuthenticated) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-[#5d4e37] font-inter">Checking authentication...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#d4c4b0] border-t-[#8b6834]"></div>
+          <p className="mt-4 text-[#5d4e37] font-inter">Loading...</p>
         </div>
       </div>
     );
   }
 
-  if (requireAdmin && !isAdmin) {
+  if (requireAuth && !isAuthenticated) {
     return null;
   }
-  */
+
+  if (requireAdmin && user?.role !== 'admin') {
+    return null;
+  }
 
   return <>{children}</>;
 }

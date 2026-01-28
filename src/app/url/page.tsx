@@ -8,8 +8,11 @@ import ModernUrlCard from '@/components/cards/url-cards/ModernUrlCard';
 import DownloadControls from '@/components/DownloadControls';
 import CustomizationPanel from '@/components/CustomizationPanel';
 import { PhotocardData, BackgroundOptions, MultiplePhotocardData, UrlData } from '@/types';
+import { cardAPI } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
+  const { canGenerateCard, refreshCredits } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [photocardData, setPhotocardData] = useState<PhotocardData | null>(null);
   const [url, setUrl] = useState('');
@@ -43,6 +46,12 @@ export default function Home() {
   };
 
   const handleUrlSubmit = async (url: string) => {
+    // Check if user can generate cards
+    if (!canGenerateCard()) {
+      setError('Daily card generation limit reached. Please upgrade or wait for reset.');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
     setPhotocardData(null);
@@ -78,6 +87,21 @@ export default function Home() {
       };
 
       setPhotocardData(photocardData);
+      
+      // Record card generation in backend
+      try {
+        await cardAPI.generate({
+          card_type: 'url',
+          source_url: url,
+          theme: theme,
+        });
+        
+        // Refresh credits to update UI
+        await refreshCredits();
+      } catch (creditError) {
+        console.error('Failed to record card generation:', creditError);
+      }
+      
       setUrl(''); // Auto-clear URL after successful generation
     } catch (err) {
       console.error('Error:', err);
@@ -156,6 +180,12 @@ export default function Home() {
   };
 
   const handleMultipleUrlsSubmit = async (urls: string[]) => {
+    // Check if user can generate cards
+    if (!canGenerateCard()) {
+      setError('Daily card generation limit reached. Please upgrade or wait for reset.');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
     setMultiplePhotocards([]);
@@ -177,6 +207,8 @@ export default function Home() {
     }));
 
     setMultiplePhotocards(initialData);
+
+    let successfulGenerations = 0;
 
     // Process each URL
     for (let i = 0; i < urls.length; i++) {
@@ -228,6 +260,8 @@ export default function Home() {
           )
         );
 
+        successfulGenerations++;
+
       } catch (err) {
         console.error('Error processing URL:', urls[i], err);
         setMultiplePhotocards(prev => 
@@ -241,6 +275,24 @@ export default function Home() {
               : item
           )
         );
+      }
+    }
+
+    // Record batch generation in backend
+    if (successfulGenerations > 0) {
+      try {
+        await cardAPI.generate({
+          card_type: 'url',
+          source_url: urls[0], // Store first URL as representative
+          theme: theme,
+          is_batch: true,
+          batch_count: successfulGenerations,
+        });
+        
+        // Refresh credits to update UI
+        await refreshCredits();
+      } catch (creditError) {
+        console.error('Failed to record batch generation:', creditError);
       }
     }
 

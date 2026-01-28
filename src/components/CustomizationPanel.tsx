@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { BackgroundOptions } from "@/types";
 import { Plus, Lock, RefreshCw, X, Upload } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import UpgradeModal from "./UpgradeModal";
 
 interface CustomizationPanelProps {
   background: BackgroundOptions;
@@ -68,9 +70,12 @@ export default function CustomizationPanel({
   theme = "classic",
   onThemeChange,
 }: CustomizationPanelProps) {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("Background");
   const [selectedTheme, setSelectedTheme] = useState(theme);
   const [showFontModal, setShowFontModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState('');
   const [selectedFontType, setSelectedFontType] = useState<
     "weekDate" | "headline" | null
   >(null);
@@ -81,9 +86,40 @@ export default function CustomizationPanel({
     initialFrameBorderThickness,
   );
 
-  const handleThemeChange = (themeId: string) => {
+  const isFreeUser = user?.plan === 'Free';
+
+  const THEMES_WITH_LOCK = [
+    {
+      id: "classic",
+      name: "Classic",
+      locked: false,
+      thumbnail: "/themes/cus-1.png",
+    },
+    {
+      id: "modern",
+      name: "Modern",
+      locked: isFreeUser, // Lock Modern theme for Free users
+      thumbnail: "/themes/cus-2.png",
+    },
+  ];
+
+  const handleThemeChange = (themeId: string, isLocked: boolean) => {
+    if (isLocked) {
+      setUpgradeFeature('Modern Theme');
+      setShowUpgradeModal(true);
+      return;
+    }
     setSelectedTheme(themeId);
     onThemeChange?.(themeId);
+  };
+
+  const handleFontsTabClick = () => {
+    if (isFreeUser) {
+      setUpgradeFeature('Font Customization');
+      setShowUpgradeModal(true);
+      return;
+    }
+    setActiveTab('Fonts');
   };
 
   const handleFrameColorChange = (color: string) => {
@@ -106,14 +142,25 @@ export default function CustomizationPanel({
           {tabs.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => {
+                if (tab === 'Fonts') {
+                  handleFontsTabClick();
+                } else {
+                  setActiveTab(tab);
+                }
+              }}
               className={`pb-3 text-sm font-medium font-inter transition-colors relative whitespace-nowrap ${
                 activeTab === tab
                   ? "text-[#2c2419]"
                   : "text-[#5d4e37] hover:text-[#8b6834]"
               }`}
             >
-              {tab}
+              <span className="flex items-center gap-1.5">
+                {tab}
+                {tab === 'Fonts' && isFreeUser && (
+                  <Lock className="w-3 h-3" />
+                )}
+              </span>
               {activeTab === tab && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8b6834]" />
               )}
@@ -212,16 +259,15 @@ export default function CustomizationPanel({
         {activeTab === 'Theme' && (
           <div>
             <div className="grid grid-cols-2 gap-4">
-              {THEMES.map((theme) => (
+              {THEMES_WITH_LOCK.map((theme) => (
                 <div key={theme.id} className="flex flex-col">
                   <button
-                    onClick={() => !theme.locked && handleThemeChange(theme.id)}
-                    disabled={theme.locked}
+                    onClick={() => handleThemeChange(theme.id, theme.locked)}
                     className={`w-full transition-all duration-200 border-2 overflow-hidden ${
                       selectedTheme === theme.id && !theme.locked
                         ? 'border-[#8b6834] shadow-lg shadow-[#8b6834]/30'
                         : 'border-[#d4c4b0] hover:border-[#8b6834] hover:shadow-md'
-                    } ${theme.locked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+                    } ${theme.locked ? 'opacity-80 cursor-pointer' : 'cursor-pointer'}`}
                   >
                     <div className="relative w-full h-36 bg-[#f5f0e8]">
                       <img
@@ -504,6 +550,14 @@ export default function CustomizationPanel({
           </div>
         )}
       </div>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        feature={upgradeFeature}
+        requiredPlan="Basic"
+      />
     </div>
   );
 }

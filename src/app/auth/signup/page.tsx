@@ -3,9 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function SignupPage() {
   const router = useRouter();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -26,27 +28,25 @@ export default function SignupPage() {
       return;
     }
 
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
+
     if (!formData.agreeToTerms) {
       setError('Please agree to the terms and conditions');
       return;
     }
 
     setIsLoading(true);
-
-    // TODO: Implement actual registration with proper validation
-    // - Email verification
-    // - Password strength checking
-    // - CAPTCHA for bot prevention
-    // - Rate limiting
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await register(formData.name, formData.email, formData.password);
       
-      // Redirect to login or onboarding
-      router.push('/auth/login?registered=true');
-    } catch (err) {
-      setError('Registration failed. Please try again.');
+      // Redirect to main app after successful registration
+      router.push('/url');
+    } catch (err: any) {
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

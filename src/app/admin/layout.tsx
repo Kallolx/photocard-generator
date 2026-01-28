@@ -2,6 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
+import { LayoutDashboard, Users, LogOut, Home } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -9,63 +12,76 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   const navigation = [
-    { name: 'Dashboard', href: '/admin' },
-    { name: 'Users & Subscriptions', href: '/admin/users' },
+    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    { name: 'Users', href: '/admin/users', icon: Users },
   ];
 
-  // TODO: Implement role checking with useAuth hook
-  // Redirect non-admins to appropriate page
+  const isActive = (href: string) => {
+    if (href === '/admin') {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
 
   return (
-    <div className="min-h-screen bg-[#faf8f5]">
-      {/* Top Navigation Bar */}
-      <nav className="bg-white border-b-2 border-[#d4c4b0]">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-lora font-bold text-[#2c2419]">Admin Panel</h1>
-              
-              <div className="flex space-x-1">
-                {navigation.map((item) => {
-                  const isActive = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      className={`px-4 py-2 font-inter font-medium transition-colors ${
-                        isActive
-                          ? 'text-[#8b6834] border-b-2 border-[#8b6834]'
-                          : 'text-[#5d4e37] hover:text-[#2c2419]'
-                      }`}
-                    >
-                      {item.name}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Link
-                href="/url"
-                className="px-4 py-2 bg-[#f5f0e8] text-[#2c2419] font-inter font-medium hover:bg-[#e8dcc8] border border-[#d4c4b0]"
-              >
-                Back to App
-              </Link>
-              <button className="px-4 py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-medium hover:bg-[#6b4e25]">
-                Logout
-              </button>
-            </div>
+    <ProtectedRoute requireAuth={true} requireAdmin={true}>
+      <div className="flex h-screen bg-[#faf8f5]">
+        {/* Sidebar */}
+        <aside className="w-64 bg-white border-r-2 border-[#d4c4b0] flex flex-col">
+          {/* Logo */}
+          <div className="p-6 border-b-2 border-[#d4c4b0]">
+            <h1 className="text-2xl font-lora font-bold text-[#2c2419]">Admin Panel</h1>
+            <p className="text-xs text-[#5d4e37] font-inter mt-1">{user?.email}</p>
           </div>
-        </div>
-      </nav>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {children}
-      </main>
-    </div>
+          {/* Navigation */}
+          <nav className="flex-1 p-4 space-y-1">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`flex items-center gap-3 px-4 py-3 rounded font-inter font-medium transition-colors ${
+                    isActive(item.href)
+                      ? 'bg-[#f5f0e8] text-[#8b6834] border-l-4 border-[#8b6834]'
+                      : 'text-[#5d4e37] hover:bg-[#faf8f5] hover:text-[#8b6834]'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Footer Actions */}
+          <div className="p-4 border-t-2 border-[#d4c4b0] space-y-2">
+            <Link
+              href="/url"
+              className="flex items-center gap-3 px-4 py-3 rounded font-inter font-medium text-[#5d4e37] hover:bg-[#faf8f5] hover:text-[#8b6834] transition-colors"
+            >
+              <Home className="w-5 h-5" />
+              <span>Back to App</span>
+            </Link>
+            <button
+              onClick={logout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded font-inter font-medium text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#c19a6b] transition-colors"
+            >
+              <LogOut className="w-5 h-5" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 }

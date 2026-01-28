@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Link2, User, Grid3X3 } from 'lucide-react';
+import { Link2, User, Grid3X3, Lock } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import UpgradeModal from './UpgradeModal';
 
 interface UrlComponentProps {
   mode: 'single' | 'multiple';
@@ -40,11 +42,13 @@ export default function UrlComponent({
 }: UrlComponentProps) {
   const [url, setUrl] = useState('');
   const [urls, setUrls] = useState<string[]>(['']);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const { user, features } = useAuth();
   
   const handleSingleSubmit = () => {
     if (url.trim()) {
       onUrlSubmit(url.trim());
-      setUrl(''); // Auto-clear URL after submission
+      setUrl('');
     }
   };
 
@@ -52,7 +56,7 @@ export default function UrlComponent({
     const validUrls = urls.filter(u => u.trim());
     if (validUrls.length > 0 && onMultipleUrlsSubmit) {
       onMultipleUrlsSubmit(validUrls);
-      setUrls(['']); // Auto-clear URLs after submission
+      setUrls(['']);
     }
   };
 
@@ -87,15 +91,26 @@ export default function UrlComponent({
             <span>Single</span>
           </button>
           <button
-            onClick={() => setMode('multiple')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium font-inter transition-all duration-200 ${
+            onClick={() => {
+              if (user?.plan === 'Premium') {
+                setMode('multiple');
+              } else {
+                setShowUpgradeModal(true);
+              }
+            }}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium font-inter transition-all duration-200 relative ${
               mode === 'multiple'
                 ? 'bg-white text-[#2c2419] shadow-sm'
                 : 'text-[#5d4e37] hover:text-[#8b6834] hover:bg-[#e8dcc8]'
+            } ${
+              user?.plan !== 'Premium' ? 'opacity-60' : ''
             }`}
           >
             <Grid3X3 className="w-4 h-4" />
             <span>Batch</span>
+            {user?.plan !== 'Premium' && (
+              <Lock className="w-3 h-3 absolute top-2 right-2 text-[#8b6834]" />
+            )}
           </button>
         </div>
       </div>
@@ -123,9 +138,7 @@ export default function UrlComponent({
                 disabled={isLoading}
               />
               
-              {/* Button and Success Message Row */}
               <div className="flex items-center gap-3">
-                {/* Success Message - Left Side */}
                 {photocardData && (
                   <div className="flex-1 flex items-center gap-2 text-[#38A169] text-xs sm:text-sm font-medium font-inter">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +148,6 @@ export default function UrlComponent({
                   </div>
                 )}
 
-                {/* Generate Button - Right Side (always aligned right) */}
                 <button
                   onClick={handleSingleSubmit}
                   disabled={!url.trim() || isLoading}
@@ -148,7 +160,7 @@ export default function UrlComponent({
             
             {error && (
               <div className="mt-4 p-3 bg-red-50 border border-red-200">
-                <p className="text-red-700 text-sm">{error}</p>
+                <p className="text-red-700 text-sm font-inter">{error}</p>
               </div>
             )}
           </>
@@ -197,21 +209,21 @@ export default function UrlComponent({
             
             {error && (
               <div className="mt-4 p-3 bg-red-50 border border-red-200">
-                <p className="text-red-700 text-sm">{error}</p>
+                <p className="text-red-700 text-sm font-inter">{error}</p>
               </div>
             )}
 
             {multiplePhotocards && multiplePhotocards.length > 0 && (
               <div className="mt-4 space-y-2">
                 {multiplePhotocards.map((photocard) => (
-                  <div key={photocard.id} className="p-3 bg-slate-50">
+                  <div key={photocard.id} className="p-3 bg-[#e8dcc8] border border-[#d4c4b0]">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-inter text-[#5d4e37] truncate flex-1">
                         {photocard.data.url || 'Processing...'}
                       </span>
                       <div className={`px-2 py-1 text-xs font-medium font-inter ${
                         photocard.status === 'completed' ? 'bg-[#d4edda] text-[#38A169]' :
-                        photocard.status === 'loading' ? 'bg-[#e8dcc8] text-[#8b6834]' :
+                        photocard.status === 'loading' ? 'bg-[#8b6834] text-[#faf8f5]' :
                         photocard.status === 'error' ? 'bg-[#f5e5d3] text-[#8b6834]' :
                         'bg-[#f5f0e8] text-[#5d4e37]'
                       }`}>
@@ -228,6 +240,12 @@ export default function UrlComponent({
         )}
       </div>
 
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        feature="Batch Processing"
+        requiredPlan="Premium"
+      />
     </div>
   );
 }
