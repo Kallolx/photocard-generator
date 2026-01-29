@@ -13,15 +13,19 @@ export interface PhotocardData extends UrlData {
 }
 
 export interface BackgroundOptions {
-  type: 'solid' | 'gradient';
+  type: "solid" | "gradient";
   color: string;
   gradientFrom?: string;
   gradientTo?: string;
+  pattern?: string;
+  patternColor?: string;
+  patternOpacity?: number;
+  patternImage?: string | null;
 }
 
 export interface MultiplePhotocardData {
   id: string;
   data: PhotocardData;
-  status: 'pending' | 'loading' | 'completed' | 'error';
+  status: "pending" | "loading" | "completed" | "error";
   error?: string;
 }

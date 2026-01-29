@@ -57,7 +57,18 @@ const THEMES = [
   },
 ];
 
-type Tab = "Background" | "Theme" | "Fonts" | "Frame" | "Ad Banner";
+type Tab = "Background" | "Pattern" | "Theme" | "Fonts" | "Frame" | "Ad Banner";
+
+const PATTERNS = [
+  { id: "none", name: "None" },
+  { id: "dots", name: "Dots" },
+  { id: "abstract", name: "Abstract" },
+  { id: "lines", name: "Lines" },
+  { id: "grid", name: "Grid" },
+  { id: "checks", name: "Checks" },
+  { id: "curves", name: "Curves" },
+  { id: "custom", name: "Upload" },
+];
 
 export default function CustomizationPanel({
   background,
@@ -75,7 +86,7 @@ export default function CustomizationPanel({
   const [selectedTheme, setSelectedTheme] = useState(theme);
   const [showFontModal, setShowFontModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [upgradeFeature, setUpgradeFeature] = useState('');
+  const [upgradeFeature, setUpgradeFeature] = useState("");
   const [selectedFontType, setSelectedFontType] = useState<
     "weekDate" | "headline" | null
   >(null);
@@ -86,7 +97,11 @@ export default function CustomizationPanel({
     initialFrameBorderThickness,
   );
 
-  const isFreeUser = user?.plan === 'Free';
+  const isFreeUser = user?.plan === "Free";
+
+  const gettingLockedCheck = (isLocked: boolean) => {
+    return isLocked ? "" : "";
+  };
 
   const THEMES_WITH_LOCK = [
     {
@@ -105,7 +120,7 @@ export default function CustomizationPanel({
 
   const handleThemeChange = (themeId: string, isLocked: boolean) => {
     if (isLocked) {
-      setUpgradeFeature('Modern Theme');
+      setUpgradeFeature("Modern Theme");
       setShowUpgradeModal(true);
       return;
     }
@@ -115,11 +130,11 @@ export default function CustomizationPanel({
 
   const handleFontsTabClick = () => {
     if (isFreeUser) {
-      setUpgradeFeature('Font Customization');
+      setUpgradeFeature("Font Customization");
       setShowUpgradeModal(true);
       return;
     }
-    setActiveTab('Fonts');
+    setActiveTab("Fonts");
   };
 
   const handleFrameColorChange = (color: string) => {
@@ -132,7 +147,14 @@ export default function CustomizationPanel({
     onFrameChange?.(frameBorderColor, thickness);
   };
 
-  const tabs: Tab[] = ["Background", "Theme", "Fonts", "Frame", "Ad Banner"];
+  const tabs: Tab[] = [
+    "Background",
+    "Pattern",
+    "Theme",
+    "Fonts",
+    "Frame",
+    "Ad Banner",
+  ];
 
   return (
     <div className="bg-[#f5f0e8] p-6 border-2 border-[#d4c4b0]">
@@ -143,7 +165,7 @@ export default function CustomizationPanel({
             <button
               key={tab}
               onClick={() => {
-                if (tab === 'Fonts') {
+                if (tab === "Fonts") {
                   handleFontsTabClick();
                 } else {
                   setActiveTab(tab);
@@ -157,9 +179,7 @@ export default function CustomizationPanel({
             >
               <span className="flex items-center gap-1.5">
                 {tab}
-                {tab === 'Fonts' && isFreeUser && (
-                  <Lock className="w-3 h-3" />
-                )}
+                {tab === "Fonts" && isFreeUser && <Lock className="w-3 h-3" />}
               </span>
               {activeTab === tab && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8b6834]" />
@@ -177,86 +197,378 @@ export default function CustomizationPanel({
             {/* Solid Colors Section */}
             <div>
               <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
-                Solid Colors{' '}
+                Solid Colors{" "}
                 <span className="text-xs text-[#5d4e37]">
                   ({SOLID_COLORS.length} colors)
                 </span>
               </h3>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                {SOLID_COLORS.map((item) => (
-                  <button
-                    key={item.color}
-                    onClick={() =>
-                      onBackgroundChange({ type: "solid", color: item.color })
-                    }
-                    className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
-                      background.type === "solid" &&
-                      background.color === item.color
-                        ? "border-[#8b6834] shadow-md"
-                        : "border-[#d4c4b0] hover:scale-95"
-                    }`}
-                    style={{ backgroundColor: item.color }}
-                    title={item.name}
-                  >
-                    {background.type === "solid" &&
-                      background.color === item.color && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-[#8b6834] text-[#faf8f5] text-[10px] font-inter text-center py-0.5">
-                          selected
+                {SOLID_COLORS.map((item, index) => {
+                  const isLocked = isFreeUser && index > 0;
+                  return (
+                    <button
+                      key={item.color}
+                      onClick={() => {
+                        if (isLocked) {
+                          setUpgradeFeature("Premium Colors");
+                          setShowUpgradeModal(true);
+                          return;
+                        }
+                        onBackgroundChange({
+                          type: "solid",
+                          color: item.color,
+                        });
+                      }}
+                      className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
+                        background.type === "solid" &&
+                        background.color === item.color
+                          ? "border-[#8b6834] shadow-md"
+                          : "border-[#d4c4b0] hover:scale-95"
+                      } ${gettingLockedCheck(isLocked)}`}
+                      style={{ backgroundColor: item.color }}
+                      title={item.name}
+                    >
+                      {isLocked && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                          <Lock className="w-4 h-4 text-white drop-shadow-md" />
                         </div>
                       )}
-                  </button>
-                ))}
+                      {background.type === "solid" &&
+                        background.color === item.color && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-[#8b6834] text-[#faf8f5] text-[10px] font-inter text-center py-0.5">
+                            selected
+                          </div>
+                        )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Gradients Section */}
             <div>
               <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
-                Gradients{' '}
+                Gradients{" "}
                 <span className="text-xs text-[#5d4e37]">
                   ({GRADIENTS.length} colors)
                 </span>
               </h3>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                {GRADIENTS.map((grad, index) => (
-                  <button
-                    key={index}
-                    onClick={() =>
-                      onBackgroundChange({
-                        type: "gradient",
-                        color: "",
-                        gradientFrom: grad.from,
-                        gradientTo: grad.to,
-                      })
-                    }
-                    className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
-                      background.type === "gradient" &&
-                      background.gradientFrom === grad.from &&
-                      background.gradientTo === grad.to
-                        ? "border-[#8b6834] shadow-md"
-                        : "border-[#d4c4b0] hover:scale-95"
-                    }`}
-                    style={{
-                      backgroundImage: `linear-gradient(135deg, ${grad.from}, ${grad.to})`,
-                    }}
-                    title={grad.name}
-                  >
-                    {background.type === "gradient" &&
-                      background.gradientFrom === grad.from &&
-                      background.gradientTo === grad.to && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-[#2c2419]/70 text-[#faf8f5] text-[10px] font-inter text-center py-1">
-                          selected
+                {GRADIENTS.map((grad, index) => {
+                  const isLocked = isFreeUser;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        if (isLocked) {
+                          setUpgradeFeature("Gradients");
+                          setShowUpgradeModal(true);
+                          return;
+                        }
+                        onBackgroundChange({
+                          type: "gradient",
+                          color: "",
+                          gradientFrom: grad.from,
+                          gradientTo: grad.to,
+                        });
+                      }}
+                      className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
+                        background.type === "gradient" &&
+                        background.gradientFrom === grad.from &&
+                        background.gradientTo === grad.to
+                          ? "border-[#8b6834] shadow-md"
+                          : "border-[#d4c4b0] hover:scale-95"
+                      } ${gettingLockedCheck(isLocked)}`}
+                      style={{
+                        backgroundImage: `linear-gradient(135deg, ${grad.from}, ${grad.to})`,
+                      }}
+                      title={grad.name}
+                    >
+                      {isLocked && (
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                          <Lock className="w-4 h-4 text-white drop-shadow-md" />
                         </div>
                       )}
-                  </button>
-                ))}
+                      {background.type === "gradient" &&
+                        background.gradientFrom === grad.from &&
+                        background.gradientTo === grad.to && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-[#2c2419]/70 text-[#faf8f5] text-[10px] font-inter text-center py-1">
+                            selected
+                          </div>
+                        )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </>
         )}
 
-{/* Theme Tab */}
-        {activeTab === 'Theme' && (
+        {/* Pattern Tab */}
+        {activeTab === "Pattern" && (
+          <div className="space-y-6">
+            {/* Pattern Selection */}
+            <div>
+              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                Select Pattern
+              </h3>
+              <div className="grid grid-cols-4 gap-3">
+                {PATTERNS.map((pattern) => {
+                  const isLocked =
+                    isFreeUser &&
+                    ["lines", "grid", "checks", "curves", "custom"].includes(
+                      pattern.id,
+                    );
+                  const isActive = background.pattern === pattern.id;
+
+                  return (
+                    <button
+                      key={pattern.id}
+                      onClick={() => {
+                        if (isLocked) {
+                          setUpgradeFeature("Premium Patterns");
+                          setShowUpgradeModal(true);
+                          return;
+                        }
+                        onBackgroundChange({
+                          ...background,
+                          pattern: pattern.id,
+                        });
+                      }}
+                      className={`aspect-square flex flex-col items-center justify-center p-2 border-2 transition-all overflow-hidden relative ${
+                        isActive
+                          ? "border-[#8b6834] bg-[#e8dcc8]"
+                          : "border-[#d4c4b0] bg-[#faf8f5] hover:border-[#8b6834]"
+                      } ${gettingLockedCheck(isLocked)}`}
+                    >
+                      {/* Visual Preview */}
+                      <div className="w-full h-full mb-1 border border-black/5 overflow-hidden bg-white/50 relative">
+                        {pattern.id === "none" && (
+                          <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
+                            None
+                          </div>
+                        )}
+                        {pattern.id === "custom" && (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Upload className="w-4 h-4 text-[#5d4e37]" />
+                          </div>
+                        )}
+
+                        {/* CSS Previews for Patterns */}
+                        {pattern.id === "dots" && (
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage:
+                                "radial-gradient(#8b6834 1px, transparent 1px)",
+                              backgroundSize: "8px 8px",
+                            }}
+                          />
+                        )}
+                        {pattern.id === "lines" && (
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage:
+                                "repeating-linear-gradient(45deg, #8b6834, #8b6834 1px, transparent 1px, transparent 6px)",
+                            }}
+                          />
+                        )}
+                        {pattern.id === "grid" && (
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage:
+                                "linear-gradient(#8b6834 1px, transparent 1px), linear-gradient(90deg, #8b6834 1px, transparent 1px)",
+                              backgroundSize: "8px 8px",
+                            }}
+                          />
+                        )}
+                        {pattern.id === "checks" && (
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage:
+                                "repeating-linear-gradient(45deg, #8b6834 25%, transparent 25%, transparent 75%, #8b6834 75%, #8b6834), repeating-linear-gradient(45deg, #8b6834 25%, transparent 25%, transparent 75%, #8b6834 75%, #8b6834)",
+                              backgroundSize: "10px 10px",
+                              backgroundPosition: "0 0, 5px 5px",
+                              opacity: 0.5,
+                            }}
+                          />
+                        )}
+                        {pattern.id === "curves" && (
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage:
+                                "repeating-radial-gradient(circle at 0 0, transparent 0, #8b6834 1px, transparent 2px, transparent 4px)",
+                              backgroundSize: "16px 16px",
+                              opacity: 0.6,
+                            }}
+                          />
+                        )}
+                        {pattern.id === "abstract" && (
+                          <div
+                            className="absolute inset-0"
+                            style={{
+                              backgroundImage:
+                                "radial-gradient(circle at 50% 50%, #8b6834 2px, transparent 2.5px), radial-gradient(circle at 0% 0%, #8b6834 2px, transparent 2.5px)",
+                              backgroundSize: "16px 16px",
+                              opacity: 0.6,
+                            }}
+                          />
+                        )}
+
+                        {/* Lock Overlay for restricted patterns */}
+                        {isLocked && (
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px] z-10">
+                            <Lock className="w-5 h-5 text-white drop-shadow-md" />
+                          </div>
+                        )}
+                      </div>
+
+                      <span
+                        className={`text-[10px] font-medium leading-tight ${isActive ? "text-[#2c2419]" : "text-[#5d4e37]"}`}
+                      >
+                        {pattern.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Custom File Upload Input */}
+            {background.pattern === "custom" && (
+              <div className="bg-[#e8dcc8] p-4 border border-[#d4c4b0]">
+                <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-2">
+                  Upload Pattern Image
+                </h3>
+                <label className="block border-2 border-dashed border-[#8b6834]/50 bg-[#faf8f5] hover:bg-white transition-colors cursor-pointer p-6 text-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          onBackgroundChange({
+                            ...background,
+                            patternImage: reader.result as string,
+                          });
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                  <Upload className="w-5 h-5 mx-auto mb-2 text-[#8b6834]" />
+                  <p className="text-xs text-[#5d4e37] font-medium">
+                    Click to upload image
+                  </p>
+                  <p className="text-[10px] text-[#5d4e37]/70 mt-1">
+                    Supports PNG, JPG (will be used as overlay)
+                  </p>
+                </label>
+                {background.patternImage && (
+                  <div className="mt-2 text-xs text-green-700 flex items-center gap-1 font-medium">
+                    <div className="w-2 h-2 bg-green-500" /> Image loaded
+                    successfully
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Pattern Color & Opacity - Only show if pattern is selected and NOT custom/none */}
+            {background.pattern && background.pattern !== "none" && (
+              <>
+                {/* Pattern Color - Hidden for Custom */}
+                {background.pattern !== "custom" && (
+                  <div>
+                    <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                      Pattern Color
+                    </h3>
+                    <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                      <button
+                        onClick={() =>
+                          onBackgroundChange({
+                            ...background,
+                            patternColor: "#FFFFFF",
+                          })
+                        }
+                        className={`w-10 h-10 flex-shrink-0 border-2 ${background.patternColor === "#FFFFFF" ? "border-black" : "border-[#d4c4b0]"}`}
+                        style={{ backgroundColor: "#FFFFFF" }}
+                        title="White"
+                      />
+                      <button
+                        onClick={() =>
+                          onBackgroundChange({
+                            ...background,
+                            patternColor: "#000000",
+                          })
+                        }
+                        className={`w-10 h-10 flex-shrink-0 border-2 ${background.patternColor === "#000000" ? "border-black" : "border-[#d4c4b0]"}`}
+                        style={{ backgroundColor: "#000000" }}
+                        title="Black"
+                      />
+                      {SOLID_COLORS.map((item) => (
+                        <button
+                          key={item.color}
+                          onClick={() =>
+                            onBackgroundChange({
+                              ...background,
+                              patternColor: item.color,
+                            })
+                          }
+                          className={`w-10 h-10 flex-shrink-0 border-2 transition-all ${
+                            background.patternColor === item.color
+                              ? "border-black"
+                              : "border-[#d4c4b0]"
+                          }`}
+                          style={{ backgroundColor: item.color }}
+                          title={item.name}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Opacity Slider - Available for Custom too */}
+                <div>
+                  <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                    Opacity
+                  </h3>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="range"
+                      min="0.05"
+                      max="0.8"
+                      step="0.05"
+                      value={background.patternOpacity || 0.1}
+                      onChange={(e) =>
+                        onBackgroundChange({
+                          ...background,
+                          patternOpacity: parseFloat(e.target.value),
+                        })
+                      }
+                      className="flex-1 h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((background.patternOpacity || 0.1) - 0.05) / 0.75) * 100}%, #e8dcc8 ${(((background.patternOpacity || 0.1) - 0.05) / 0.75) * 100}%, #e8dcc8 100%)`,
+                      }}
+                    />
+                    <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
+                      {Math.round((background.patternOpacity || 0.1) * 100)}%
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Theme Tab */}
+        {activeTab === "Theme" && (
           <div>
             <div className="grid grid-cols-2 gap-4">
               {THEMES_WITH_LOCK.map((theme) => (
@@ -265,9 +577,9 @@ export default function CustomizationPanel({
                     onClick={() => handleThemeChange(theme.id, theme.locked)}
                     className={`w-full transition-all duration-200 border-2 overflow-hidden ${
                       selectedTheme === theme.id && !theme.locked
-                        ? 'border-[#8b6834] shadow-lg shadow-[#8b6834]/30'
-                        : 'border-[#d4c4b0] hover:border-[#8b6834] hover:shadow-md'
-                    } ${theme.locked ? 'opacity-80 cursor-pointer' : 'cursor-pointer'}`}
+                        ? "border-[#8b6834] shadow-lg shadow-[#8b6834]/30"
+                        : "border-[#d4c4b0] hover:border-[#8b6834] hover:shadow-md"
+                    } ${theme.locked ? "opacity-80 cursor-pointer" : "cursor-pointer"}`}
                   >
                     <div className="relative w-full h-36 bg-[#f5f0e8]">
                       <img
@@ -285,7 +597,9 @@ export default function CustomizationPanel({
                       {/* Selected indicator at bottom inside the image area */}
                       {selectedTheme === theme.id && !theme.locked && (
                         <div className="absolute bottom-0 left-0 right-0 w-full bg-[#8b6834] py-0.5 text-center">
-                          <span className="text-[#faf8f5] text-sm font-inter font-semibold">Selected</span>
+                          <span className="text-[#faf8f5] text-sm font-inter font-semibold">
+                            Selected
+                          </span>
                         </div>
                       )}
                     </div>
@@ -365,8 +679,8 @@ export default function CustomizationPanel({
                     </h3>
                     <button
                       onClick={() => setShowFontModal(false)}
-                      className="text-[#5d4e37] hover:text-[#2c2419]">
-                    
+                      className="text-[#5d4e37] hover:text-[#2c2419]"
+                    >
                       <X className="w-5 h-5" />
                     </button>
                   </div>
@@ -377,8 +691,8 @@ export default function CustomizationPanel({
                         // placeholder: apply font selection for Week/Headline in future
                         setShowFontModal(false);
                       }}
-                      className="w-full p-3 bg-[#f5f0e8] hover:bg-[#e8dcc8] transition-colors flex items-center justify-between">
-                    
+                      className="w-full p-3 bg-[#f5f0e8] hover:bg-[#e8dcc8] transition-colors flex items-center justify-between"
+                    >
                       <div className="flex-1 text-left">
                         <span className="font-noto-bengali text-[#2c2419] block">
                           আমার সোনার বাংলা
@@ -393,14 +707,16 @@ export default function CustomizationPanel({
                       onClick={() => {
                         setShowFontModal(false);
                       }}
-                      className="w-full p-3 bg-[#f5f0e8] hover:bg-[#e8dcc8] transition-colors flex items-center justify-between">
-                    
+                      className="w-full p-3 bg-[#f5f0e8] hover:bg-[#e8dcc8] transition-colors flex items-center justify-between"
+                    >
                       <div className="flex-1 text-left">
                         <span className="font-dm-sans text-[#2c2419] block">
                           আমার সোনার বাংলা
                         </span>
                       </div>
-                      <div className="ml-4 text-sm font-inter text-[#5d4e37]">DM Sans</div>
+                      <div className="ml-4 text-sm font-inter text-[#5d4e37]">
+                        DM Sans
+                      </div>
                     </button>
 
                     <div className="w-full p-3 bg-[#f5f0e8] transition-colors flex items-center justify-between opacity-50 cursor-not-allowed">
@@ -416,8 +732,8 @@ export default function CustomizationPanel({
                   </div>
                   <button
                     onClick={() => setShowFontModal(false)}
-                    className="w-full mt-4 px-4 py-2 bg-[#2c2419] text-[#faf8f5] font-inter font-medium hover:bg-[#8b6834] transition-colors">
-                  
+                    className="w-full mt-4 px-4 py-2 bg-[#2c2419] text-[#faf8f5] font-inter font-medium hover:bg-[#8b6834] transition-colors"
+                  >
                     Close
                   </button>
                 </div>
@@ -432,7 +748,7 @@ export default function CustomizationPanel({
             {/* Border Color */}
             <div>
               <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
-                Border Color{' '}
+                Border Color{" "}
                 <span className="text-xs text-[#5d4e37]">
                   ({FRAME_COLORS.length} colors)
                 </span>

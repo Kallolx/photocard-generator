@@ -1,62 +1,68 @@
 export const en = {
   nav: {
+    home: "Home",
     howItWorks: "How It Works",
     features: "Features",
     pricing: "Pricing",
     about: "About",
-    getStarted: "Get Started"
+    getStarted: "Get Started",
   },
   hero: {
     title: "Professional News Cards for",
     titleHighlight: "Journalists",
-    subtitle: "Create stunning news cards from any article URL in seconds. Perfect for sharing breaking news on social media platforms.",
+    subtitle:
+      "Create stunning news cards from any article URL in seconds. Perfect for sharing breaking news on social media platforms.",
     ctaPrimary: "Create Now",
     ctaSecondary: "See Demo",
     stats: {
       users: "Journalists",
       cards: "News Cards",
-      rating: "Rating"
-    }
+      rating: "Rating",
+    },
   },
   howItWorks: {
     title: "How It Works",
-    subtitle: "Transform any news article into a shareable card in four simple steps",
+    subtitle:
+      "Transform any news article into a shareable card in four simple steps",
     step1: {
       title: "Paste URL",
-      description: "Copy and paste your article URL into our generator"
+      description: "Copy and paste your article URL into our generator",
     },
     step2: {
       title: "Auto Extract",
-      description: "We automatically extract headlines, images, and key details"
+      description:
+        "We automatically extract headlines, images, and key details",
     },
     step3: {
       title: "Customize",
-      description: "Fine-tune text, images, and layout to match your brand"
+      description: "Fine-tune text, images, and layout to match your brand",
     },
     step4: {
       title: "Download & Share",
-      description: "Export in high quality and share across all platforms"
-    }
+      description: "Export in high quality and share across all platforms",
+    },
   },
   features: {
     title: "Built for Journalists",
     subtitle: "Everything you need to create professional news cards quickly",
     urlGeneration: {
       title: "URL-Based Generation",
-      description: "Automatically extract article content from any news URL"
+      description: "Automatically extract article content from any news URL",
     },
     customDesign: {
       title: "Custom Branding",
-      description: "Add your logo, colors, and typography for consistent branding"
+      description:
+        "Add your logo, colors, and typography for consistent branding",
     },
     templates: {
       title: "News Templates",
-      description: "Professional templates designed specifically for journalism"
+      description:
+        "Professional templates designed specifically for journalism",
     },
     instantDownload: {
       title: "High-Quality Export",
-      description: "Download cards optimized for every social platform"
-    }
+      description: "Download cards optimized for every social platform",
+    },
   },
   pricing: {
     title: "Transparent Pricing",
@@ -73,28 +79,28 @@ export const en = {
         "1 template style",
         "Basic customization",
         "Standard quality",
-        "Newscard watermark"
+        "Newscard watermark",
       ],
-      cta: "Start Free"
+      cta: "Start Free",
     },
     basic: {
-      name: "Professional",
+      name: "Basic",
       price: "199",
       period: "per month",
       description: "For regular publishers",
       features: [
-        "15 cards per day",
+        "30 cards per day",
         "5-7 template styles",
         "Advanced customization",
         "High quality export",
         "No watermark",
-        "Priority support"
+        "Priority support",
       ],
       cta: "Get Started",
-      popular: "Most Popular"
+      popular: "Most Popular",
     },
     premium: {
-      name: "Newsroom",
+      name: "Premium",
       price: "499",
       period: "per month",
       description: "For media organizations",
@@ -105,10 +111,10 @@ export const en = {
         "Team collaboration",
         "API access",
         "Analytics dashboard",
-        "Dedicated support"
+        "Dedicated support",
       ],
-      cta: "Contact Sales"
-    }
+      cta: "Contact Sales",
+    },
   },
   about: {
     title: "Why Newscard?",
@@ -116,21 +122,25 @@ export const en = {
     reasons: [
       {
         title: "Save Editorial Time",
-        description: "Generate publication-ready social cards in seconds, not minutes"
+        description:
+          "Generate publication-ready social cards in seconds, not minutes",
       },
       {
         title: "Consistent Brand Identity",
-        description: "Maintain your publication's visual standards across all platforms"
+        description:
+          "Maintain your publication's visual standards across all platforms",
       },
       {
         title: "Boost Engagement",
-        description: "Professional cards get more clicks, shares, and reader engagement"
+        description:
+          "Professional cards get more clicks, shares, and reader engagement",
       },
       {
         title: "Built for News",
-        description: "Designed specifically for journalism workflows and requirements"
-      }
-    ]
+        description:
+          "Designed specifically for journalism workflows and requirements",
+      },
+    ],
   },
   footer: {
     tagline: "Professional news cards for modern journalism",
@@ -144,6 +154,31 @@ export const en = {
     contact: "Contact",
     privacy: "Privacy Policy",
     terms: "Terms of Service",
-    rights: "All rights reserved"
-  }
+    rights: "All rights reserved",
+  },
+  auth: {
+    loginTitle: "Sign in to your account",
+    loginSubtitle: "Welcome back! Please enter your details.",
+    signupTitle: "Create an account",
+    signupSubtitle: "Start creating professional news cards today.",
+    emailLabel: "Email Address",
+    passwordLabel: "Password",
+    nameLabel: "Full Name",
+    confirmPasswordLabel: "Confirm Password",
+    rememberMe: "Remember me",
+    forgotPassword: "Forgot password?",
+    signInButton: "Sign In",
+    createAccountButton: "Create Account",
+    noAccount: "Don't have an account?",
+    haveAccount: "Already have an account?",
+    signUpLink: "Sign up",
+    signInLink: "Sign in",
+    backToHome: "Back to Home",
+    agreeTerms: "I agree to the Terms of Service and Privacy Policy",
+    passwordsDoNotMatch: "Passwords do not match",
+    passwordTooShort: "Password must be at least 8 characters",
+    termsRequired: "Please agree to the terms and conditions",
+    loginFailed: "Login failed. Please try again.",
+    registrationFailed: "Registration failed. Please try again.",
+  },
 };

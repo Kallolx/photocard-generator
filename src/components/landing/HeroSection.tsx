@@ -1,12 +1,24 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
+import { useState, useEffect } from "react";
+
+const CARD_COLORS = ["#8b6834", "#2c2419", "#d4c4b0", "#5d4e37"];
 
 interface HeroSectionProps {
   t: any;
 }
 
 export default function HeroSection({ t }: HeroSectionProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % CARD_COLORS.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative pt-32 pb-20 px-4 bg-[#faf8f5] border-b-2 border-[#d4c4b0]">
       <div className="max-w-7xl mx-auto">
@@ -17,17 +29,17 @@ export default function HeroSection({ t }: HeroSectionProps) {
                 For Journalists & Publishers
               </span>
             </div>
-            
+
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-lora font-bold mb-6 leading-tighter text-[#2c2419]">
               {t.hero.title}
               <br />
               <span className="text-[#8b6834]">{t.hero.titleHighlight}</span>
             </h1>
-            
+
             <p className="text-xl text-[#5d4e37] mb-10 leading-relaxed font-inter">
               {t.hero.subtitle}
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/url"
@@ -41,19 +53,37 @@ export default function HeroSection({ t }: HeroSectionProps) {
             </div>
           </div>
 
-          <div className="relative">
-            <div className="bg-white border-2 border-[#d4c4b0] p-8">
-              <div className="aspect-video bg-[#f5f0e8] border-2 border-[#d4c4b0] flex items-center justify-center">
-                <svg className="w-32 h-32 text-[#c19a6b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                </svg>
-              </div>
-              <div className="mt-6 grid grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="aspect-square bg-[#f5f0e8] border border-[#d4c4b0]"></div>
-                ))}
-              </div>
-            </div>
+          <div className="relative h-[400px] flex items-center justify-center">
+            {CARD_COLORS.map((color, index) => {
+              const offset =
+                (index - activeIndex + CARD_COLORS.length) % CARD_COLORS.length;
+              if (offset > 2) {
+                // Keep the last item just hidden behind the stack so it can transition in
+                if (offset !== CARD_COLORS.length - 1) return null;
+              }
+
+              // Custom transition logic for the stack effect
+              const isHidden = offset > 2;
+
+              return (
+                <div
+                  key={index}
+                  className="absolute w-full max-w-sm aspect-square border-2 border-[#d4c4b0] shadow-xl transition-all duration-700 ease-in-out"
+                  style={{
+                    backgroundColor: color,
+                    zIndex: 30 - offset * 10,
+                    transform: `scale(${1 - (offset > 2 ? 0.15 : offset * 0.05)}) translateY(-${offset > 2 ? 40 : offset * 20}px)`,
+                    opacity: isHidden ? 0 : 1,
+                  }}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-white/50 text-6xl font-lora font-bold opacity-20">
+                      {index + 1}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

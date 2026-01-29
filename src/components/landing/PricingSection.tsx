@@ -1,14 +1,36 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import WhatsAppModal from "../WhatsAppModal";
 
 interface PricingSectionProps {
   t: any;
 }
 
 export default function PricingSection({ t }: PricingSectionProps) {
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{
+    name: string;
+    price: string;
+  } | null>(null);
+
+  const handleFreePlan = () => {
+    router.push("/auth/signup");
+  };
+
+  const handleUpgrade = (planName: string, price: string) => {
+    setSelectedPlan({ name: planName, price });
+    setIsModalOpen(true);
+  };
+
   return (
-    <section id="pricing" className="py-24 px-4 bg-[#f5f0e8] border-b-2 border-[#d4c4b0]">
+    <section
+      id="pricing"
+      className="py-24 px-4 bg-[#f5f0e8] border-b-2 border-[#d4c4b0]"
+    >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-lora font-bold text-[#2c2419] mb-4">
@@ -26,8 +48,12 @@ export default function PricingSection({ t }: PricingSectionProps) {
               {t.pricing.free.name}
             </h3>
             <div className="mb-4">
-              <span className="text-5xl font-lora font-bold text-[#8b6834]">৳{t.pricing.free.price}</span>
-              <span className="text-[#5d4e37] ml-2 font-inter">/ {t.pricing.free.period}</span>
+              <span className="text-5xl font-lora font-bold text-[#8b6834]">
+                ৳{t.pricing.free.price}
+              </span>
+              <span className="text-[#5d4e37] ml-2 font-inter">
+                / {t.pricing.free.period}
+              </span>
             </div>
             <p className="text-[#5d4e37] mb-8 h-12 font-inter">
               {t.pricing.free.description}
@@ -35,19 +61,27 @@ export default function PricingSection({ t }: PricingSectionProps) {
             <ul className="space-y-4 mb-8">
               {t.pricing.free.features.map((feature: string, i: number) => (
                 <li key={i} className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-[#8b6834] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <svg
+                    className="w-5 h-5 text-[#8b6834] flex-shrink-0 mt-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <span className="text-[#5d4e37] font-inter">{feature}</span>
                 </li>
               ))}
             </ul>
-            <Link
-              href="/url"
+            <button
+              onClick={handleFreePlan}
               className="block w-full text-center px-6 py-4 border-2 border-[#8b6834] text-[#8b6834] font-inter font-semibold hover:bg-[#f5f0e8] transition-all"
             >
               {t.pricing.free.cta}
-            </Link>
+            </button>
           </div>
 
           {/* Basic Plan - Popular */}
@@ -62,7 +96,9 @@ export default function PricingSection({ t }: PricingSectionProps) {
               <span className="text-5xl font-lora font-bold text-[#8b6834]">
                 ৳{t.pricing.basic.price}
               </span>
-              <span className="text-[#5d4e37] ml-2 font-inter">/ {t.pricing.basic.period}</span>
+              <span className="text-[#5d4e37] ml-2 font-inter">
+                / {t.pricing.basic.period}
+              </span>
             </div>
             <p className="text-[#5d4e37] mb-8 h-12 font-inter">
               {t.pricing.basic.description}
@@ -70,19 +106,31 @@ export default function PricingSection({ t }: PricingSectionProps) {
             <ul className="space-y-4 mb-8">
               {t.pricing.basic.features.map((feature: string, i: number) => (
                 <li key={i} className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-[#8b6834] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <svg
+                    className="w-5 h-5 text-[#8b6834] flex-shrink-0 mt-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
-                  <span className="text-[#5d4e37] font-inter font-medium">{feature}</span>
+                  <span className="text-[#5d4e37] font-inter font-medium">
+                    {feature}
+                  </span>
                 </li>
               ))}
             </ul>
-            <Link
-              href="/url"
+            <button
+              onClick={() =>
+                handleUpgrade(t.pricing.basic.name, `৳${t.pricing.basic.price}`)
+              }
               className="block w-full text-center px-6 py-4 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold border-2 border-[#6b4e25] hover:bg-[#6b4e25] transition-all"
             >
               {t.pricing.basic.cta}
-            </Link>
+            </button>
           </div>
 
           {/* Premium Plan */}
@@ -91,8 +139,12 @@ export default function PricingSection({ t }: PricingSectionProps) {
               {t.pricing.premium.name}
             </h3>
             <div className="mb-4">
-              <span className="text-5xl font-lora font-bold text-[#8b6834]">৳{t.pricing.premium.price}</span>
-              <span className="text-[#5d4e37] ml-2 font-inter">/ {t.pricing.premium.period}</span>
+              <span className="text-5xl font-lora font-bold text-[#8b6834]">
+                ৳{t.pricing.premium.price}
+              </span>
+              <span className="text-[#5d4e37] ml-2 font-inter">
+                / {t.pricing.premium.period}
+              </span>
             </div>
             <p className="text-[#5d4e37] mb-8 h-12 font-inter">
               {t.pricing.premium.description}
@@ -100,22 +152,42 @@ export default function PricingSection({ t }: PricingSectionProps) {
             <ul className="space-y-4 mb-8">
               {t.pricing.premium.features.map((feature: string, i: number) => (
                 <li key={i} className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-[#8b6834] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <svg
+                    className="w-5 h-5 text-[#8b6834] flex-shrink-0 mt-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <span className="text-[#5d4e37] font-inter">{feature}</span>
                 </li>
               ))}
             </ul>
-            <Link
-              href="/url"
+            <button
+              onClick={() =>
+                handleUpgrade(
+                  t.pricing.premium.name,
+                  `৳${t.pricing.premium.price}`,
+                )
+              }
               className="block w-full text-center px-6 py-4 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold border-2 border-[#6b4e25] hover:bg-[#6b4e25] transition-all"
             >
               {t.pricing.premium.cta}
-            </Link>
+            </button>
           </div>
         </div>
       </div>
+
+      <WhatsAppModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        planName={selectedPlan?.name || ""}
+        price={selectedPlan?.price || ""}
+      />
     </section>
   );
 }

@@ -133,7 +133,7 @@ export default function UrlComponent({
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://example.com/article"
+                placeholder="Paste your article url"
                 className="w-full px-4 py-3 bg-[#e8dcc8] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter focus:outline-none focus:ring-2 focus:ring-[#8b6834]"
                 disabled={isLoading}
               />

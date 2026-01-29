@@ -25,6 +25,12 @@ export default function LandingNavbar({ lang, setLang, t }: NavbarProps) {
           </Link>
           
           <div className="hidden md:flex items-center gap-8">
+            <a
+              href="#home"
+              className="text-[#5d4e37] hover:text-[#8b6834] transition-colors font-inter font-medium"              
+            >
+              {t.nav.home}
+            </a>
             <a 
               href="#how-it-works" 
               className="text-[#5d4e37] hover:text-[#8b6834] transition-colors font-inter font-medium"
@@ -48,13 +54,6 @@ export default function LandingNavbar({ lang, setLang, t }: NavbarProps) {
               className="text-[#5d4e37] hover:text-[#8b6834] transition-colors font-inter font-medium"
             >
               {t.nav.about}
-            </a>
-            <a
-              href="/api"
-              className="text-[#5d4e37] hover:text-[#8b6834] transition-colors font-inter font-medium"
-              title="API"
-            >
-              API
             </a>
           </div>
           
