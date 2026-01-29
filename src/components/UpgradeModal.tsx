@@ -12,6 +12,8 @@ import {
 } from "react";
 import WhatsAppModal from "./WhatsAppModal";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { en } from "@/locales/en";
+import { bn } from "@/locales/bn";
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -39,20 +41,25 @@ export default function UpgradeModal({
     setShowWhatsApp(true);
   };
 
+  // Use direct locale imports to handle mixed language requirements
+  // User wants Price in Bengali (font-noto-serif) but everything else in English
+  const english = en.pricing;
+  const bengali = bn.pricing;
+
   const allPlans = [
     {
       id: "Basic",
-      name: t.pricing.basic.name,
-      price: t.pricing.basic.price,
-      period: t.pricing.basic.period,
-      features: t.pricing.basic.features,
+      name: english.basic.name,
+      price: bengali.basic.price,
+      period: english.basic.period,
+      features: english.basic.features,
     },
     {
       id: "Premium",
-      name: t.pricing.premium.name,
-      price: t.pricing.premium.price,
-      period: t.pricing.premium.period,
-      features: t.pricing.premium.features,
+      name: english.premium.name,
+      price: bengali.premium.price,
+      period: english.premium.period,
+      features: english.premium.features,
     },
   ];
 
@@ -120,7 +127,7 @@ export default function UpgradeModal({
                       {plan.name}
                     </h4>
                     <div className="flex items-baseline mt-1">
-                      <span className="text-2xl font-lora font-bold text-[#8b6834]">
+                      <span className="text-2xl font-noto-bengali font-bold text-[#8b6834]">
                         ৳{plan.price}
                       </span>
                       <span className="text-xs text-[#5d4e37] font-inter ml-1">
@@ -198,11 +205,9 @@ export default function UpgradeModal({
           onClose(); // Close both or just one? User likely wants to close main modal too if they went to WhatsApp
         }}
         planName={
-          selectedPlan === "Basic"
-            ? t.pricing.basic.name
-            : t.pricing.premium.name
+          selectedPlan === "Basic" ? english.basic.name : english.premium.name
         }
-        price={`${selectedPlan === "Basic" ? t.pricing.basic.price : t.pricing.premium.price} BDT`}
+        price={`${selectedPlan === "Basic" ? bengali.basic.price : bengali.premium.price} BDT`}
       />
     </div>
   );
