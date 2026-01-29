@@ -17,18 +17,21 @@ export default function PlanUpgradeSuccessModal({
 
   const features = {
     Basic: [
-      "Increased daily generation limit (50 cards/day)",
-      "Access to Basic templates",
-      "Remove watermarks",
+      "30 cards per day",
+      "10+ template styles",
+      "Advanced customization",
+      "High quality export",
+      "No watermark",
       "Priority support",
     ],
     Premium: [
-      "Unlimited daily generation",
-      "Access to all Premium templates",
-      "Custom branding & logo upload",
-      "Batch processing (Bulk generation)",
-      "API Access",
-      "Dedicated account manager",
+      "Unlimited cards",
+      "All templates + updates",
+      "Full brand customization",
+      "Team collaboration",
+      "API access",
+      "Analytics dashboard",
+      "Dedicated support",
     ],
   };
 

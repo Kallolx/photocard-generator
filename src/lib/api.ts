@@ -196,6 +196,18 @@ export const adminAPI = {
     const { data } = await apiClient.get("/admin/stats");
     return data;
   },
+  getNotifications: async () => {
+    const { data } = await apiClient.get("/admin/notifications");
+    return data;
+  },
+  markNotificationRead: async (id: number) => {
+    const { data } = await apiClient.put(`/admin/notifications/${id}/read`);
+    return data;
+  },
+  markAllNotificationsRead: async () => {
+    const { data } = await apiClient.put("/admin/notifications/read-all");
+    return data;
+  },
 };
 
 // Developer API calls
