@@ -31,7 +31,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="w-full bg-[#faf8f5] border-b-2 border-[#d4c4b0] px-4 md:px-6 py-3 md:py-4 relative">
+    <nav className="w-full bg-[#faf8f5] border-b-2 border-[#d4c4b0] px-4 md:px-6 py-3 md:py-4 relative z-[100]">
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
