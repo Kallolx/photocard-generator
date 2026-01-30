@@ -71,11 +71,11 @@ export default function UpgradeModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[10000] p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white border-2 border-[#d4c4b0] max-w-lg w-full p-6 shadow-xl"
+        className="bg-white border-2 border-[#d4c4b0] max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -98,7 +98,11 @@ export default function UpgradeModal({
 
         {/* Plans Grid */}
         <div
-          className={`grid ${plans.length === 1 ? "grid-cols-1 max-w-sm mx-auto" : "grid-cols-2"} gap-3 mb-6`}
+          className={`grid gap-3 mb-6 ${
+            plans.length === 1
+              ? "grid-cols-1 max-w-sm mx-auto"
+              : "grid-cols-1 md:grid-cols-2"
+          }`}
         >
           {plans.map((plan) => {
             const isCurrentPlan = user?.plan === plan.id;
