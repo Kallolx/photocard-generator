@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import LandingNavbar from "@/components/landing/LandingNavbar";
-import LandingFooter from "@/components/landing/LandingFooter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { ArrowLeft } from "lucide-react";
 
@@ -43,8 +42,6 @@ export default function NotFound() {
           </div>
         </div>
       </div>
-
-      <LandingFooter />
     </div>
   );
 }
