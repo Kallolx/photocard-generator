@@ -72,35 +72,111 @@ export default function DownloadControls({
 
     setIsDownloading(true);
     try {
-      // Wait for images to load
-      const images = photocardElement.querySelectorAll("img");
+      // Create a deep clone of the element to avoid modifying the visible DOM
+      const clone = photocardElement.cloneNode(true) as HTMLElement;
+      
+      // We need to position the clone off-screen but part of DOM for some styles/fonts to resolve correctly
+      // or at least handle the image loading manually before passing to html-to-image
+      // Actually, html-to-image handles cloning internally, but we need to ensure images are loaded.
+      // A better approach for "stale image" issues is to manually fetch the images and replace src with base64
+      // in the *original* or let html-to-image handle it with a filter.
+      
+      // Let's try the pre-fetch approach on the existing DOM for a moment, or use the 'filter' to force reload? 
+      // No, let's manually fetch images and convert to DataURL for the library.
+      
+      const images = Array.from(photocardElement.querySelectorAll("img"));
+      
+      // Map of original src to Data URL
+      const srcMap = new Map<string, string>();
+      
       await Promise.all(
-        Array.from(images).map((img) => {
-          if (img.complete) return Promise.resolve();
-          return new Promise((resolve) => {
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(true);
-          });
-        }),
+        images.map(async (img) => {
+          const src = img.src;
+          if (!src || src.startsWith("data:")) return;
+          
+          try {
+            // Fetch with cache busting
+            const fetchUrl = src + (src.includes("?") ? "&" : "?") + "t=" + Date.now();
+            const response = await fetch(fetchUrl, { cache: "no-store" });
+            const blob = await response.blob();
+            return new Promise<void>((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                if (typeof reader.result === "string") {
+                  srcMap.set(src, reader.result);
+                }
+                resolve();
+              };
+              reader.readAsDataURL(blob);
+            });
+          } catch (err) {
+            console.error("Failed to pre-fetch image:", src, err);
+          }
+        })
       );
 
-      // Add a small delay to ensure images are rendered
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      // Function to process the node and swap images
+      const filter = (node: HTMLElement) => {
+        if (node.tagName === "IMG") {
+          const img = node as HTMLImageElement;
+          if (srcMap.has(img.src)) {
+            img.src = srcMap.get(img.src)!;
+          }
+        }
+        return true;
+      };
+
+      // Since we can't easily hook into the library's internal clone process with a replacement map
+      // without using the 'filter' which is for exclusion...
+      // actually we can just modify our clone if we made one.
+      
+      // Alternative: Use the library's `imagePlaceholder` or pre-process the DOM.
+      // Let's pre-process: swap srcs in the real DOM, capture, swap back?
+      // Risky for flicker.
+      
+      // Better: Create a hidden container, put the clone there, swap srcs in clone, capture clone.
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.top = '-9999px';
+      container.style.left = '-9999px';
+      // Copy width/height to ensure layout is same
+      container.style.width = photocardElement.offsetWidth + 'px';
+      // container.style.height = photocardElement.offsetHeight + 'px'; // Height might be auto
+      document.body.appendChild(container);
+      
+      container.appendChild(clone);
+      
+      // Update images in clone
+      const cloneImages = Array.from(clone.querySelectorAll("img"));
+      cloneImages.forEach(img => {
+        // Find by matching the original src (which we have in the map, BUT the clone has the same src so far)
+        // Wait, the clone has the same src attributes.
+        if (srcMap.has(img.src)) {
+           img.src = srcMap.get(img.src)!;
+        }
+      });
+      
+      // Wait a tiny bit for the blob srcs to be recognized by layout engine
+       await new Promise((resolve) => setTimeout(resolve, 100));
 
       let dataUrl;
       const options = {
         quality,
-        pixelRatio: quality === 1.0 ? 3 : 2, // Higher pixel ratio for HQ
+        pixelRatio: quality === 1.0 ? 3 : 2,
         backgroundColor: format === "jpg" ? "#ffffff" : undefined,
+        // We are capturing the CLONE now
       };
 
       if (format === "jpg") {
-        dataUrl = await toJpeg(photocardElement, options);
+        dataUrl = await toJpeg(clone, options);
       } else if (format === "svg") {
-        dataUrl = await toSvg(photocardElement, options);
+        dataUrl = await toSvg(clone, options);
       } else {
-        dataUrl = await toPng(photocardElement, options);
+        dataUrl = await toPng(clone, options);
       }
+
+      // Cleanup
+      document.body.removeChild(container);
 
       const link = document.createElement("a");
       link.download = `photocard-${Date.now()}.${format}`;
@@ -110,20 +186,7 @@ export default function DownloadControls({
       setShowFormats(false);
     } catch (error) {
       console.error("Error downloading image:", error);
-
-      // Provide more specific error messages
-      let errorMessage = "Failed to download image. ";
-      if (error instanceof Error) {
-        if (error.message.includes("canvas")) {
-          errorMessage += "Canvas rendering failed. Try again.";
-        } else {
-          errorMessage += error.message;
-        }
-      } else {
-        errorMessage += "Please try again.";
-      }
-
-      alert(errorMessage);
+      alert("Failed to download image. Please try again.");
     } finally {
       setIsDownloading(false);
     }

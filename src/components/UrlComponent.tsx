@@ -21,6 +21,7 @@ interface UrlComponentProps {
   onFrameChange?: (color: string, thickness: number) => void;
   adBannerImage?: string | null;
   onAdBannerChange?: (image: string | null) => void;
+  onDownloadAll?: () => void;
 }
 
 export default function UrlComponent({
@@ -35,10 +36,9 @@ export default function UrlComponent({
   onMultipleUrlsSubmit,
   multiplePhotocards,
   frameBorderColor,
-  frameBorderThickness,
-  onFrameChange,
   adBannerImage,
-  onAdBannerChange
+  onAdBannerChange,
+  onDownloadAll
 }: UrlComponentProps) {
   const [url, setUrl] = useState('');
   const [urls, setUrls] = useState<string[]>(['']);
@@ -198,11 +198,19 @@ export default function UrlComponent({
                   + Add URL
                 </button>
                 <button
-                  onClick={handleMultipleSubmit}
-                  disabled={urls.filter(u => u.trim()).length === 0 || isLoading}
-                  className="flex-1 px-6 py-3 bg-[#8b6834] text-[#faf8f5] font-medium font-inter hover:bg-[#6b4e25] disabled:bg-[#a08d74] disabled:cursor-not-allowed transition-colors"
+                  onClick={multiplePhotocards && multiplePhotocards.some(p => p.status === 'completed') ? onDownloadAll : handleMultipleSubmit}
+                  disabled={isLoading || (!multiplePhotocards?.some(p => p.status === 'completed') && urls.filter(u => u.trim()).length === 0)}
+                  className={`flex-1 px-6 py-3 font-medium font-inter transition-colors text-[#faf8f5]
+                    ${isLoading ? 'bg-[#a08d74] cursor-not-allowed' :
+                      multiplePhotocards && multiplePhotocards.some(p => p.status === 'completed')
+                        ? 'bg-green-600 hover:bg-green-700'
+                        : 'bg-[#8b6834] hover:bg-[#6b4e25] disabled:bg-[#a08d74] disabled:cursor-not-allowed'
+                    }`}
                 >
-                  {isLoading ? 'Loading...' : 'Generate All'}
+                  {isLoading ? 'Loading...' : 
+                    multiplePhotocards && multiplePhotocards.some(p => p.status === 'completed') 
+                      ? 'Download All' 
+                      : 'Generate All'}
                 </button>
               </div>
             </div>

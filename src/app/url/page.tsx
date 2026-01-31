@@ -5,13 +5,11 @@ import { DotBackground } from "@/components/DotBackground";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import UrlComponent from "@/components/UrlComponent";
-import ClassicUrlCard from "@/components/cards/url-cards/ClassicUrlCard";
 import ModernUrlCard from "@/components/cards/url-cards/ModernUrlCard";
-import DownloadControls from "@/components/DownloadControls";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import {
   PhotocardData,
-  BackgroundOptions,
+  BackgroundOptions,  
   MultiplePhotocardData,
   UrlData,
 } from "@/types";
@@ -19,6 +17,11 @@ import { cardAPI } from "@/lib/api";
 import UpgradeModal from "@/components/UpgradeModal";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ClassicUrlCard from "@/components/cards/url-cards/ClassicUrlCard";
+import DownloadControls from "@/components/DownloadControls";
+import { toPng } from "html-to-image";
+import JSZip from "jszip";
+import { createRoot } from "react-dom/client"; // For off-screen rendering
 
 export default function Home() {
   const { user, canGenerateCard, refreshCredits } = useAuth();
@@ -166,10 +169,14 @@ export default function Home() {
       adBannerImage,
     };
 
-    return theme === "modern" ? (
-      <ModernUrlCard {...cardProps} />
-    ) : (
-      <ClassicUrlCard {...cardProps} />
+    return (
+      <div key={cardData.title + cardData.url + Date.now()}>
+        {theme === "modern" ? (
+          <ModernUrlCard {...cardProps} />
+        ) : (
+          <ClassicUrlCard {...cardProps} />
+        )}
+      </div>
     );
   };
 
@@ -213,89 +220,10 @@ export default function Home() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const STORAGE_KEY = "photocard-app-state-v1";
+  // No localStorage for URL cards as per requirement
 
-  // Load state from local storage on mount
-  useEffect(() => {
-    try {
-      const savedState = localStorage.getItem(STORAGE_KEY);
-      if (savedState) {
-        const parsed = JSON.parse(savedState);
-        if (parsed.url) setUrl(parsed.url);
-        if (parsed.photocardData) setPhotocardData(parsed.photocardData);
-        if (parsed.background) setBackground(parsed.background);
-        if (parsed.frameBorderColor)
-          setFrameBorderColor(parsed.frameBorderColor);
-        if (parsed.frameBorderThickness !== undefined)
-          setFrameBorderThickness(parsed.frameBorderThickness);
-        if (parsed.mode) setMode(parsed.mode);
-        if (parsed.multiplePhotocards)
-          setMultiplePhotocards(parsed.multiplePhotocards);
-        if (parsed.adBannerImage) setAdBannerImage(parsed.adBannerImage);
-        if (parsed.theme) setTheme(parsed.theme);
-      }
-    } catch (error) {
-      console.error("Failed to load state from local storage:", error);
-    }
-  }, []);
 
-  // Save state to local storage with debounce
-  useEffect(() => {
-    const saveState = setTimeout(() => {
-      try {
-        const stateToSave = {
-          url,
-          photocardData,
-          background,
-          frameBorderColor,
-          frameBorderThickness,
-          mode,
-          multiplePhotocards,
-          adBannerImage,
-          theme,
-          timestamp: Date.now(),
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-      } catch (error) {
-        console.error("Failed to save state to local storage:", error);
-        // If quota exceeded, try to save without heavy items (images)
-        if (
-          error instanceof DOMException &&
-          error.name === "QuotaExceededError"
-        ) {
-          try {
-            // Create fallback state without adBannerImage
-            const fallbackState = {
-              url,
-              photocardData,
-              background,
-              frameBorderColor,
-              frameBorderThickness,
-              mode,
-              multiplePhotocards,
-              theme,
-              timestamp: Date.now(),
-            };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(fallbackState));
-          } catch (e) {
-            console.error("Failed to save state even after reducing size:", e);
-          }
-        }
-      }
-    }, 1000);
 
-    return () => clearTimeout(saveState);
-  }, [
-    url,
-    photocardData,
-    background,
-    frameBorderColor,
-    frameBorderThickness,
-    mode,
-    multiplePhotocards,
-    adBannerImage,
-    theme,
-  ]);
 
   const handleUrlCleared = () => {
     setClearUrl(false);
@@ -434,9 +362,127 @@ export default function Home() {
   };
 
   const handleDownloadAll = async () => {
-    // This will be implemented with a zip library
-    console.log("Download all photocards as ZIP");
-    alert("ZIP download functionality will be implemented next!");
+    if (completedPhotocards.length === 0) return;
+    setIsLoading(true);
+
+    try {
+      const zip = new JSZip();
+      const folder = zip.folder("photocards");
+      
+      // Create a hidden container for rendering
+      const container = document.createElement("div");
+      container.style.position = "fixed";
+      container.style.top = "-9999px";
+      container.style.left = "-9999px";
+      container.style.width = "1000px"; // Fixed ample width
+      document.body.appendChild(container);
+
+      // Process each card
+      for (let i = 0; i < completedPhotocards.length; i++) {
+        const item = completedPhotocards[i];
+        
+        // 1. Render card into the hidden container
+        const cardWrapper = document.createElement("div");
+        cardWrapper.style.display = "inline-block";
+        container.appendChild(cardWrapper);
+        
+        const root = createRoot(cardWrapper);
+        
+        // Wrap in a promise to wait for render
+        await new Promise<void>((resolve) => {
+           // Create the component instance
+           const Component = theme === "modern" ? ModernUrlCard : ClassicUrlCard;
+           
+           // We need to render it
+           root.render(
+             <Component 
+               data={item.data}
+               background={background}
+               id={`temp-card-${i}`}
+               fullSize={true}
+               frameBorderColor={frameBorderColor}
+               frameBorderThickness={frameBorderThickness}
+               adBannerImage={adBannerImage}
+             />
+           );
+           
+           // Give it a moment to mount
+           setTimeout(resolve, 100);
+        });
+
+        const element = cardWrapper.firstElementChild as HTMLElement;
+        if (!element) {
+           root.unmount();
+           continue;
+        }
+
+        // 2. Pre-fetch images to blobs (Reuse the robust logic)
+        const images = Array.from(element.querySelectorAll("img"));
+        const srcMap = new Map<string, string>();
+
+        await Promise.all(
+          images.map(async (img) => {
+            const src = img.src;
+            if (!src || src.startsWith("data:")) return;
+            try {
+              const fetchUrl = src + (src.includes("?") ? "&" : "?") + "t=" + Date.now();
+              const response = await fetch(fetchUrl, { cache: "no-store" });
+              const blob = await response.blob();
+              return new Promise<void>((resolveInner) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  if (typeof reader.result === "string") {
+                     img.src = reader.result; // Swap directly in the off-screen DOM
+                  }
+                  resolveInner();
+                };
+                reader.readAsDataURL(blob);
+              });
+            } catch (err) {
+               // Log but continue
+              console.error("Failed to pre-fetch image for zip:", src, err);
+            }
+          })
+        );
+        
+        // Small delay for layout update after src swap
+        await new Promise(r => setTimeout(r, 100));
+
+        // 3. Generate PNG
+        const dataUrl = await toPng(element, {
+           quality: 0.95,
+            pixelRatio: 2,
+            cacheBust: true,
+            skipAutoScale: true
+        });
+
+        // 4. Add to ZIP
+        const base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
+        const fileName = `photocard-${i + 1}-${Date.now()}.png`;
+        folder?.file(fileName, base64Data, { base64: true });
+
+        // Cleanup
+        root.unmount();
+        container.removeChild(cardWrapper);
+      }
+
+      // Cleanup container
+      document.body.removeChild(container);
+
+      // Generate and download ZIP
+      const content = await zip.generateAsync({ type: "blob" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(content);
+      link.download = `photocards-batch-${Date.now()}.zip`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+
+    } catch (err) {
+      console.error("Error creating ZIP:", err);
+      alert("Failed to generate ZIP file. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const completedPhotocards = multiplePhotocards.filter(
@@ -509,6 +555,7 @@ export default function Home() {
               onFrameChange={handleFrameChange}
               adBannerImage={adBannerImage}
               onAdBannerChange={setAdBannerImage}
+              onDownloadAll={handleDownloadAll}
             />
 
             {/* Customization Panel */}
