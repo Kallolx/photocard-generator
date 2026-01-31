@@ -42,6 +42,29 @@ export default function SignupPage() {
       return;
     }
 
+    // Email Domain Validation
+    const ALLOWED_DOMAINS = [
+      "gmail.com",
+      "yahoo.com",
+      "hotmail.com",
+      "outlook.com",
+      "live.com",
+      "icloud.com",
+      "me.com",
+      "protonmail.com",
+      "zoho.com",
+      "aol.com",
+      "gmx.com",
+      "mail.com",
+      "yandex.com"
+    ];
+
+    const emailDomain = formData.email.split("@")[1];
+    if (emailDomain && !ALLOWED_DOMAINS.includes(emailDomain)) {
+      setError("Please use a valid email address.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
