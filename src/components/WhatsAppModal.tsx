@@ -25,7 +25,7 @@ export default function WhatsAppModal({
   const handleWhatsAppClick = () => {
     const message = `Hi! I'm interested in the ${planName} plan (${price}). Can you help me upgrade?`;
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/8801750318048?text=${encodedMessage}`, "_blank");
+    window.open(`https://wa.me/8801831624571?text=${encodedMessage}`, "_blank");
     onClose();
   };
 

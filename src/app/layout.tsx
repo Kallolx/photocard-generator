@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import FloatingSupport from "@/components/FloatingSupport";
 
 export const metadata: Metadata = {
   title: "Photocard Generator - Transform Articles into Visual Cards",
@@ -29,7 +30,10 @@ export default function RootLayout({
       </head>
       <body className="antialiased font-dm-sans">
         <LanguageProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <FloatingSupport />
+          </AuthProvider>
         </LanguageProvider>
       </body>
     </html>

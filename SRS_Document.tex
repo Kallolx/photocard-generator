@@ -1,0 +1,2412 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{tocloft}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{titlesec}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Photocard - News Card Generator}
+\lhead{SRS Document}
+\rfoot{Page \thepage}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
+% Title page content
+\title{\textbf{Photocard - News Card Generator Platform}\\
+\vspace{0.5cm}
+\Large Software Requirements Specification\\
+\vspace{0.5cm}
+\large Version 1.0}
+
+\author{
+    Streamo Digital\\
+    \textit{Lead Software Engineer}
+}
+
+\date{February 2, 2026}
+
+\begin{document}
+
+% Title Page
+\maketitle
+\thispagestyle{empty}
+
+\vspace{2cm}
+
+\begin{center}
+\textbf{Prepared for}\\
+Streamo Digital - Client Project\\
+\vspace{0.5cm}
+\textit{Professional News Card Generation Platform}\\
+February 2026
+\end{center}
+
+\newpage
+
+% Revision History
+\section*{Revision History}
+
+\begin{longtable}{|p{2.5cm}|p{3cm}|p{3cm}|p{4.5cm}|}
+\hline
+\textbf{Date} & \textbf{Description} & \textbf{Author} & \textbf{Comments} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Date} & \textbf{Description} & \textbf{Author} & \textbf{Comments} \\
+\hline
+\endhead
+
+Feb 2, 2026 & Version 1.0 & Streamo Digital & Initial SRS Document \\
+\hline
+ & & & \\
+\hline
+ & & & \\
+\hline
+ & & & \\
+\hline
+\end{longtable}
+
+\vspace{1cm}
+
+% Document Approval
+\section*{Document Approval}
+
+The following Software Requirements Specification has been accepted and approved by the following:
+
+\vspace{0.5cm}
+
+\begin{longtable}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{2.5cm}|}
+\hline
+\textbf{Signature} & \textbf{Printed Name} & \textbf{Title} & \textbf{Date} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Signature} & \textbf{Printed Name} & \textbf{Title} & \textbf{Date} \\
+\hline
+\endhead
+
+ & Streamo Digital & Lead Software Eng. & \\
+\hline
+ & Project Manager & Project Manager & \\
+\hline
+ & Client Representative & Client & \\
+\hline
+\end{longtable}
+
+\newpage
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% Start of Document Content
+\section{Introduction}
+
+\subsection{Purpose}
+
+The purpose of this Software Requirements Specification (SRS) document is to provide a comprehensive description of the Photocard News Card Generator Platform. This document outlines the functional and non-functional requirements, system architecture, user interfaces, and design constraints for the platform.
+
+The Photocard platform is designed to serve journalists, content creators, media organizations, and social media managers who need to create professional, shareable news cards from article URLs or custom content. The system automates the extraction of article metadata, provides customization options, and enables high-quality image generation suitable for social media distribution.
+
+This SRS is intended for:
+\begin{itemize}
+    \item Software developers and engineers implementing the system
+    \item Quality assurance teams testing the platform
+    \item Project managers overseeing development
+    \item Stakeholders evaluating project progress
+    \item System administrators deploying and maintaining the platform
+\end{itemize}
+
+\subsection{Scope}
+
+The Photocard platform is a comprehensive web-based SaaS (Software as a Service) application that enables users to generate professional news cards from article URLs or custom content. The system consists of a Next.js frontend application and a Node.js/Express backend API with MySQL database.
+
+\textbf{Key Capabilities:}
+\begin{itemize}
+    \item \textbf{URL-Based Card Generation:} Automatically extract article metadata (title, image, site name, favicon) from any news article URL and generate professional news cards
+    \item \textbf{Custom Card Creation:} Create cards with custom logos, images, titles, and social media information
+    \item \textbf{Multi-Language Support:} Interface available in English and Bengali languages
+    \item \textbf{Tiered Subscription Plans:} Free, Basic, and Premium plans with varying feature access and usage limits
+    \item \textbf{Batch Processing:} Generate multiple cards simultaneously (Premium feature)
+    \item \textbf{Extensive Customization:} Customize backgrounds, gradients, patterns, themes, borders, fonts, and ad banners
+    \item \textbf{API Access:} RESTful API for programmatic card generation (Premium feature)
+    \item \textbf{Admin Dashboard:} Comprehensive user management, statistics, and system monitoring
+    \item \textbf{Credit System:} Daily usage limits with automatic reset mechanism
+    \item \textbf{Authentication \& Authorization:} Secure JWT-based authentication with role-based access control
+\end{itemize}
+
+\textbf{Out of Scope:}
+\begin{itemize}
+    \item Video content generation
+    \item Real-time collaborative editing
+    \item Mobile native applications (iOS/Android)
+    \item Direct social media posting integration
+    \item Payment gateway integration (currently manual via WhatsApp)
+\end{itemize}
+
+\subsection{Definitions, Acronyms, and Abbreviations}
+
+\begin{description}[style=nextline]
+    \item[API] Application Programming Interface - Interface for programmatic access to the system
+    \item[SaaS] Software as a Service - Cloud-based software delivery model
+    \item[JWT] JSON Web Token - Secure token-based authentication mechanism
+    \item[REST] Representational State Transfer - Architectural style for web services
+    \item[CRUD] Create, Read, Update, Delete - Basic database operations
+    \item[OG] Open Graph - Meta tags protocol for social media sharing
+    \item[URL] Uniform Resource Locator - Web address
+    \item[SPA] Single Page Application - Web application architecture
+    \item[SSR] Server-Side Rendering - Rendering web pages on the server
+    \item[CORS] Cross-Origin Resource Sharing - Security mechanism for web browsers
+    \item[SQL] Structured Query Language - Database query language
+    \item[HTTPS] Hypertext Transfer Protocol Secure - Secure web protocol
+    \item[DOM] Document Object Model - Programming interface for HTML documents
+    \item[UI] User Interface - Visual elements users interact with
+    \item[UX] User Experience - Overall user interaction experience
+    \item[Admin] Administrator - User with elevated system privileges
+    \item[DFD] Data Flow Diagram - Visual representation of data flow
+    \item[STD] State-Transition Diagram - Visual representation of state changes
+    \item[News Card] A professionally designed image containing article information
+    \item[Photocard] The generated news card image
+    \item[Credit] Usage unit representing card generation allowance
+    \item[Batch Processing] Generating multiple cards simultaneously
+    \item[Theme] Visual style preset for card designs (Classic, Modern)
+    \item[Pattern] Background design pattern option
+    \item[Frame] Border styling around news cards
+    \item[API Key] Authentication token for external API access
+\end{description}
+
+\subsection{References}
+
+\begin{enumerate}
+    \item Next.js Documentation - https://nextjs.org/docs
+    \item Express.js Documentation - https://expressjs.com/
+    \item MySQL Documentation - https://dev.mysql.com/doc/
+    \item JWT Specification - RFC 7519
+    \item Open Graph Protocol - https://ogp.me/
+    \item Schema.org Structured Data - https://schema.org/
+    \item Cheerio Documentation - https://cheerio.js.org/
+    \item Puppeteer Documentation - https://pptr.dev/
+    \item React Documentation - https://react.dev/
+    \item TypeScript Documentation - https://www.typescriptlang.org/docs/
+    \item Tailwind CSS Documentation - https://tailwindcss.com/docs
+    \item Bcrypt.js - Password hashing library
+    \item Axios HTTP Client - https://axios-http.com/
+\end{enumerate}
+
+\subsection{Overview}
+
+This SRS document is organized into five main sections:
+
+\textbf{Section 1 - Introduction:} Provides the purpose, scope, definitions, and overview of the document.
+
+\textbf{Section 2 - General Description:} Describes the product perspective, functions, user characteristics, constraints, and assumptions.
+
+\textbf{Section 3 - Specific Requirements:} Details the functional requirements, external interfaces, use cases, non-functional requirements, and design constraints.
+
+\textbf{Section 4 - Analysis Models:} Presents sequence diagrams, data flow diagrams, and state-transition diagrams.
+
+\textbf{Section 5 - Change Management Process:} Outlines procedures for managing requirement changes.
+
+\textbf{Appendix A:} Contains supplementary information, glossary, and additional technical details.
+
+\newpage
+
+\section{General Description}
+
+\subsection{Product Perspective}
+
+The Photocard News Card Generator is a standalone web-based SaaS platform designed to address the needs of modern journalists and content creators who require quick, professional visual content for social media distribution.
+
+\subsubsection{System Context}
+
+The system operates as an independent web application with the following architectural components:
+
+\textbf{Frontend Application:}
+\begin{itemize}
+    \item Next.js 16.1.4 with React 19.2.3
+    \item Server-Side Rendering (SSR) and Client-Side Rendering (CSR)
+    \item Responsive design using Tailwind CSS 4
+    \item TypeScript for type safety
+    \item Context API for state management (Auth, Language)
+\end{itemize}
+
+\textbf{Backend API:}
+\begin{itemize}
+    \item Node.js with Express.js framework
+    \item RESTful API architecture
+    \item MySQL 2 database with connection pooling
+    \item JWT-based authentication
+    \item Puppeteer for server-side rendering
+    \item Rate limiting and security middleware
+\end{itemize}
+
+\textbf{External Integrations:}
+\begin{itemize}
+    \item Web scraping for URL metadata extraction
+    \item Image proxy service for external image handling
+    \item WhatsApp for manual payment coordination
+    \item Email providers (Gmail, Yahoo, Outlook, etc.) for user registration
+\end{itemize}
+
+\textbf{System Boundaries:}
+\begin{itemize}
+    \item The system does not directly integrate with social media APIs
+    \item Payment processing is manual via WhatsApp
+    \item No third-party authentication providers (Google, Facebook login)
+    \item No email service integration for notifications
+\end{itemize}
+
+\subsection{Product Functions}
+
+The Photocard platform provides the following major functions:
+
+\subsubsection{User Management}
+\begin{itemize}
+    \item User registration with email validation
+    \item Secure login/logout with JWT authentication
+    \item Profile management (name, email, password)
+    \item Subscription plan management (Free, Basic, Premium)
+    \item Credit tracking and usage monitoring
+\end{itemize}
+
+\subsubsection{Card Generation}
+\begin{itemize}
+    \item URL-based card generation with automatic metadata extraction
+    \item Custom card creation with manual content input
+    \item Single card generation
+    \item Batch processing (multiple URLs simultaneously - Premium)
+    \item Real-time preview of generated cards
+    \item High-quality image export (PNG format)
+\end{itemize}
+
+\subsubsection{Customization Features}
+\begin{itemize}
+    \item Background customization (solid colors, gradients, patterns)
+    \item Theme selection (Classic, Modern)
+    \item Font customization (Premium)
+    \item Frame/border styling
+    \item Ad banner insertion
+    \item Custom logo and image upload
+    \item Social media information integration
+\end{itemize}
+
+\subsubsection{API Services}
+\begin{itemize}
+    \item API key generation and management (Premium)
+    \item RESTful endpoints for card generation
+    \item Rate limiting (20 requests/day per API key)
+    \item Usage statistics tracking
+\end{itemize}
+
+\subsubsection{Administrative Functions}
+\begin{itemize}
+    \item User management dashboard
+    \item Statistics and analytics
+    \item Plan upgrades and downgrades
+    \item API key management
+    \item System notifications
+    \item User activity monitoring
+\end{itemize}
+
+\subsection{User Characteristics}
+
+\subsubsection{Journalists}
+\begin{itemize}
+    \item \textbf{Technical Expertise:} Basic to intermediate web skills
+    \item \textbf{Domain Knowledge:} Professional news writing and reporting
+    \item \textbf{Primary Needs:} Quick card generation from article URLs, professional appearance
+    \item \textbf{Usage Pattern:} Daily, multiple cards per day
+    \item \textbf{Typical Plan:} Basic or Premium
+\end{itemize}
+
+\subsubsection{Social Media Managers}
+\begin{itemize}
+    \item \textbf{Technical Expertise:} Intermediate, familiar with social media tools
+    \item \textbf{Domain Knowledge:} Social media marketing, content distribution
+    \item \textbf{Primary Needs:} Batch processing, customization, API access
+    \item \textbf{Usage Pattern:} High volume, scheduled posting
+    \item \textbf{Typical Plan:} Premium
+\end{itemize}
+
+\subsubsection{Content Creators}
+\begin{itemize}
+    \item \textbf{Technical Expertise:} Basic to intermediate
+    \item \textbf{Domain Knowledge:} Content creation, blogging
+    \item \textbf{Primary Needs:} Custom card creation, branding consistency
+    \item \textbf{Usage Pattern:} Moderate, project-based
+    \item \textbf{Typical Plan:} Free or Basic
+\end{itemize}
+
+\subsubsection{Media Organizations}
+\begin{itemize}
+    \item \textbf{Technical Expertise:} Advanced, may use API integration
+    \item \textbf{Domain Knowledge:} News distribution, brand management
+    \item \textbf{Primary Needs:} API access, high volume, batch processing
+    \item \textbf{Usage Pattern:} Very high volume, automated workflows
+    \item \textbf{Typical Plan:} Premium with API access
+\end{itemize}
+
+\subsubsection{System Administrators}
+\begin{itemize}
+    \item \textbf{Technical Expertise:} Advanced technical skills
+    \item \textbf{Domain Knowledge:} System management, user support
+    \item \textbf{Primary Needs:} User management, analytics, system monitoring
+    \item \textbf{Usage Pattern:} Daily administrative tasks
+    \item \textbf{Role:} Admin role with elevated privileges
+\end{itemize}
+
+\subsection{General Constraints}
+
+\subsubsection{Regulatory Constraints}
+\begin{itemize}
+    \item Must comply with data privacy regulations (GDPR considerations)
+    \item User data must be stored securely with encryption
+    \item Password storage must use industry-standard hashing (bcrypt)
+    \item API rate limiting required to prevent abuse
+\end{itemize}
+
+\subsubsection{Technical Constraints}
+\begin{itemize}
+    \item System requires Node.js runtime environment
+    \item MySQL database required for data persistence
+    \item Modern web browser required (Chrome, Firefox, Safari, Edge)
+    \item JavaScript must be enabled in browser
+    \item Minimum 1200x800 screen resolution recommended
+    \item Puppeteer requires sufficient server resources for rendering
+\end{itemize}
+
+\subsubsection{Business Constraints}
+\begin{itemize}
+    \item Manual payment processing via WhatsApp
+    \item Limited to specific email providers for registration
+    \item Daily usage limits enforced by subscription plans
+    \item No automatic refund system
+    \item Support provided during business hours only
+\end{itemize}
+
+\subsubsection{Design Constraints}
+\begin{itemize}
+    \item Must use Next.js framework for frontend
+    \item Must use Express.js for backend API
+    \item Must use MySQL for database
+    \item Must implement JWT for authentication
+    \item Must support both English and Bengali languages
+    \item Must generate cards as PNG images
+\end{itemize}
+
+\subsection{Assumptions and Dependencies}
+
+\subsubsection{Assumptions}
+\begin{itemize}
+    \item Users have reliable internet connectivity
+    \item Users provide valid article URLs
+    \item Target websites allow web scraping for metadata extraction
+    \item Users have modern web browsers with JavaScript enabled
+    \item Email providers continue to support SMTP (for future implementation)
+    \item WhatsApp remains available for payment coordination
+    \item Server infrastructure remains available and scalable
+    \item Users understand basic web interface interactions
+\end{itemize}
+
+\subsubsection{Dependencies}
+\begin{itemize}
+    \item \textbf{Node.js Runtime:} Required for backend and build processes
+    \item \textbf{MySQL Database:} Required for data persistence
+    \item \textbf{Next.js Framework:} Core frontend framework dependency
+    \item \textbf{Puppeteer:} Required for server-side card rendering
+    \item \textbf{Cheerio:} Required for HTML parsing and metadata extraction
+    \item \textbf{External Websites:} Target article websites must be accessible
+    \item \textbf{Image Hosting:} External images must be accessible via URLs
+    \item \textbf{Web Fonts:} Google Fonts or similar services for typography
+    \item \textbf{NPM Registry:} Required for package management
+    \item \textbf{Hosting Provider:} Reliable hosting with Node.js support
+\end{itemize}
+
+\newpage
+
+\section{Specific Requirements}
+
+\subsection{External Interface Requirements}
+
+\subsubsection{User Interfaces}
+
+\textbf{UI-1: Landing Page}
+\begin{itemize}
+    \item \textbf{Description:} Public-facing homepage showcasing platform features
+    \item \textbf{Components:} Navigation bar, hero section, how-it-works section, features section, pricing section, about section, footer
+    \item \textbf{Functionality:} Language toggle (EN/BN), plan comparison, call-to-action buttons
+    \item \textbf{Responsive:} Mobile, tablet, and desktop layouts
+\end{itemize}
+
+\textbf{UI-2: Authentication Pages}
+\begin{itemize}
+    \item \textbf{Login Page:} Email and password fields, "Forgot Password" link, "Sign Up" link
+    \item \textbf{Signup Page:} Name, email, password fields, email domain validation, terms acceptance
+    \item \textbf{Error Handling:} Real-time validation feedback, error messages
+\end{itemize}
+
+\textbf{UI-3: URL Card Generation Page}
+\begin{itemize}
+    \item \textbf{Mode Selector:} Toggle between Single and Batch modes
+    \item \textbf{URL Input:} Text input for article URLs, validation indicators
+    \item \textbf{Preview Area:} Real-time card preview with selected customizations
+    \item \textbf{Customization Panel:} Tabs for Background, Pattern, Theme, Fonts, Frame, Ad Banner
+    \item \textbf{Download Controls:} Download button, format selection, credit display
+\end{itemize}
+
+\textbf{UI-4: Custom Card Creation Page}
+\begin{itemize}
+    \item \textbf{Content Inputs:} Logo upload, news image upload, title text area
+    \item \textbf{Social Media Inputs:} Multiple platform/username pairs
+    \item \textbf{Preview Panel:} Real-time card preview
+    \item \textbf{Customization Panel:} Same as URL generation page
+    \item \textbf{Responsive Layout:} Adjustable panel widths, mobile-optimized
+\end{itemize}
+
+\textbf{UI-5: Settings Page}
+\begin{itemize}
+    \item \textbf{Tabs:} Profile, Security, Plan, Developer (Premium only)
+    \item \textbf{Profile Settings:} Name and email update form
+    \item \textbf{Security Settings:} Password change form
+    \item \textbf{Plan Settings:} Current plan display, upgrade buttons, usage statistics
+    \item \textbf{Developer Settings:} API key display, generate/revoke buttons, usage stats
+\end{itemize}
+
+\textbf{UI-6: Admin Dashboard}
+\begin{itemize}
+    \item \textbf{Sidebar Navigation:} Dashboard, Users, Statistics, Settings
+    \item \textbf{User Management:} Search, filter, pagination, user details modal
+    \item \textbf{Statistics:} Charts and graphs for system usage
+    \item \textbf{Actions:} Plan upgrade/downgrade, user status management, API key management
+\end{itemize}
+
+\textbf{UI-7: Common Components}
+\begin{itemize}
+    \item \textbf{Navigation Bar:} Logo, menu items, user profile dropdown, credit display
+    \item \textbf{Modals:} Upgrade modal, WhatsApp modal, success notifications
+    \item \textbf{Floating Support:} WhatsApp contact button
+    \item \textbf{Toasts:} Success, error, warning notifications
+\end{itemize}
+
+\subsubsection{Hardware Interfaces}
+
+\textbf{HW-1: Client Device Requirements}
+\begin{itemize}
+    \item \textbf{Type:} Desktop computer, laptop, tablet, or smartphone
+    \item \textbf{Minimum RAM:} 2GB for basic functionality
+    \item \textbf{Storage:} 50MB free space for browser cache
+    \item \textbf{Display:} 1200x800 minimum resolution (1920x1080 recommended)
+    \item \textbf{Input:} Keyboard and mouse/touchscreen
+    \item \textbf{Network:} Active internet connection (minimum 1 Mbps)
+\end{itemize}
+
+\textbf{HW-2: Server Requirements}
+\begin{itemize}
+    \item \textbf{Processor:} Multi-core CPU (4+ cores recommended)
+    \item \textbf{RAM:} 8GB minimum (16GB recommended for production)
+    \item \textbf{Storage:} 100GB SSD for application and database
+    \item \textbf{Network:} High-bandwidth internet connection
+    \item \textbf{Puppeteer Requirements:} Chrome/Chromium dependencies installed
+\end{itemize}
+
+\subsubsection{Software Interfaces}
+
+\textbf{SW-1: Database Interface}
+\begin{itemize}
+    \item \textbf{Software:} MySQL 2 (mysql2 npm package)
+    \item \textbf{Purpose:} Persistent data storage for users, cards, credits, API keys
+    \item \textbf{Interface Type:} Connection pool with async/await queries
+    \item \textbf{Data Format:} SQL queries with parameterized statements
+    \item \textbf{Tables:} users, user\_credits, api\_keys, card\_generations, migrations, notifications
+\end{itemize}
+
+\textbf{SW-2: Web Scraping Interface}
+\begin{itemize}
+    \item \textbf{Software:} Cheerio 1.2.0, Axios 1.13.4
+    \item \textbf{Purpose:} Extract metadata from article URLs
+    \item \textbf{Data Extracted:} Title, image, logo, favicon, site name, Open Graph tags, Schema.org data
+    \item \textbf{Error Handling:} Timeout handling, fallback strategies
+\end{itemize}
+
+\textbf{SW-3: Image Generation Interface}
+\begin{itemize}
+    \item \textbf{Software:} Puppeteer 24.36.1, html-to-image 1.11.13
+    \item \textbf{Purpose:} Render HTML/CSS cards to PNG images
+    \item \textbf{Resolution:} High DPI (2x device pixel ratio)
+    \item \textbf{Format:} PNG with transparency support
+\end{itemize}
+
+\textbf{SW-4: Authentication Interface}
+\begin{itemize}
+    \item \textbf{Software:} jsonwebtoken 9.0.2, bcryptjs 2.4.3
+    \item \textbf{Purpose:} User authentication and password security
+    \item \textbf{Token Format:} JWT with configurable expiration
+    \item \textbf{Password Hashing:} bcrypt with salt rounds = 12
+\end{itemize}
+
+\textbf{SW-5: External API Interface}
+\begin{itemize}
+    \item \textbf{Endpoints:} /api/external/v1/generate
+    \item \textbf{Authentication:} API key via x-api-key header
+    \item \textbf{Request Format:} JSON with url, theme, options parameters
+    \item \textbf{Response Format:} PNG image binary data
+    \item \textbf{Rate Limiting:} 20 requests per day per API key
+\end{itemize}
+
+\subsubsection{Communications Interfaces}
+
+\textbf{COM-1: HTTP/HTTPS Protocol}
+\begin{itemize}
+    \item \textbf{Protocol:} HTTPS for production, HTTP for development
+    \item \textbf{Port:} 443 (HTTPS), 3000 (Frontend dev), 5000 (Backend dev)
+    \item \textbf{Methods:} GET, POST, PUT, DELETE
+    \item \textbf{Security:} TLS 1.2 or higher required for production
+\end{itemize}
+
+\textbf{COM-2: RESTful API Communication}
+\begin{itemize}
+    \item \textbf{Format:} JSON for request and response bodies
+    \item \textbf{Headers:} Content-Type: application/json, Authorization: Bearer <token>
+    \item \textbf{Status Codes:} Standard HTTP status codes (200, 201, 400, 401, 403, 404, 500)
+    \item \textbf{CORS:} Cross-origin requests enabled with credentials
+\end{itemize}
+
+\textbf{COM-3: WebSocket (Future Enhancement)}
+\begin{itemize}
+    \item \textbf{Status:} Not currently implemented
+    \item \textbf{Planned Use:} Real-time notifications, live collaboration
+\end{itemize}
+
+\subsection{Functional Requirements}
+
+\subsubsection{User Authentication \& Authorization}
+
+\textbf{FR-1.1: User Registration}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall allow new users to register with name, email, and password
+    \item \textbf{Input:} Name (2-255 chars), email (valid format, allowed domains), password (minimum 8 chars)
+    \item \textbf{Processing:} Validate email domain, check for existing email, hash password, create user record, initialize credits (5/day for Free plan)
+    \item \textbf{Output:} Success message with access token and refresh token, or error message
+    \item \textbf{Validation:} Email must be from allowed domains (Gmail, Yahoo, Outlook, etc.)
+\end{itemize}
+
+\textbf{FR-1.2: User Login}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall authenticate users with email and password
+    \item \textbf{Input:} Email and password
+    \item \textbf{Processing:} Verify email exists, compare password hash, generate JWT tokens, update last login
+    \item \textbf{Output:} User data with credits information and authentication tokens
+    \item \textbf{Security:} Failed login attempts logged, account status checked
+\end{itemize}
+
+\textbf{FR-1.3: Token-Based Authentication}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall use JWT tokens for session management
+    \item \textbf{Access Token:} 7-day expiration (configurable)
+    \item \textbf{Refresh Token:} 30-day expiration (configurable)
+    \item \textbf{Storage:} localStorage and HTTP cookies
+    \item \textbf{Validation:} Token verified on each protected request
+\end{itemize}
+
+\textbf{FR-1.4: Role-Based Access Control}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall enforce different access levels based on user role
+    \item \textbf{Roles:} User (default), Admin
+    \item \textbf{Admin Access:} User management, statistics, plan modifications, system settings
+    \item \textbf{User Access:} Card generation, profile management, API key management (Premium)
+\end{itemize}
+
+\textbf{FR-1.5: Profile Management}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} Users shall be able to update name, email, and password
+    \item \textbf{Constraints:} Email must be unique, password requires current password verification
+    \item \textbf{Validation:} Same as registration requirements
+\end{itemize}
+
+\subsubsection{Card Generation Features}
+
+\textbf{FR-2.1: URL Metadata Extraction}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall automatically extract article metadata from provided URLs
+    \item \textbf{Extraction Sources:} Schema.org JSON-LD, Open Graph tags, Twitter Cards, HTML meta tags, H1 tags
+    \item \textbf{Data Extracted:} Title, main image, site logo, favicon, site name, URL
+    \item \textbf{Fallback:} If extraction fails, use default values or prompt user
+    \item \textbf{Processing:} HTML entity decoding, string cleanup, domain-specific handling
+\end{itemize}
+
+\textbf{FR-2.2: Single Card Generation}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall generate individual news cards from URLs or custom input
+    \item \textbf{Input:} Article URL or custom data (logo, image, title)
+    \item \textbf{Processing:} Extract metadata, apply theme and customizations, render card
+    \item \textbf{Output:} High-resolution PNG image (1200x630 recommended)
+    \item \textbf{Credit Deduction:} 1 credit per card
+\end{itemize}
+
+\textbf{FR-2.3: Batch Card Generation}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} Premium users shall be able to generate multiple cards simultaneously
+    \item \textbf{Access:} Premium plan only
+    \item \textbf{Input:} Multiple URLs (array)
+    \item \textbf{Processing:} Process each URL in parallel, track individual status
+    \item \textbf{Output:} Array of cards with individual status (completed, error)
+    \item \textbf{Batch Download:} ZIP file containing all generated cards
+    \item \textbf{Credit Deduction:} 1 credit per card in batch
+\end{itemize}
+
+\textbf{FR-2.4: Custom Card Creation}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} Users shall be able to create cards with custom content
+    \item \textbf{Input:} Logo image, news image, title text, social media links
+    \item \textbf{Customization:} Background, theme, frame, fonts, ad banner
+    \item \textbf{Access:} Premium users have additional customization options
+    \item \textbf{Output:} High-resolution PNG image
+\end{itemize}
+
+\textbf{FR-2.5: Real-Time Preview}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} System shall display live preview of card as customizations are applied
+    \item \textbf{Update Trigger:} Any customization change
+    \item \textbf{Rendering:} Client-side React component rendering
+    \item \textbf{Performance:} Debounced updates to prevent excessive rendering
+\end{itemize}
+
+\subsubsection{Customization Features}
+
+\textbf{FR-3.1: Background Customization}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} Users shall be able to customize card backgrounds
+    \item \textbf{Options:} Solid colors (5 presets), gradients (5 presets), custom colors
+    \item \textbf{Types:} Solid or gradient
+    \item \textbf{Access:} All users
+\end{itemize}
+
+\textbf{FR-3.2: Pattern Overlay}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} Users shall be able to add pattern overlays to backgrounds
+    \item \textbf{Patterns:} Dots, abstract, lines, grid, checks, curves, custom upload
+    \item \textbf{Customization:} Pattern color, opacity
+    \item \textbf{Access:} Basic and Premium users
+\end{itemize}
+
+\textbf{FR-3.3: Theme Selection}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} Users shall be able to choose between different card layouts
+    \item \textbf{Themes:} Classic (all users), Modern (Premium only)
+    \item \textbf{Differences:} Layout structure, typography, spacing
+    \item \textbf{Preview:} Thumbnail previews for each theme
+\end{itemize}
+
+\textbf{FR-3.4: Font Customization}
+\begin{itemize}
+    \item \textbf{Priority:} Low
+    \item \textbf{Description:} Premium users shall be able to customize fonts
+    \item \textbf{Access:} Premium plan only
+    \item \textbf{Elements:} Week/Date text, headline text
+    \item \textbf{Properties:} Font family, size, weight, color
+\end{itemize}
+
+\textbf{FR-3.5: Frame/Border Styling}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} Users shall be able to add borders around cards
+    \item \textbf{Options:} 5 color presets (white, soft gray, cool gray, soft green, clean blue)
+    \item \textbf{Thickness:} Adjustable slider (0-10px)
+    \item \textbf{Access:} All users
+\end{itemize}
+
+\textbf{FR-3.6: Ad Banner Integration}
+\begin{itemize}
+    \item \textbf{Priority:} Low
+    \item \textbf{Description:} Users shall be able to add advertisement banners to cards
+    \item \textbf{Input:} Image upload or URL
+    \item \textbf{Placement:} Bottom of card
+    \item \textbf{Access:} Basic and Premium users
+\end{itemize}
+
+\subsubsection{Credit Management System}
+
+\textbf{FR-4.1: Credit Initialization}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall initialize user credits upon registration
+    \item \textbf{Free Plan:} 5 cards per day
+    \item \textbf{Basic Plan:} 50 cards per day
+    \item \textbf{Premium Plan:} Unlimited (-1 indicates unlimited)
+    \item \textbf{Features:} Batch processing, custom cards, API access flags
+\end{itemize}
+
+\textbf{FR-4.2: Credit Deduction}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall deduct credits for each card generated
+    \item \textbf{Single Card:} 1 credit
+    \item \textbf{Batch:} 1 credit per card in batch
+    \item \textbf{Validation:} Check available credits before generation
+    \item \textbf{Transaction:} Atomic operation (card generation + credit deduction)
+\end{itemize}
+
+\textbf{FR-4.3: Daily Credit Reset}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall reset daily credits at midnight
+    \item \textbf{Mechanism:} Check last\_reset\_date before each generation
+    \item \textbf{Reset Action:} Set cards\_generated\_today to 0, update last\_reset\_date
+    \item \textbf{Time Zone:} Server time zone (configurable)
+\end{itemize}
+
+\textbf{FR-4.4: Credit Display}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} System shall display remaining credits to users
+    \item \textbf{Locations:} Navbar, generation pages, settings page
+    \item \textbf{Format:} "X/Y cards used" or "Unlimited"
+    \item \textbf{Real-Time:} Update after each generation
+\end{itemize}
+
+\textbf{FR-4.5: Limit Enforcement}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall prevent card generation when limit reached
+    \item \textbf{Check:} Before each generation attempt
+    \item \textbf{Response:} Error message with upgrade prompt
+    \item \textbf{Exception:} Unlimited plan bypasses limit check
+\end{itemize}
+
+\subsubsection{Subscription \& Plan Management}
+
+\textbf{FR-5.1: Plan Tiers}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall support three subscription tiers
+    \item \textbf{Free Plan:} 5 cards/day, basic customization, Classic theme only
+    \item \textbf{Basic Plan:} 50 cards/day, patterns, ad banners, both themes
+    \item \textbf{Premium Plan:} Unlimited cards, batch processing, API access, all features
+\end{itemize}
+
+\textbf{FR-5.2: Plan Upgrade}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} Users shall be able to request plan upgrades
+    \item \textbf{Process:} Click upgrade button, open WhatsApp modal, contact admin
+    \item \textbf{Manual Activation:} Admin manually updates plan after payment confirmation
+    \item \textbf{Immediate Effect:} Credits and features update immediately upon plan change
+\end{itemize}
+
+\textbf{FR-5.3: Feature Access Control}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall enforce feature access based on subscription plan
+    \item \textbf{Free Limitations:} Classic theme only, no batch, no API, basic customization
+    \item \textbf{Basic Enhancements:} Modern theme, patterns, ad banners
+    \item \textbf{Premium Privileges:} All features, batch processing, API access, font customization
+    \item \textbf{UI Indication:} Lock icons on restricted features, upgrade prompts
+\end{itemize}
+
+\textbf{FR-5.4: Plan Status Tracking}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} System shall track plan status and expiration
+    \item \textbf{Status Values:} active, expired, suspended
+    \item \textbf{Expiration Handling:} Downgrade to Free plan upon expiration
+    \item \textbf{Renewal:} Manual renewal via WhatsApp contact
+\end{itemize}
+
+\subsubsection{API Access \& Management}
+
+\textbf{FR-6.1: API Key Generation}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} Premium users shall be able to generate API keys
+    \item \textbf{Access:} Premium plan only
+    \item \textbf{Format:} pk\_live\_[32-character UUID without hyphens]
+    \item \textbf{Limitation:} One active API key per user
+    \item \textbf{Revocation:} Previous keys automatically revoked when generating new key
+\end{itemize}
+
+\textbf{FR-6.2: API Authentication}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} System shall authenticate API requests using API keys
+    \item \textbf{Header:} x-api-key
+    \item \textbf{Validation:} Key exists, status is active, user account is active, user has Premium plan
+    \item \textbf{Response:} 401 for invalid key, 403 for revoked or insufficient plan
+\end{itemize}
+
+\textbf{FR-6.3: API Rate Limiting}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} System shall limit API requests to 20 per day per key
+    \item \textbf{Tracking:} daily\_usage and last\_reset\_date in api\_keys table
+    \item \textbf{Reset:} Automatic daily reset at midnight
+    \item \textbf{Response:} 429 status when limit exceeded
+\end{itemize}
+
+\textbf{FR-6.4: API Card Generation}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} System shall provide API endpoint for card generation
+    \item \textbf{Endpoint:} POST /api/external/v1/generate
+    \item \textbf{Parameters:} url (required), theme (classic/modern), options (object)
+    \item \textbf{Processing:} Use Puppeteer to render frontend component, capture screenshot
+    \item \textbf{Response:} PNG image binary data
+\end{itemize}
+
+\textbf{FR-6.5: API Usage Statistics}
+\begin{itemize}
+    \item \textbf{Priority:} Low
+    \item \textbf{Description:} System shall track and display API usage statistics
+    \item \textbf{Metrics:} Total requests, daily usage, last reset date
+    \item \textbf{Display:} Developer settings page
+    \item \textbf{Access:} User can view own API statistics
+\end{itemize}
+
+\subsubsection{Administrative Features}
+
+\textbf{FR-7.1: User Management Dashboard}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} Admins shall be able to view and manage all users
+    \item \textbf{Features:} Search by name/email, filter by plan/status, pagination
+    \item \textbf{Display:} User details (name, email, plan, credits, API key status, registration date)
+    \item \textbf{Access:} Admin role only
+\end{itemize}
+
+\textbf{FR-7.2: Plan Modification}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} Admins shall be able to upgrade/downgrade user plans
+    \item \textbf{Options:} Free, Basic, Premium
+    \item \textbf{Effect:} Immediate credit limit update, feature access update
+    \item \textbf{Logging:} Action logged with timestamp and admin user
+\end{itemize}
+
+\textbf{FR-7.3: User Status Management}
+\begin{itemize}
+    \item \textbf{Priority:} High
+    \item \textbf{Description:} Admins shall be able to activate/suspend user accounts
+    \item \textbf{Status Options:} active, suspended
+    \item \textbf{Effect:} Suspended users cannot login or access system
+    \item \textbf{Reason:} Optional suspension reason field
+\end{itemize}
+
+\textbf{FR-7.4: Statistics Dashboard}
+\begin{itemize}
+    \item \textbf{Priority:} Medium
+    \item \textbf{Description:} Admins shall be able to view system-wide statistics
+    \item \textbf{Metrics:} Total users, cards generated (total, today, this week, this month), plan distribution, API usage
+    \item \textbf{Visualization:} Charts and graphs
+    \item \textbf{Export:} CSV or PDF export capability (future)
+\end{itemize}
+
+\textbf{FR-7.5: Notification System}
+\begin{itemize}
+    \item \textbf{Priority:} Low
+    \item \textbf{Description:} System shall generate notifications for admin review
+    \item \textbf{Types:} New user signup, plan upgrade request, API key generation, system errors
+    \item \textbf{Storage:} notifications table in database
+    \item \textbf{Display:} Notification center in admin dashboard (future)
+\end{itemize}
+
+\subsection{Use Cases}
+
+\subsubsection{Use Case \#1: Generate News Card from URL}
+
+\textbf{Use Case ID:} UC-1
+
+\textbf{Actor:} Registered User (Journalist)
+
+\textbf{Preconditions:}
+\begin{itemize}
+    \item User is authenticated
+    \item User has available daily credits
+    \item User has valid article URL
+\end{itemize}
+
+\textbf{Main Success Scenario:}
+\begin{enumerate}
+    \item User navigates to URL generation page
+    \item User selects "Single" mode
+    \item User pastes article URL into input field
+    \item User clicks "Generate" button
+    \item System validates URL format
+    \item System checks user's remaining credits
+    \item System fetches article webpage
+    \item System extracts metadata (title, image, logo, site name)
+    \item System applies default theme and background
+    \item System renders card preview
+    \item System deducts 1 credit from user's daily allowance
+    \item System displays success message
+    \item User views card preview
+    \item User customizes background color (optional)
+    \item User clicks "Download" button
+    \item System generates high-resolution PNG image
+    \item Browser downloads card image
+\end{enumerate}
+
+\textbf{Alternative Flows:}
+\begin{itemize}
+    \item \textbf{A1: Invalid URL Format}
+        \begin{enumerate}
+            \item At step 5, system detects invalid URL format
+            \item System displays error message
+            \item Use case returns to step 3
+        \end{enumerate}
+    \item \textbf{A2: Insufficient Credits}
+        \begin{enumerate}
+            \item At step 6, system detects zero remaining credits
+            \item System displays limit reached message
+            \item System shows upgrade modal
+            \item Use case ends
+        \end{enumerate}
+    \item \textbf{A3: Metadata Extraction Failure}
+        \begin{enumerate}
+            \item At step 8, system cannot extract metadata
+            \item System uses fallback values or prompts user for manual input
+            \item Use case continues from step 9
+        \end{enumerate}
+\end{itemize}
+
+\textbf{Postconditions:}
+\begin{itemize}
+    \item Card is generated and displayed
+    \item User credit is deducted
+    \item Card generation is recorded in database
+    \item User has downloaded card image
+\end{itemize}
+
+\subsubsection{Use Case \#2: Batch Generate Multiple Cards (Premium)}
+
+\textbf{Use Case ID:} UC-2
+
+\textbf{Actor:} Premium User (Social Media Manager)
+
+\textbf{Preconditions:}
+\begin{itemize}
+    \item User has Premium plan subscription
+    \item User is authenticated
+    \item User has sufficient daily credits or unlimited plan
+    \item User has multiple article URLs
+\end{itemize}
+
+\textbf{Main Success Scenario:}
+\begin{enumerate}
+    \item User navigates to URL generation page
+    \item User clicks "Batch" mode button
+    \item User enters first article URL in input field
+    \item User clicks "Add URL" button
+    \item Additional URL input fields appear
+    \item User enters 2-5 more article URLs
+    \item User clicks "Generate All" button
+    \item System validates all URL formats
+    \item System checks user's Premium plan status
+    \item System checks available credits
+    \item System processes each URL in parallel
+    \item For each URL, system extracts metadata
+    \item System renders card preview for each URL
+    \item System updates individual card status (loading → completed)
+    \item System deducts credits (1 per card)
+    \item System displays all generated cards
+    \item User reviews all cards
+    \item User clicks "Download All" button
+    \item System creates ZIP file containing all cards
+    \item Browser downloads ZIP file
+\end{enumerate}
+
+\textbf{Alternative Flows:}
+\begin{itemize}
+    \item \textbf{A1: Non-Premium User Attempts Batch}
+        \begin{enumerate}
+            \item At step 2, system detects user plan is not Premium
+            \item System displays upgrade modal
+            \item Use case ends
+        \end{enumerate}
+    \item \textbf{A2: Some URLs Fail}
+        \begin{enumerate}
+            \item At step 12, some URLs fail metadata extraction
+            \item System marks those cards with error status
+            \item System continues processing remaining URLs
+            \item System generates cards for successful URLs only
+            \item System displays error summary
+            \item Use case continues from step 16
+        \end{enumerate}
+    \item \textbf{A3: Insufficient Credits for Batch}
+        \begin{enumerate}
+            \item At step 10, system detects insufficient credits for all cards
+            \item System displays error message indicating how many cards can be generated
+            \item System offers to generate partial batch or cancel
+            \item Use case ends or continues with partial batch
+        \end{enumerate}
+\end{itemize}
+
+\textbf{Postconditions:}
+\begin{itemize}
+    \item Multiple cards are generated
+    \item Credits deducted (1 per successful card)
+    \item All generations recorded in database
+    \item ZIP file downloaded with all cards
+\end{itemize}
+
+\subsubsection{Use Case \#3: Upgrade Subscription Plan}
+
+\textbf{Use Case ID:} UC-3
+
+\textbf{Actor:} Free Plan User
+
+\textbf{Preconditions:}
+\begin{itemize}
+    \item User is authenticated
+    \item User has Free or Basic plan
+    \item User wants access to Premium features
+\end{itemize}
+
+\textbf{Main Success Scenario:}
+\begin{enumerate}
+    \item User navigates to Settings page
+    \item User clicks "Plan" tab
+    \item System displays current plan (Free)
+    \item System displays plan comparison table
+    \item User reviews Premium features (unlimited cards, batch processing, API access)
+    \item User clicks "Upgrade to Premium" button
+    \item System displays upgrade modal
+    \item Modal shows Premium plan price and features
+    \item Modal displays WhatsApp contact button
+    \item User clicks "Contact via WhatsApp" button
+    \item System opens WhatsApp with pre-filled message
+    \item User sends message to admin
+    \item Admin reviews upgrade request
+    \item User provides payment via agreed method
+    \item Admin confirms payment receipt
+    \item Admin logs into admin dashboard
+    \item Admin searches for user by email
+    \item Admin opens user details modal
+    \item Admin selects "Premium" from plan dropdown
+    \item Admin clicks "Update Plan" button
+    \item System updates user plan to Premium
+    \item System updates credit limits (unlimited)
+    \item System enables batch processing and API access flags
+    \item System sends confirmation notification to user
+    \item User receives plan upgrade success modal
+    \item User can now access Premium features
+\end{enumerate}
+
+\textbf{Alternative Flows:}
+\begin{itemize}
+    \item \textbf{A1: Payment Not Received}
+        \begin{enumerate}
+            \item At step 15, admin does not receive payment
+            \item Admin does not upgrade plan
+            \item User remains on Free plan
+            \item Use case ends
+        \end{enumerate}
+    \item \textbf{A2: User Already Has Premium}
+        \begin{enumerate}
+            \item At step 6, system detects user already has Premium plan
+            \item System displays message indicating current Premium status
+            \item Upgrade button is disabled
+            \item Use case ends
+        \end{enumerate}
+\end{itemize}
+
+\textbf{Postconditions:}
+\begin{itemize}
+    \item User plan updated to Premium
+    \item Credit limits changed to unlimited
+    \item Premium features enabled
+    \item Plan change recorded in database
+    \item User notified of successful upgrade
+\end{itemize}
+
+\subsection{Classes / Objects}
+
+\subsubsection{Class: User}
+
+\textbf{Attributes:}
+\begin{itemize}
+    \item id: Integer (Primary Key, Auto-increment)
+    \item name: String (2-255 characters)
+    \item email: String (Unique, Valid email format)
+    \item password: String (Hashed with bcrypt)
+    \item plan: Enum ('Free', 'Basic', 'Premium')
+    \item role: Enum ('user', 'admin')
+    \item plan\_status: Enum ('active', 'expired', 'suspended')
+    \item status: Enum ('active', 'suspended')
+    \item created\_at: Timestamp
+    \item updated\_at: Timestamp
+    \item last\_login: Timestamp (Nullable)
+\end{itemize}
+
+\textbf{Methods:}
+\begin{itemize}
+    \item register(name, email, password): User
+    \item login(email, password): AuthTokens
+    \item updateProfile(name, email): Boolean
+    \item changePassword(currentPassword, newPassword): Boolean
+    \item upgradePlan(newPlan): Boolean
+    \item suspend(): Boolean
+    \item activate(): Boolean
+    \item hasPermission(feature): Boolean
+\end{itemize}
+
+\textbf{Relationships:}
+\begin{itemize}
+    \item One-to-One with UserCredits
+    \item One-to-Many with CardGeneration
+    \item One-to-Many with APIKey
+\end{itemize}
+
+\subsubsection{Class: UserCredits}
+
+\textbf{Attributes:}
+\begin{itemize}
+    \item id: Integer (Primary Key, Auto-increment)
+    \item user\_id: Integer (Foreign Key → User.id)
+    \item daily\_limit: Integer (-1 for unlimited)
+    \item cards\_generated\_today: Integer
+    \item last\_reset\_date: Date
+    \item total\_cards\_generated: Integer
+    \item batch\_processing\_enabled: Boolean
+    \item custom\_cards\_enabled: Boolean
+    \item api\_access\_enabled: Boolean
+    \item created\_at: Timestamp
+    \item updated\_at: Timestamp
+\end{itemize}
+
+\textbf{Methods:}
+\begin{itemize}
+    \item checkAvailableCredits(): Integer
+    \item deductCredits(amount): Boolean
+    \item resetDailyCredits(): Boolean
+    \item shouldReset(): Boolean
+    \item getRemainingCredits(): Integer
+    \item updateLimits(newLimit): Boolean
+\end{itemize}
+
+\textbf{Relationships:}
+\begin{itemize}
+    \item Many-to-One with User
+\end{itemize}
+
+\subsubsection{Class: CardGeneration}
+
+\textbf{Attributes:}
+\begin{itemize}
+    \item id: Integer (Primary Key, Auto-increment)
+    \item user\_id: Integer (Foreign Key → User.id)
+    \item card\_type: Enum ('url', 'custom')
+    \item source\_url: String (Nullable)
+    \item is\_batch: Boolean
+    \item batch\_count: Integer
+    \item theme: Enum ('classic', 'modern')
+    \item download\_allowed: Boolean
+    \item ip\_address: String
+    \item created\_at: Timestamp
+\end{itemize}
+
+\textbf{Methods:}
+\begin{itemize}
+    \item recordGeneration(userId, cardData): CardGeneration
+    \item getGenerationHistory(userId, limit): Array<CardGeneration>
+    \item getStatistics(userId): Object
+\end{itemize}
+
+\textbf{Relationships:}
+\begin{itemize}
+    \item Many-to-One with User
+\end{itemize}
+
+\subsubsection{Class: APIKey}
+
+\textbf{Attributes:}
+\begin{itemize}
+    \item id: Integer (Primary Key, Auto-increment)
+    \item user\_id: Integer (Foreign Key → User.id)
+    \item api\_key: String (Unique, pk\_live\_[UUID])
+    \item status: Enum ('active', 'revoked')
+    \item daily\_usage: Integer
+    \item last\_reset\_date: Date (Nullable)
+    \item created\_at: Timestamp
+\end{itemize}
+
+\textbf{Methods:}
+\begin{itemize}
+    \item generate(userId): String
+    \item revoke(apiKey): Boolean
+    \item validate(apiKey): Boolean
+    \item incrementUsage(apiKey): Boolean
+    \item checkRateLimit(apiKey): Boolean
+    \item resetDailyUsage(): Boolean
+\end{itemize}
+
+\textbf{Relationships:}
+\begin{itemize}
+    \item Many-to-One with User
+\end{itemize}
+
+\subsubsection{Class: PhotocardData}
+
+\textbf{Attributes:}
+\begin{itemize}
+    \item title: String
+    \item image: String (URL)
+    \item logo: String (URL)
+    \item favicon: String (URL)
+    \item siteName: String
+    \item url: String
+    \item weekName: String
+    \item date: String
+\end{itemize}
+
+\textbf{Methods:}
+\begin{itemize}
+    \item extractFromURL(url): PhotocardData
+    \item validate(): Boolean
+    \item sanitize(): PhotocardData
+\end{itemize}
+
+\subsubsection{Class: BackgroundOptions}
+
+\textbf{Attributes:}
+\begin{itemize}
+    \item type: Enum ('solid', 'gradient')
+    \item color: String (Hex color code)
+    \item gradientFrom: String (Hex color code, optional)
+    \item gradientTo: String (Hex color code, optional)
+    \item pattern: String (Pattern ID, optional)
+    \item patternColor: String (Hex color code, optional)
+    \item patternOpacity: Number (0-1, optional)
+    \item patternImage: String (URL, optional)
+\end{itemize}
+
+\textbf{Methods:}
+\begin{itemize}
+    \item applyToCard(cardElement): void
+    \item toCSS(): String
+\end{itemize}
+
+\subsection{Non-Functional Requirements}
+
+\subsubsection{Performance}
+
+\textbf{NFR-1.1: Response Time}
+\begin{itemize}
+    \item \textbf{Requirement:} 95\% of API requests shall respond within 2 seconds under normal load
+    \item \textbf{Page Load:} Initial page load shall complete within 3 seconds on broadband connection
+    \item \textbf{Card Generation:} Single card shall generate within 5 seconds
+    \item \textbf{Batch Processing:} Batch of 5 cards shall complete within 15 seconds
+    \item \textbf{Measurement:} Response time measured from request initiation to complete response
+\end{itemize}
+
+\textbf{NFR-1.2: Throughput}
+\begin{itemize}
+    \item \textbf{Requirement:} System shall support at least 100 concurrent users
+    \item \textbf{API Throughput:} Handle minimum 50 API requests per minute
+    \item \textbf{Database:} Support minimum 500 queries per minute
+    \item \textbf{Scalability:} Architecture shall allow horizontal scaling
+\end{itemize}
+
+\textbf{NFR-1.3: Resource Utilization}
+\begin{itemize}
+    \item \textbf{Memory:} Backend process shall not exceed 2GB RAM under normal load
+    \item \textbf{Database:} Connection pool limited to 10 concurrent connections
+    \item \textbf{Browser:} Client application shall not exceed 500MB browser memory
+    \item \textbf{CPU:} Puppeteer rendering shall not block other requests
+\end{itemize}
+
+\textbf{NFR-1.4: Image Quality}
+\begin{itemize}
+    \item \textbf{Resolution:} Generated cards shall be high DPI (2x device pixel ratio)
+    \item \textbf{Format:} PNG with transparency support
+    \item \textbf{File Size:} Optimized to under 2MB per card
+    \item \textbf{Quality:} No visible artifacts or compression issues
+\end{itemize}
+
+\subsubsection{Reliability}
+
+\textbf{NFR-2.1: Availability}
+\begin{itemize}
+    \item \textbf{Uptime:} System shall maintain 99\% uptime during business hours
+    \item \textbf{Downtime:} Planned maintenance windows announced 24 hours in advance
+    \item \textbf{Recovery:} System shall recover from failures within 15 minutes
+\end{itemize}
+
+\textbf{NFR-2.2: Error Handling}
+\begin{itemize}
+    \item \textbf{Graceful Degradation:} System shall continue operating when non-critical components fail
+    \item \textbf{User Feedback:} All errors shall be presented with clear, actionable messages
+    \item \textbf{Logging:} All errors shall be logged with timestamp, user context, and stack trace
+    \item \textbf{Recovery:} Failed card generations shall not corrupt user credit balance
+\end{itemize}
+
+\textbf{NFR-2.3: Data Integrity}
+\begin{itemize}
+    \item \textbf{Transactions:} All database operations shall use transactions where appropriate
+    \item \textbf{Consistency:} Credit deductions shall be atomic with card generation
+    \item \textbf{Validation:} Input validation on both client and server side
+    \item \textbf{Backups:} Database backups performed daily
+\end{itemize}
+
+\textbf{NFR-2.4: Fault Tolerance}
+\begin{itemize}
+    \item \textbf{Database:} Automatic reconnection on connection loss
+    \item \textbf{External Services:} Fallback mechanisms for failed metadata extraction
+    \item \textbf{API:} Retry logic for transient failures
+\end{itemize}
+
+\subsubsection{Availability}
+
+\textbf{NFR-3.1: Service Availability}
+\begin{itemize}
+    \item \textbf{Target:} 99\% availability during peak hours (9 AM - 9 PM local time)
+    \item \textbf{Maintenance:} Maximum 4 hours planned downtime per month
+    \item \textbf{Notification:} Users notified of maintenance 24 hours in advance
+\end{itemize}
+
+\textbf{NFR-3.2: Geographic Availability}
+\begin{itemize}
+    \item \textbf{Primary Market:} Optimized for users in Bangladesh and South Asia
+    \item \textbf{Global Access:} Accessible from anywhere with internet connection
+    \item \textbf{CDN:} Static assets served via CDN for improved global performance
+\end{itemize}
+
+\subsubsection{Security}
+
+\textbf{NFR-4.1: Authentication Security}
+\begin{itemize}
+    \item \textbf{Password Hashing:} bcrypt with minimum 12 salt rounds
+    \item \textbf{Token Security:} JWT tokens with configurable expiration
+    \item \textbf{Session Management:} Tokens stored in httpOnly cookies and localStorage
+    \item \textbf{Logout:} Complete token invalidation on logout
+\end{itemize}
+
+\textbf{NFR-4.2: Authorization}
+\begin{itemize}
+    \item \textbf{Role-Based:} Strict role-based access control (user, admin)
+    \item \textbf{Plan-Based:} Feature access enforced based on subscription plan
+    \item \textbf{API Keys:} Separate authentication for API access
+    \item \textbf{Validation:} Authorization checked on every protected request
+\end{itemize}
+
+\textbf{NFR-4.3: Data Security}
+\begin{itemize}
+    \item \textbf{Encryption:} HTTPS/TLS for all data in transit
+    \item \textbf{SQL Injection:} Parameterized queries prevent SQL injection
+    \item \textbf{XSS Protection:} Input sanitization and output encoding
+    \item \textbf{CSRF Protection:} CSRF tokens on state-changing operations
+\end{itemize}
+
+\textbf{NFR-4.4: Privacy}
+\begin{itemize}
+    \item \textbf{Data Minimization:} Collect only necessary user information
+    \item \textbf{Access Control:} Users can only access their own data
+    \item \textbf{Admin Access:} Admin actions logged with timestamp and admin ID
+    \item \textbf{Data Retention:} User data deleted upon account deletion request
+\end{itemize}
+
+\textbf{NFR-4.5: Rate Limiting}
+\begin{itemize}
+    \item \textbf{API Rate Limits:} 20 requests per day per API key
+    \item \textbf{General Rate Limits:} 100 requests per 15 minutes per IP
+    \item \textbf{Login Attempts:} Protection against brute force attacks
+    \item \textbf{Response:} HTTP 429 when rate limit exceeded
+\end{itemize}
+
+\subsubsection{Maintainability}
+
+\textbf{NFR-5.1: Code Quality}
+\begin{itemize}
+    \item \textbf{Standards:} Follow TypeScript and JavaScript best practices
+    \item \textbf{Linting:} ESLint configuration enforced
+    \item \textbf{Type Safety:} TypeScript used for type checking
+    \item \textbf{Documentation:} All functions and classes documented with JSDoc/TSDoc
+\end{itemize}
+
+\textbf{NFR-5.2: Modularity}
+\begin{itemize}
+    \item \textbf{Components:} Reusable React components
+    \item \textbf{Services:} Separate service layer for business logic
+    \item \textbf{Controllers:} Thin controllers delegate to services
+    \item \textbf{Middleware:} Reusable middleware for common operations
+\end{itemize}
+
+\textbf{NFR-5.3: Version Control}
+\begin{itemize}
+    \item \textbf{Repository:} Git-based version control
+    \item \textbf{Branching:} Feature branches with pull request workflow
+    \item \textbf{Commits:} Descriptive commit messages
+    \item \textbf{Tags:} Version tags for releases
+\end{itemize}
+
+\textbf{NFR-5.4: Testing}
+\begin{itemize}
+    \item \textbf{Unit Tests:} Critical business logic covered by unit tests
+    \item \textbf{Integration Tests:} API endpoints tested
+    \item \textbf{Manual Testing:} QA process for new features
+    \item \textbf{Test Coverage:} Minimum 60\% code coverage target
+\end{itemize}
+
+\subsubsection{Portability}
+
+\textbf{NFR-6.1: Browser Compatibility}
+\begin{itemize}
+    \item \textbf{Supported:} Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+    \item \textbf{Mobile:} Chrome Mobile, Safari iOS
+    \item \textbf{Testing:} Regular testing on all supported browsers
+\end{itemize}
+
+\textbf{NFR-6.2: Platform Independence}
+\begin{itemize}
+    \item \textbf{Server:} Node.js runs on Windows, Linux, macOS
+    \item \textbf{Database:} MySQL compatible with multiple platforms
+    \item \textbf{Deployment:} Can deploy to various hosting providers
+\end{itemize}
+
+\textbf{NFR-6.3: Device Compatibility}
+\begin{itemize}
+    \item \textbf{Desktop:} Optimized for desktop browsers
+    \item \textbf{Tablet:} Responsive design for tablet devices
+    \item \textbf{Mobile:} Mobile-responsive interface
+    \item \textbf{Screen Sizes:} Support from 360px to 2560px width
+\end{itemize}
+
+\subsection{Inverse Requirements}
+
+\textbf{INV-1: No Automated Social Media Posting}
+\begin{itemize}
+    \item System shall NOT directly post to social media platforms
+    \item Users must manually download and upload cards
+\end{itemize}
+
+\textbf{INV-2: No Automated Payment Processing}
+\begin{itemize}
+    \item System shall NOT integrate payment gateways
+    \item All payments processed manually via WhatsApp coordination
+\end{itemize}
+
+\textbf{INV-3: No Video Content}
+\begin{itemize}
+    \item System shall NOT generate video content
+    \item Only static image cards are generated
+\end{itemize}
+
+\textbf{INV-4: No Third-Party Authentication}
+\begin{itemize}
+    \item System shall NOT integrate Google, Facebook, or other OAuth providers
+    \item Only email/password authentication supported
+\end{itemize}
+
+\textbf{INV-5: No Real-Time Collaboration}
+\begin{itemize}
+    \item System shall NOT support multiple users editing same card simultaneously
+    \item Each user works independently
+\end{itemize}
+
+\textbf{INV-6: No Email Notifications}
+\begin{itemize}
+    \item System shall NOT send automated email notifications
+    \item Notifications handled through in-app messages only
+\end{itemize}
+
+\subsection{Design Constraints}
+
+\textbf{DC-1: Technology Stack}
+\begin{itemize}
+    \item Frontend MUST use Next.js 16+ with React 19+
+    \item Backend MUST use Node.js with Express.js
+    \item Database MUST be MySQL 2+
+    \item Styling MUST use Tailwind CSS 4
+\end{itemize}
+
+\textbf{DC-2: Authentication}
+\begin{itemize}
+    \item MUST use JWT for session management
+    \item MUST use bcrypt for password hashing
+    \item MUST implement role-based access control
+\end{itemize}
+
+\textbf{DC-3: Image Generation}
+\begin{itemize}
+    \item MUST use Puppeteer for server-side rendering
+    \item MUST generate PNG format images
+    \item MUST support high-DPI rendering (2x)
+\end{itemize}
+
+\textbf{DC-4: Internationalization}
+\begin{itemize}
+    \item MUST support English and Bengali languages
+    \item MUST use React Context for language management
+    \item MUST use separate locale files (en.ts, bn.ts)
+\end{itemize}
+
+\textbf{DC-5: Responsive Design}
+\begin{itemize}
+    \item MUST be responsive for mobile, tablet, and desktop
+    \item MUST use mobile-first design approach
+    \item MUST support minimum 360px screen width
+\end{itemize}
+
+\subsection{Logical Database Requirements}
+
+\subsubsection{Database Schema}
+
+\textbf{Table: users}
+\begin{itemize}
+    \item id: INT AUTO\_INCREMENT PRIMARY KEY
+    \item name: VARCHAR(255) NOT NULL
+    \item email: VARCHAR(255) UNIQUE NOT NULL
+    \item password: VARCHAR(255) NOT NULL
+    \item plan: ENUM('Free', 'Basic', 'Premium') DEFAULT 'Free'
+    \item role: ENUM('user', 'admin') DEFAULT 'user'
+    \item plan\_status: VARCHAR(50) DEFAULT 'active'
+    \item status: ENUM('active', 'suspended') DEFAULT 'active'
+    \item created\_at: TIMESTAMP DEFAULT CURRENT\_TIMESTAMP
+    \item updated\_at: TIMESTAMP DEFAULT CURRENT\_TIMESTAMP ON UPDATE CURRENT\_TIMESTAMP
+    \item last\_login: TIMESTAMP NULL
+\end{itemize}
+
+\textbf{Table: user\_credits}
+\begin{itemize}
+    \item id: INT AUTO\_INCREMENT PRIMARY KEY
+    \item user\_id: INT NOT NULL, FOREIGN KEY (user\_id) REFERENCES users(id)
+    \item daily\_limit: INT NOT NULL
+    \item cards\_generated\_today: INT DEFAULT 0
+    \item last\_reset\_date: DATE
+    \item total\_cards\_generated: INT DEFAULT 0
+    \item batch\_processing\_enabled: BOOLEAN DEFAULT FALSE
+    \item custom\_cards\_enabled: BOOLEAN DEFAULT FALSE
+    \item api\_access\_enabled: BOOLEAN DEFAULT FALSE
+    \item created\_at: TIMESTAMP DEFAULT CURRENT\_TIMESTAMP
+    \item updated\_at: TIMESTAMP DEFAULT CURRENT\_TIMESTAMP ON UPDATE CURRENT\_TIMESTAMP
+\end{itemize}
+
+\textbf{Table: api\_keys}
+\begin{itemize}
+    \item id: INT AUTO\_INCREMENT PRIMARY KEY
+    \item user\_id: INT NOT NULL, FOREIGN KEY (user\_id) REFERENCES users(id)
+    \item api\_key: VARCHAR(255) UNIQUE NOT NULL
+    \item status: ENUM('active', 'revoked') DEFAULT 'active'
+    \item daily\_usage: INT DEFAULT 0
+    \item last\_reset\_date: DATE NULL
+    \item created\_at: TIMESTAMP DEFAULT CURRENT\_TIMESTAMP
+\end{itemize}
+
+\textbf{Table: card\_generations}
+\begin{itemize}
+    \item id: INT AUTO\_INCREMENT PRIMARY KEY
+    \item user\_id: INT NOT NULL, FOREIGN KEY (user\_id) REFERENCES users(id)
+    \item card\_type: ENUM('url', 'custom') NOT NULL
+    \item source\_url: TEXT NULL
+    \item is\_batch: BOOLEAN DEFAULT FALSE
+    \item batch\_count: INT DEFAULT 1
+    \item theme: VARCHAR(50) DEFAULT 'classic'
+    \item download\_allowed: BOOLEAN DEFAULT TRUE
+    \item ip\_address: VARCHAR(45)
+    \item created\_at: TIMESTAMP DEFAULT CURRENT\_TIMESTAMP
+\end{itemize}
+
+\textbf{Table: migrations}
+\begin{itemize}
+    \item id: INT AUTO\_INCREMENT PRIMARY KEY
+    \item migration\_name: VARCHAR(255) UNIQUE NOT NULL
+    \item executed\_at: TIMESTAMP DEFAULT CURRENT\_TIMESTAMP
+\end{itemize}
+
+\textbf{Table: notifications}
+\begin{itemize}
+    \item id: INT AUTO\_INCREMENT PRIMARY KEY
+    \item type: VARCHAR(50) NOT NULL
+    \item title: VARCHAR(255) NOT NULL
+    \item message: TEXT
+    \item is\_read: BOOLEAN DEFAULT FALSE
+    \item created\_at: TIMESTAMP DEFAULT CURRENT\_TIMESTAMP
+\end{itemize}
+
+\subsubsection{Database Constraints}
+
+\begin{itemize}
+    \item All tables use InnoDB engine
+    \item Character set: utf8mb4
+    \item Collation: utf8mb4\_unicode\_ci
+    \item Foreign keys enforce referential integrity
+    \item Indexes on frequently queried columns (email, api\_key, user\_id)
+    \item Cascading deletes not implemented (manual cleanup required)
+\end{itemize}
+
+\subsection{Other Requirements}
+
+\textbf{OR-1: Localization}
+\begin{itemize}
+    \item Support for Bengali (Bangla) and English languages
+    \item Date formatting according to locale
+    \item Currency display in Bangladeshi Taka (৳)
+\end{itemize}
+
+\textbf{OR-2: Accessibility}
+\begin{itemize}
+    \item Keyboard navigation support
+    \item Proper ARIA labels for screen readers
+    \item Sufficient color contrast ratios
+    \item Alt text for images
+\end{itemize}
+
+\textbf{OR-3: SEO Optimization}
+\begin{itemize}
+    \item Server-side rendering for landing pages
+    \item Proper meta tags (title, description, Open Graph)
+    \item Semantic HTML structure
+    \item Sitemap generation
+\end{itemize}
+
+\textbf{OR-4: Analytics \& Monitoring}
+\begin{itemize}
+    \item Server-side logging of errors and warnings
+    \item User activity tracking (card generations, logins)
+    \item Performance monitoring
+    \item Usage statistics for admin dashboard
+\end{itemize}
+
+\newpage
+
+\section{Analysis Models}
+
+\subsection{Sequence Diagrams}
+
+\subsubsection{Sequence Diagram: User Registration}
+
+\begin{verbatim}
+Actor: User
+System: Frontend (Next.js)
+Backend: Express API
+Database: MySQL
+
+User -> Frontend: Enter registration details (name, email, password)
+Frontend -> Frontend: Validate input format
+Frontend -> Backend: POST /api/auth/register
+Backend -> Backend: Validate email domain
+Backend -> Database: Check if email exists
+Database -> Backend: Return query result
+Backend -> Backend: Hash password with bcrypt (12 rounds)
+Backend -> Database: BEGIN TRANSACTION
+Backend -> Database: INSERT INTO users
+Backend -> Database: INSERT INTO user_credits (5 daily limit)
+Backend -> Database: COMMIT TRANSACTION
+Backend -> Backend: Generate JWT tokens (access + refresh)
+Backend -> Database: Record notification (new signup)
+Backend -> Frontend: Return success + tokens + user data
+Frontend -> Frontend: Store tokens (localStorage + cookies)
+Frontend -> Frontend: Update AuthContext
+Frontend -> User: Redirect to /url page + show welcome message
+\end{verbatim}
+
+\subsubsection{Sequence Diagram: Generate Card from URL}
+
+\begin{verbatim}
+Actor: User
+Frontend: Next.js
+API Route: /api/extract-url
+Backend: Express API
+Database: MySQL
+
+User -> Frontend: Enter article URL
+Frontend -> Frontend: Validate URL format
+User -> Frontend: Click "Generate" button
+Frontend -> Backend: POST /api/cards/generate (record intent)
+Backend -> Database: Check user credits
+Database -> Backend: Return credit status
+Backend -> Backend: Validate sufficient credits
+Backend -> Frontend: Return credit check success
+Frontend -> API Route: POST /api/extract-url
+API Route -> External Site: Fetch webpage HTML
+External Site -> API Route: Return HTML content
+API Route -> API Route: Parse HTML with Cheerio
+API Route -> API Route: Extract metadata (Schema.org, OG, meta)
+API Route -> API Route: Clean and decode title
+API Route -> Frontend: Return PhotocardData
+Frontend -> Frontend: Apply theme and customizations
+Frontend -> Frontend: Render card preview (React component)
+Backend -> Database: UPDATE user_credits (increment cards_generated)
+Backend -> Database: INSERT INTO card_generations
+User -> Frontend: Review preview
+User -> Frontend: Click "Download"
+Frontend -> Frontend: Use html-to-image library
+Frontend -> Frontend: Capture card as PNG
+Frontend -> User: Trigger browser download
+\end{verbatim}
+
+\subsubsection{Sequence Diagram: API Card Generation (External)}
+
+\begin{verbatim}
+Actor: External Client
+Backend: Express API
+Middleware: apiKeyAuth
+Database: MySQL
+Puppeteer: Headless Browser
+Frontend: Next.js (Render URL)
+
+External Client -> Backend: POST /api/external/v1/generate
+                            Header: x-api-key
+Backend -> Middleware: Authenticate API key
+Middleware -> Database: SELECT from api_keys WHERE api_key = ?
+Database -> Middleware: Return key data + user info
+Middleware -> Middleware: Validate key status (active)
+Middleware -> Middleware: Check user plan (Premium required)
+Middleware -> Middleware: Check daily rate limit (20/day)
+Middleware -> Database: Check if daily_usage < 20
+Middleware -> Backend: Authentication successful
+Backend -> Puppeteer: Launch headless browser
+Puppeteer -> Puppeteer: Create new page
+Backend -> Backend: Build render URL with parameters
+                    (frontend URL + /render/card?url=...&theme=...)
+Puppeteer -> Frontend: Navigate to render URL
+Frontend -> Frontend: Server-side render card component
+Frontend -> API Route: Extract URL metadata
+API Route -> External Site: Fetch article HTML
+External Site -> API Route: Return HTML
+API Route -> Frontend: Return metadata
+Frontend -> Puppeteer: Render complete card HTML
+Puppeteer -> Puppeteer: Wait for #card-container selector
+Puppeteer -> Puppeteer: Screenshot card element as PNG
+Puppeteer -> Backend: Return image buffer
+Backend -> Database: UPDATE api_keys SET daily_usage + 1
+Backend -> External Client: Send PNG image (binary)
+Backend -> Puppeteer: Close browser
+\end{verbatim}
+
+\subsection{Data Flow Diagrams (DFD)}
+
+\subsubsection{Level 0 DFD: Context Diagram}
+
+\begin{verbatim}
+                    +-------------------------+
+                    |                         |
+    User ---------->|                         |
+    (Journalist)    |   Photocard Platform    |--------> Generated Cards
+                    |   (News Card Generator) |
+                    |                         |<-------- Article URLs
+    Admin --------->|                         |
+                    +-------------------------+
+                         |           ^
+                         v           |
+                   External       WhatsApp
+                   Websites       (Payments)
+\end{verbatim}
+
+\textbf{External Entities:}
+\begin{itemize}
+    \item User (Journalist, Content Creator)
+    \item Admin (System Administrator)
+    \item External Websites (News articles)
+    \item WhatsApp (Payment coordination)
+\end{itemize}
+
+\textbf{Data Flows:}
+\begin{itemize}
+    \item User → System: Article URLs, Custom Content, Customization Preferences
+    \item System → User: Generated Cards (PNG), User Dashboard, Credit Status
+    \item System → External Websites: HTTP Requests
+    \item External Websites → System: HTML Content, Metadata
+    \item User → WhatsApp: Payment Requests
+    \item Admin → System: User Management Actions, Plan Upgrades
+\end{itemize}
+
+\subsubsection{Level 1 DFD: Major Processes}
+
+\begin{verbatim}
+User ----[Article URL]----> 1.0 URL Extraction ----[Metadata]----> D1: Temp Data
+                                    |
+                                    v
+User ----[Customization]----> 2.0 Card Rendering <---[Metadata]-- D1: Temp Data
+                                    |
+                                    v
+                            3.0 Image Generation ----[PNG]--------> User
+                                    |
+                                    v
+                            4.0 Credit Management ---[Usage]-----> D2: Database
+                                    ^
+                                    |
+User ----[Login]----------> 5.0 Authentication ----[Session]----> D2: Database
+                                    |
+                                    v
+User ----[API Request]----> 6.0 API Service -----[Credits]------> 4.0
+                                    |
+                                    v
+Admin ---[Manage]---------> 7.0 Admin Functions ---[Updates]----> D2: Database
+\end{verbatim}
+
+\textbf{Processes:}
+\begin{enumerate}
+    \item URL Extraction: Fetch and parse article metadata
+    \item Card Rendering: Apply theme and customizations
+    \item Image Generation: Convert HTML to PNG
+    \item Credit Management: Track usage and enforce limits
+    \item Authentication: Verify users and manage sessions
+    \item API Service: Handle external API requests
+    \item Admin Functions: User and system management
+\end{enumerate}
+
+\textbf{Data Stores:}
+\begin{itemize}
+    \item D1: Temporary Data (In-memory cache, session data)
+    \item D2: Database (MySQL - users, credits, cards, API keys)
+\end{itemize}
+
+\subsubsection{Level 2 DFD: Card Generation Process}
+
+\begin{verbatim}
+User ----[URL]----------> 2.1 Validate URL ----[Valid URL]-----> 2.2 Fetch HTML
+                              |
+                              v [Invalid]
+                          Error Message ----> User
+                              
+                          2.2 Fetch HTML ----[HTML]-----------> 2.3 Parse Metadata
+                              |
+                              v [Fetch Failed]
+                          Error Handler ----> User
+                          
+                          2.3 Parse Metadata ---[Data]--------> 2.4 Apply Theme
+                              |
+                              v [Extraction Failed]
+                          Default Values ---> 2.4 Apply Theme
+                          
+User ----[Customization]-> 2.4 Apply Theme ----[Styled Card]--> 2.5 Render HTML
+                          
+                          2.5 Render HTML ----[HTML/CSS]------> 2.6 Screenshot
+                          
+                          2.6 Screenshot ----[PNG Buffer]-----> 2.7 Optimize Image
+                          
+                          2.7 Optimize ----[Final PNG]--------> User
+                              |
+                              v
+                          2.8 Record Generation ---[Record]---> Database
+                              |
+                              v
+                          2.9 Deduct Credits ----[Update]-----> Database
+\end{verbatim}
+
+\subsection{State-Transition Diagrams (STD)}
+
+\subsubsection{STD: User Session States}
+
+\begin{verbatim}
+                    [Start]
+                       |
+                       v
+              +------------------+
+              | Not Authenticated|
+              +------------------+
+                       |
+              [Login / Register]
+                       |
+                       v
+              +------------------+
+              |   Authenticated  |<-----------+
+              |  (Active Session)|            |
+              +------------------+            |
+                       |                      |
+          +------------+------------+         |
+          |            |            |         |
+    [Idle Timeout] [Logout]  [Token Refresh] |
+          |            |            |         |
+          v            v            +---------+
+     +---------+ +---------+
+     | Expired | | Logged  |
+     +---------+ | Out     |
+          |      +---------+
+          |            |
+          +------------+
+                 |
+                 v
+          +------------------+
+          | Not Authenticated|
+          +------------------+
+                 |
+                 v
+              [End]
+\end{verbatim}
+
+\textbf{States:}
+\begin{itemize}
+    \item \textbf{Not Authenticated:} No valid session, guest access only
+    \item \textbf{Authenticated:} Valid JWT token, full access to features
+    \item \textbf{Expired:} Token expired, requires re-authentication
+    \item \textbf{Logged Out:} User explicitly logged out, tokens invalidated
+\end{itemize}
+
+\textbf{Transitions:}
+\begin{itemize}
+    \item Login/Register: Valid credentials → Authenticated
+    \item Logout: User action → Logged Out
+    \item Idle Timeout: 7 days of inactivity → Expired
+    \item Token Refresh: Valid refresh token → Stay Authenticated
+\end{itemize}
+
+\subsubsection{STD: Card Generation States}
+
+\begin{verbatim}
+                    [Start]
+                       |
+                       v
+              +------------------+
+              |      Idle        |
+              | (No card loaded) |
+              +------------------+
+                       |
+              [User enters URL / Custom data]
+                       |
+                       v
+              +------------------+
+              |    Validating    |
+              +------------------+
+                       |
+          +------------+------------+
+          |                         |
+    [Valid Input]            [Invalid Input]
+          |                         |
+          v                         v
+    +---------+              +-----------+
+    | Loading |              |   Error   |
+    +---------+              +-----------+
+          |                         |
+    [Extraction]            [Show Error Message]
+          |                         |
+          v                         v
+    +---------+              +------------------+
+    |Processing|              |      Idle        |
+    +---------+              +------------------+
+          |
+    [Rendering]
+          |
+          v
+    +-----------+
+    | Generated |<----+
+    +-----------+     |
+          |           |
+          +---[Edit Customization]
+          |
+    [Download]
+          |
+          v
+    +-----------+
+    |Downloaded |
+    +-----------+
+          |
+          v
+    +------------------+
+    |      Idle        |
+    +------------------+
+\end{verbatim}
+
+\textbf{States:}
+\begin{itemize}
+    \item \textbf{Idle:} Waiting for user input
+    \item \textbf{Validating:} Checking URL format and user credits
+    \item \textbf{Loading:} Fetching article HTML
+    \item \textbf{Processing:} Extracting metadata and rendering card
+    \item \textbf{Generated:} Card preview displayed
+    \item \textbf{Error:} Generation failed, error message shown
+    \item \textbf{Downloaded:} Card saved to user's device
+\end{itemize}
+
+\subsubsection{STD: Subscription Plan States}
+
+\begin{verbatim}
+                    [Registration]
+                       |
+                       v
+              +------------------+
+              |   Free Plan      |
+              | (5 cards/day)    |
+              +------------------+
+                       |
+                       |
+          +------------+------------+
+          |                         |
+    [Upgrade to Basic]      [Upgrade to Premium]
+          |                         |
+          v                         v
+    +---------+              +-----------+
+    |  Basic  |              |  Premium  |
+    | (50/day)|              |(Unlimited)|
+    +---------+              +-----------+
+          |                         |
+          |                         |
+    [Downgrade]               [Downgrade]
+          |                         |
+          +------------+------------+
+                       |
+                       v
+              +------------------+
+              |   Free Plan      |
+              +------------------+
+                       |
+              [Upgrade to Premium]
+                       |
+                       v
+              +------------------+
+              |     Premium      |
+              +------------------+
+                       |
+              [Expiration / Suspension]
+                       |
+                       v
+              +------------------+
+              | Suspended / Free |
+              +------------------+
+\end{verbatim}
+
+\textbf{States:}
+\begin{itemize}
+    \item \textbf{Free:} Default plan, 5 cards/day, basic features
+    \item \textbf{Basic:} Paid plan, 50 cards/day, enhanced features
+    \item \textbf{Premium:} Top-tier plan, unlimited cards, all features
+    \item \textbf{Suspended:} Account suspended, no access
+\end{itemize}
+
+\textbf{Transitions:}
+\begin{itemize}
+    \item Upgrade: User requests and admin confirms payment
+    \item Downgrade: Manual by admin or automatic on expiration
+    \item Suspension: Admin action for violations
+\end{itemize}
+
+\newpage
+
+\section{Change Management Process}
+
+\subsection{Process Overview}
+
+The change management process ensures that all changes to requirements are evaluated, approved, and documented systematically. This process maintains project stability while allowing necessary adaptations.
+
+\subsection{Change Request Procedure}
+
+\subsubsection{Step 1: Change Identification}
+\begin{itemize}
+    \item Stakeholder identifies need for requirement change
+    \item Change can originate from: users, developers, testers, management, or external factors
+    \item Initial impact assessment performed
+\end{itemize}
+
+\subsubsection{Step 2: Change Request Submission}
+\begin{itemize}
+    \item Requester submits formal Change Request (CR) document
+    \item CR includes:
+    \begin{itemize}
+        \item CR ID (unique identifier)
+        \item Date submitted
+        \item Requester name and role
+        \item Affected requirement ID(s)
+        \item Current requirement description
+        \item Proposed change description
+        \item Justification/rationale
+        \item Priority (High, Medium, Low)
+        \item Estimated impact (schedule, cost, resources)
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Step 3: Change Review}
+\begin{itemize}
+    \item Change Control Board (CCB) reviews CR
+    \item CCB composition: Project Manager, Lead Developer, QA Lead, Stakeholder Representative
+    \item Review criteria:
+    \begin{itemize}
+        \item Business value and justification
+        \item Technical feasibility
+        \item Impact on existing functionality
+        \item Resource requirements
+        \item Schedule implications
+        \item Risk assessment
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Step 4: Decision}
+\begin{itemize}
+    \item CCB makes decision: Approve, Reject, or Defer
+    \item Decision recorded with rationale
+    \item If approved: assign priority and schedule implementation
+    \item If rejected: document reasons and communicate to requester
+    \item If deferred: specify conditions for future consideration
+\end{itemize}
+
+\subsubsection{Step 5: Implementation}
+\begin{itemize}
+    \item Development team implements approved changes
+    \item Update SRS document with change details
+    \item Update version number and revision history
+    \item Notify all stakeholders of changes
+\end{itemize}
+
+\subsubsection{Step 6: Verification}
+\begin{itemize}
+    \item QA team verifies implementation
+    \item Regression testing performed
+    \item Stakeholder acceptance obtained
+    \item Close change request
+\end{itemize}
+
+\subsection{Change Classification}
+
+\textbf{Minor Changes:}
+\begin{itemize}
+    \item Clarifications or corrections to existing requirements
+    \item UI text changes
+    \item Non-functional improvements
+    \item Approval: Lead Developer + Project Manager
+\end{itemize}
+
+\textbf{Major Changes:}
+\begin{itemize}
+    \item New features or functionality
+    \item Changes to core business logic
+    \item Database schema modifications
+    \item Changes affecting multiple modules
+    \item Approval: Full CCB review required
+\end{itemize}
+
+\textbf{Critical Changes:}
+\begin{itemize}
+    \item Security vulnerabilities
+    \item Data integrity issues
+    \item System-breaking bugs
+    \item Regulatory compliance requirements
+    \item Approval: Expedited CCB review, immediate action
+\end{itemize}
+
+\subsection{Version Control}
+
+\begin{itemize}
+    \item \textbf{Major Version:} X.0.0 - Significant changes, new major features
+    \item \textbf{Minor Version:} 1.X.0 - New features, backwards compatible
+    \item \textbf{Patch Version:} 1.0.X - Bug fixes, minor improvements
+\end{itemize}
+
+\textbf{Current Version:} 1.0 (Initial Release)
+
+\subsection{Communication Plan}
+
+\begin{itemize}
+    \item All approved changes communicated via:
+    \begin{itemize}
+        \item Updated SRS document
+        \item Email notification to stakeholders
+        \item Project management system updates
+        \item Developer team meetings
+    \end{itemize}
+    \item Change log maintained in appendix
+    \item Monthly change summary reports
+\end{itemize}
+
+\newpage
+
+\section*{Appendix A: Appendices}
+
+\subsection*{A.1 Glossary}
+
+\begin{description}[style=nextline]
+    \item[Batch Processing] The ability to generate multiple news cards simultaneously from multiple URLs
+    \item[Bcrypt] Password hashing function designed for security
+    \item[Cheerio] Fast, flexible HTML parsing library for Node.js
+    \item[Credit] A unit of measurement for card generation allowance
+    \item[Daily Limit] Maximum number of cards a user can generate per day
+    \item[JWT] JSON Web Token - Compact, URL-safe means of representing claims
+    \item[Metadata] Data about data; in this context, article information like title, image, author
+    \item[Open Graph] Protocol for integrating webpages into social graph
+    \item[Photocard] A professionally designed news card image
+    \item[Puppeteer] Node.js library for controlling headless Chrome/Chromium
+    \item[Schema.org] Collaborative vocabulary for structured data on the internet
+    \item[Scraping] Extracting data from websites programmatically
+    \item[Theme] Visual style preset for card layouts (Classic, Modern)
+    \item[Token] Authentication credential issued after successful login
+\end{description}
+
+\subsection*{A.2 Acronyms}
+
+\begin{itemize}
+    \item \textbf{API:} Application Programming Interface
+    \item \textbf{CCB:} Change Control Board
+    \item \textbf{CORS:} Cross-Origin Resource Sharing
+    \item \textbf{CR:} Change Request
+    \item \textbf{CRUD:} Create, Read, Update, Delete
+    \item \textbf{CSS:} Cascading Style Sheets
+    \item \textbf{DFD:} Data Flow Diagram
+    \item \textbf{HTML:} Hypertext Markup Language
+    \item \textbf{HTTP/HTTPS:} Hypertext Transfer Protocol (Secure)
+    \item \textbf{JSON:} JavaScript Object Notation
+    \item \textbf{JWT:} JSON Web Token
+    \item \textbf{OG:} Open Graph
+    \item \textbf{PNG:} Portable Network Graphics
+    \item \textbf{QA:} Quality Assurance
+    \item \textbf{REST:} Representational State Transfer
+    \item \textbf{SaaS:} Software as a Service
+    \item \textbf{SQL:} Structured Query Language
+    \item \textbf{SRS:} Software Requirements Specification
+    \item \textbf{SSR:} Server-Side Rendering
+    \item \textbf{STD:} State-Transition Diagram
+    \item \textbf{TLS:} Transport Layer Security
+    \item \textbf{UI/UX:} User Interface / User Experience
+    \item \textbf{URL:} Uniform Resource Locator
+    \item \textbf{UUID:} Universally Unique Identifier
+\end{itemize}
+
+\subsection*{A.3 Technical Dependencies}
+
+\textbf{Frontend Dependencies:}
+\begin{itemize}
+    \item Next.js 16.1.4
+    \item React 19.2.3
+    \item TypeScript 5
+    \item Tailwind CSS 4
+    \item Axios 1.13.4
+    \item Cheerio 1.2.0
+    \item html-to-image 1.11.13
+    \item qrcode 1.5.4
+    \item react-hot-toast 2.6.0
+    \item lucide-react 0.563.0
+\end{itemize}
+
+\textbf{Backend Dependencies:}
+\begin{itemize}
+    \item Express.js 4.18.2
+    \item MySQL2 3.6.5
+    \item bcryptjs 2.4.3
+    \item jsonwebtoken 9.0.2
+    \item Puppeteer 24.36.1
+    \item cors 2.8.5
+    \item helmet 7.1.0
+    \item express-rate-limit 7.1.5
+    \item dotenv 16.3.1
+    \item uuid 13.0.0
+\end{itemize}
+
+\subsection*{A.4 Environment Variables}
+
+\textbf{Backend (.env):}
+\begin{verbatim}
+# Server
+PORT=5000
+NODE_ENV=development
+
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=photocard_db
+
+# JWT
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRE=7d
+JWT_REFRESH_SECRET=your_refresh_secret_key
+JWT_REFRESH_EXPIRE=30d
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Frontend URL (for Puppeteer)
+FRONTEND_URL=http://localhost:3000
+\end{verbatim}
+
+\textbf{Frontend (.env.local):}
+\begin{verbatim}
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+\end{verbatim}
+
+\subsection*{A.5 Deployment Checklist}
+
+\begin{enumerate}
+    \item Configure production database (MySQL)
+    \item Set environment variables on hosting platform
+    \item Enable HTTPS/TLS certificates
+    \item Configure CORS for production domains
+    \item Run database migrations
+    \item Build frontend (npm run build)
+    \item Start backend server (npm start)
+    \item Verify Puppeteer dependencies installed
+    \item Test all API endpoints
+    \item Configure rate limiting
+    \item Set up error logging
+    \item Configure backups (daily database backups)
+    \item Test payment workflow via WhatsApp
+    \item Verify email domain validation
+    \item Test all subscription features
+    \item Load test with expected user volume
+    \item Document deployment procedures
+\end{enumerate}
+
+\subsection*{A.6 Future Enhancements}
+
+\textbf{Planned Features:}
+\begin{itemize}
+    \item Automated payment gateway integration
+    \item Email notification system
+    \item Social media direct posting API integration
+    \item Video news card generation
+    \item Template marketplace
+    \item Team collaboration features
+    \item Advanced analytics dashboard
+    \item Mobile native applications (iOS/Android)
+    \item WebSocket real-time updates
+    \item AI-powered content suggestions
+    \item Multi-language support expansion
+    \item Advanced scheduling and publishing
+\end{itemize}
+
+\subsection*{A.7 Contact Information}
+
+\textbf{Development Team:}
+\begin{itemize}
+    \item Project Manager: [Contact Info]
+    \item Lead Developer: [Contact Info]
+    \item Backend Developer: [Contact Info]
+    \item Frontend Developer: [Contact Info]
+    \item QA Engineer: [Contact Info]
+\end{itemize}
+
+\textbf{Support:}
+\begin{itemize}
+    \item Technical Support: [Email/WhatsApp]
+    \item Business Inquiries: [Email]
+    \item Bug Reports: [Email/Issue Tracker]
+\end{itemize}
+
+\vspace{1cm}
+
+\begin{center}
+\textbf{--- End of Document ---}
+\end{center}
+
+\end{document}

@@ -12,6 +12,8 @@ import {
   BackgroundOptions,  
   MultiplePhotocardData,
   UrlData,
+  CardFontStyles,
+  VisibilitySettings,
 } from "@/types";
 import { cardAPI } from "@/lib/api";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -22,6 +24,7 @@ import DownloadControls from "@/components/DownloadControls";
 import { toPng } from "html-to-image";
 import JSZip from "jszip";
 import { createRoot } from "react-dom/client"; // For off-screen rendering
+import EditingToolbar from "@/components/EditingToolbar";
 
 export default function Home() {
   const { user, canGenerateCard, refreshCredits } = useAuth();
@@ -54,20 +57,89 @@ export default function Home() {
   const [isResizing, setIsResizing] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
   const [adBannerImage, setAdBannerImage] = useState<string | null>(null);
+  const [adBannerZoom, setAdBannerZoom] = useState<number>(100);
   const [theme, setTheme] = useState<string>("classic");
+  const [isDragMode, setIsDragMode] = useState(false);
+  const [elementLayout, setElementLayout] = useState<{
+    topLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta';
+    topRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta';
+    bottomLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta';
+    bottomRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta';
+  }>({
+    topLeft: 'logo',
+    topRight: 'dateWeek',
+    bottomLeft: 'qrCode',
+    bottomRight: 'cta',
+  });
+
+  // Font styles state
+  const [fontStyles, setFontStyles] = useState<CardFontStyles>({
+    week: {
+      fontFamily: "Noto Sans Bengali",
+      fontSize: "18px",
+      fontWeight: "500",
+      color: "#FFFFFF",
+      textAlign: "center",
+      letterSpacing: "0px",
+    },
+    date: {
+      fontFamily: "Noto Sans Bengali",
+      fontSize: "18px",
+      fontWeight: "500",
+      color: "#FFFFFF",
+      textAlign: "center",
+      letterSpacing: "0px",
+    },
+    headline: {
+      fontFamily: "Noto Sans Bengali",
+      fontSize: "24px",
+      fontWeight: "700",
+      color: "#FFFFFF",
+      textAlign: "center",
+      letterSpacing: "0px",
+    },
+  });
+
+  // Visibility settings state
+  const [visibilitySettings, setVisibilitySettings] =
+    useState<VisibilitySettings>({
+      showWeek: true,
+      showDate: true,
+      showLogo: true,
+      showQrCode: true,
+      showTitle: true,
+    });
+
+  // Editing state
+  const [currentLogo, setCurrentLogo] = useState<string>("");
+  const [currentImage, setCurrentImage] = useState<string>("");
+  const [currentTitle, setCurrentTitle] = useState<string>("");
+  const [isLogoFavicon, setIsLogoFavicon] = useState(false);
 
   // Mock data for preview
   const mockData: PhotocardData = {
-    title: "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
-    image:
-      "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=225&fit=crop&crop=center",
-    logo: "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png",
+    title: currentTitle || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
+    image: currentImage || "",
+    logo: currentLogo || "",
     favicon: "https://www.google.com/favicon.ico",
     siteName: "Example News",
     url: "https://example.com",
     weekName: "শনিবার",
     date: "২৪ জানুয়ারি ২০২৬",
   };
+
+  // Update current data when photocard data changes
+  useEffect(() => {
+    if (photocardData) {
+      setCurrentTitle(photocardData.title);
+      setCurrentImage(photocardData.image);
+      setCurrentLogo(photocardData.logo);
+    } else {
+      setCurrentTitle(mockData.title);
+      setCurrentImage(mockData.image);
+      setCurrentLogo(mockData.logo);
+    }
+  }, [photocardData]);
 
   const handleUrlSubmit = async (url: string) => {
     // Check if user can generate cards
@@ -122,7 +194,7 @@ export default function Home() {
 
       setPhotocardData(photocardData);
 
-      // Record card generation in backend
+      // Record card generation in backend (non-blocking)
       try {
         await cardAPI.generate({
           card_type: "url",
@@ -132,8 +204,16 @@ export default function Home() {
 
         // Refresh credits to update UI
         await refreshCredits();
-      } catch (creditError) {
-        console.error("Failed to record card generation:", creditError);
+      } catch (creditError: any) {
+        // Silently fail - card is already generated, this is just for tracking
+        console.warn("Could not record card generation:", creditError);
+        
+        // Still try to refresh credits even if recording failed
+        try {
+          await refreshCredits();
+        } catch (refreshError) {
+          console.warn("Could not refresh credits:", refreshError);
+        }
       }
 
       setUrl(""); // Auto-clear URL after successful generation
@@ -152,6 +232,93 @@ export default function Home() {
     setFrameBorderThickness(thickness);
   };
 
+  // Editing toolbar handlers
+  const handleLogoChange = (logo: string, isFavicon: boolean) => {
+    setCurrentLogo(logo);
+    setIsLogoFavicon(isFavicon);
+  };
+
+  const handleImageChange = (image: string) => {
+    setCurrentImage(image);
+  };
+
+  const handleTitleChange = (title: string) => {
+    setCurrentTitle(title);
+  };
+
+  // Logo upload from drag menu
+  const handleLogoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setCurrentLogo(result);
+      setIsLogoFavicon(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Restore all settings to defaults
+  const handleRestoreDefaults = () => {
+    // Reset element layout
+    setElementLayout({
+      topLeft: 'logo',
+      topRight: 'dateWeek',
+      bottomLeft: 'qrCode',
+      bottomRight: 'cta',
+    });
+    
+    // Reset visibility settings
+    setVisibilitySettings({
+      showWeek: true,
+      showDate: true,
+      showLogo: true,
+      showQrCode: true,
+      showTitle: true,
+    });
+    
+    // Reset font styles to defaults
+    setFontStyles({
+      week: {
+        fontFamily: "Noto Sans Bengali",
+        fontSize: "18px",
+        fontWeight: "500",
+        color: "#FFFFFF",
+        textAlign: "center",
+        letterSpacing: "0px",
+      },
+      date: {
+        fontFamily: "Noto Sans Bengali",
+        fontSize: "18px",
+        fontWeight: "500",
+        color: "#FFFFFF",
+        textAlign: "center",
+        letterSpacing: "0px",
+      },
+      headline: {
+        fontFamily: "Noto Sans Bengali",
+        fontSize: "24px",
+        fontWeight: "700",
+        color: "#FFFFFF",
+        textAlign: "center",
+        letterSpacing: "0px",
+      },
+    });
+    
+    // Reset frame border
+    setFrameBorderColor("#FFFFFF");
+    setFrameBorderThickness(0);
+    
+    // Reset ad banner
+    setAdBannerImage(null);
+    setAdBannerZoom(100);
+    
+    // Reset background to default
+    setBackground({
+      type: "solid",
+      color: "#dc2626",
+    });
+  };
+
   // Render the appropriate card based on theme
   const renderCard = (
     cardData: PhotocardData,
@@ -159,7 +326,12 @@ export default function Home() {
     isFullSize = false,
   ) => {
     const cardProps = {
-      data: cardData,
+      data: {
+        ...cardData,
+        title: currentTitle || cardData.title,
+        image: currentImage || cardData.image,
+        logo: currentLogo || cardData.logo,
+      },
       isGenerating: isLoading,
       background,
       id: cardId,
@@ -167,6 +339,16 @@ export default function Home() {
       frameBorderColor,
       frameBorderThickness,
       adBannerImage,
+      adBannerZoom,
+      fontStyles,
+      visibilitySettings,
+      isLogoFavicon,
+      isDragMode,
+      elementLayout,
+      onLayoutChange: setElementLayout,
+      onVisibilityChange: setVisibilitySettings,
+      onLogoUpload: handleLogoUpload,
+      onRestoreDefaults: handleRestoreDefaults,
     };
 
     return (
@@ -354,7 +536,15 @@ export default function Home() {
         // Refresh credits to update UI
         await refreshCredits();
       } catch (creditError) {
-        console.error("Failed to record batch generation:", creditError);
+        // Silently fail - cards are already generated
+        console.warn("Could not record batch generation:", creditError);
+        
+        // Still try to refresh credits
+        try {
+          await refreshCredits();
+        } catch (refreshError) {
+          console.warn("Could not refresh credits:", refreshError);
+        }
       }
     }
 
@@ -403,6 +593,12 @@ export default function Home() {
                frameBorderColor={frameBorderColor}
                frameBorderThickness={frameBorderThickness}
                adBannerImage={adBannerImage}
+               adBannerZoom={adBannerZoom}
+               fontStyles={fontStyles}
+               visibilitySettings={visibilitySettings}
+               isLogoFavicon={isLogoFavicon}
+               isDragMode={false}
+               elementLayout={elementLayout}
              />
            );
            
@@ -568,8 +764,14 @@ export default function Home() {
                 onFrameChange={handleFrameChange}
                 adBannerImage={adBannerImage}
                 onAdBannerChange={setAdBannerImage}
+                adBannerZoom={adBannerZoom}
+                onAdBannerZoomChange={setAdBannerZoom}
                 theme={theme}
                 onThemeChange={setTheme}
+                fontStyles={fontStyles}
+                onFontStylesChange={setFontStyles}
+                visibilitySettings={visibilitySettings}
+                onVisibilityChange={setVisibilitySettings}
               />
             </div>
           </div>
@@ -585,7 +787,20 @@ export default function Home() {
           />
 
           {/* Right Preview Area - Responsive */}
-          <DotBackground className="flex-1 bg-[#faf8f5] md:overflow-y-auto md:min-h-0">
+          <DotBackground className="flex-1 bg-[#faf8f5] md:overflow-y-auto md:min-h-0 relative">
+            {/* Editing Toolbar - Show only when card is generated or in preview */}
+            {(photocardData || mode === "single") && (
+              <EditingToolbar
+                currentLogo={currentLogo || mockData.logo}
+                currentImage={currentImage || mockData.image}
+                currentTitle={currentTitle || mockData.title}
+                isDragMode={isDragMode}
+                onLogoChange={handleLogoChange}
+                onImageChange={handleImageChange}
+                onTitleChange={handleTitleChange}
+                onDragModeToggle={() => setIsDragMode(!isDragMode)}
+              />
+            )}
             <div className="flex items-start justify-center md:justify-start md:pl-12 p-4 md:pr-8 md:py-8 w-full h-full">
               {/* Photocard Preview(s) */}
               {mode === "single" ? (

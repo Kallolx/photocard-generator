@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
@@ -11,24 +11,178 @@ import {
   Menu,
   X,
   Zap,
+  Lock,
+  Link as LinkIcon,
+  Edit,
+  MessageSquare,
+  FileText,
+  Moon,
+  BarChart3,
+  Heart,
+  Megaphone,
+  Home,
+  Image,
+  Mail,
+  HelpCircle,
+  Shield,
+  Clock,
+  Quote,
+  Package,
+  Scissors,
+  LayoutGrid,
+  Languages,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import CompactCreditDisplay from "./CompactCreditDisplay";
+import UpgradeModal from "./UpgradeModal";
+
+type CardType = {
+  id: string;
+  label: string;
+  href: string;
+  icon: React.ReactNode;
+  locked: boolean;
+  description: string;
+};
+
+type CardCategory = {
+  name: string;
+  cards: CardType[];
+};
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCardsMenuOpen, setIsCardsMenuOpen] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState("");
   const pathname = usePathname();
 
-  const navLinks = [
-    { label: "URL", href: "/url" },
-    { label: "CUSTOM", href: "/custom" },
+  const isFreeUser = user?.plan === "Free";
+
+  const cardCategories: CardCategory[] = [
+    {
+      name: "News & Social",
+      cards: [
+        {
+          id: "url",
+          label: "URL Newscard",
+          href: "/url",
+          icon: <LinkIcon className="w-4 h-4" />,
+          locked: false,
+          description: "Convert URLs to newscards",
+        },
+        {
+          id: "comment",
+          label: "Comment Card",
+          href: "/comment",
+          icon: <MessageSquare className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Social media comment cards",
+        },
+        {
+          id: "poll",
+          label: "Poll Card",
+          href: "/poll",
+          icon: <BarChart3 className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Interactive poll cards",
+        },
+        {
+          id: "quote",
+          label: "Quote Card",
+          href: "/quote",
+          icon: <Quote className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Inspirational & famous quotes",
+        },
+      ],
+    },
+    {
+      name: "Business & Marketing",
+      cards: [
+        {
+          id: "marketing",
+          label: "Marketing Card",
+          href: "/marketing",
+          icon: <Megaphone className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Promotional & ads cards",
+        },
+        {
+          id: "realestate",
+          label: "Real Estate Card",
+          href: "/realestate",
+          icon: <Home className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Property listings & tours",
+        },
+        {
+          id: "product",
+          label: "Product Card",
+          href: "/product",
+          icon: <Package className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Product showcase & e-commerce",
+        },
+        {
+          id: "thumbnail",
+          label: "Thumbnail Card",
+          href: "/thumbnail",
+          icon: <Image className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "YouTube & video thumbnails",
+        },
+      ],
+    },
+    {
+      name: "Personal & Creative",
+      cards: [
+        {
+          id: "custom",
+          label: "Custom card",
+          href: "/custom",
+          icon: <Edit className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Create custom cards",
+        },
+        {
+          id: "info",
+          label: "Info Card",
+          href: "/info",
+          icon: <FileText className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Information display cards",
+        },
+        {
+          id: "islamic",
+          label: "Islamic Card",
+          href: "/islamic",
+          icon: <Moon className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Islamic quotes & greetings",
+        },
+        {
+          id: "wish",
+          label: "Wish Card",
+          href: "/wish",
+          icon: <Heart className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Birthday & celebration wishes",
+        },
+      ],
+    },
   ];
 
-  function setShowUpgradeModal(arg0: boolean) {
-    throw new Error("Function not implemented.");
-  }
+  const allCards = cardCategories.flatMap((category) => category.cards);
+  const currentCard = allCards.find((card) => card.href === pathname);
+
+  const otherLinks = [
+    { label: "Background Remover", href: "/background-remover", icon: <Scissors className="w-4 h-4" /> },
+    { label: "Collage", href: "/collage", icon: <LayoutGrid className="w-4 h-4" /> },
+    { label: "Bangla Converter", href: "/bangla-converter", icon: <Languages className="w-4 h-4" /> },
+  ];
 
   return (
     <nav className="w-full bg-[#faf8f5] border-b-2 border-[#d4c4b0] px-4 md:px-6 py-3 md:py-4 relative z-[100]">
@@ -36,20 +190,153 @@ export default function Navbar() {
         {/* Logo */}
         <div className="flex items-center">
           <h1 className="text-lg md:text-2xl font-lora font-bold text-[#2c2419] tracking-tight">
-            Socialcard Generator
+            <Link href="/url" className="hover:text-[#8b6834] transition-colors">
+              Socialcard Generator
+            </Link>
           </h1>
         </div>
 
         {/* Navigation Links - Hidden on mobile */}
-        <div className="hidden md:flex items-center space-x-8">
-          {navLinks.map((link) => (
+        <div className="hidden md:flex items-center space-x-6">
+          {/* Cards Dropdown Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setIsCardsMenuOpen(!isCardsMenuOpen)}
+              onMouseEnter={() => setIsCardsMenuOpen(true)}
+              className={`flex items-center gap-2 text-sm font-bold font-inter transition-colors hover:text-[#8b6834] ${
+                allCards.some((card) => card.href === pathname)
+                  ? "text-[#2c2419]"
+                  : "text-[#5d4e37]"
+              }`}
+            >
+              <span>CARD TYPES</span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${isCardsMenuOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {isCardsMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-30"
+                  onClick={() => setIsCardsMenuOpen(false)}
+                />
+                <div
+                  className="absolute left-0 top-full mt-2 w-[720px] bg-white rounded-xl shadow-2xl border-2 border-[#d4c4b0] p-6 z-40 overflow-hidden"
+                  onMouseLeave={() => setIsCardsMenuOpen(false)}
+                >
+                  <div className="grid grid-cols-3 gap-0 max-h-96 overflow-y-auto">
+                    {cardCategories.map((category, catIndex) => (
+                      <div key={category.name} className={`${catIndex < cardCategories.length - 1 ? 'border-r border-[#d4c4b0]' : ''}`}>
+                        {/* Category Header */}
+                        <div className="px-4 py-2 bg-white border-b border-[#d4c4b0]">
+                          <p className="text-xs font-bold text-[#8b6834] uppercase tracking-wide">
+                            {category.name}
+                          </p>
+                        </div>
+                        
+                        {/* Category Cards */}
+                        {category.cards.map((card, cardIndex) => (
+                          <Link
+                            key={card.id}
+                            href={card.locked ? "#" : card.href}
+                            onClick={(e) => {
+                              if (card.locked) {
+                                e.preventDefault();
+                                if (isFreeUser) {
+                                  setUpgradeFeature(card.label);
+                                  setShowUpgradeModal(true);
+                                  setIsCardsMenuOpen(false);
+                                }
+                                return;
+                              }
+                              setIsCardsMenuOpen(false);
+                            }}
+                            className={`flex items-center gap-3 px-4 py-3 transition-all ${
+                              cardIndex < category.cards.length - 1 ? 'border-b border-[#d4c4b0]' : ''
+                            } ${
+                              pathname === card.href
+                                ? "bg-[#8b6834] text-white"
+                                : card.locked
+                                  ? "text-gray-400 cursor-not-allowed"
+                                  : "text-[#5d4e37] hover:bg-[#f5f0e8]"
+                            }`}
+                          >
+                            <div
+                              className={`${
+                                pathname === card.href
+                                  ? "text-white"
+                                  : card.locked
+                                    ? "text-[#8b6834]/30"
+                                    : "text-[#8b6834]"
+                              }`}
+                            >
+                              {React.cloneElement(card.icon as React.ReactElement<any>, {
+                                className: "w-5 h-5",
+                              })}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p
+                                  className={`text-sm font-semibold font-inter truncate ${
+                                    pathname === card.href
+                                      ? "text-white"
+                                      : card.locked
+                                        ? "text-[#5d4e37]/60"
+                                        : "text-[#2c2419]"
+                                  }`}
+                                >
+                                  {card.label}
+                                </p>
+                                {card.locked && (
+                                  <Lock className="w-3 h-3 flex-shrink-0" />
+                                )}
+                              </div>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+
+                  {isFreeUser && (
+                    <div className="mt-4 pt-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-bold text-[#2c2419] mb-1">
+                            Want access to all card types?
+                          </p>
+                          <p className="text-xs text-[#5d4e37]">
+                            Upgrade to unlock all premium features
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setUpgradeFeature("All Premium Card Types");
+                            setShowUpgradeModal(true);
+                            setIsCardsMenuOpen(false);
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 bg-[#8b6834] text-[#faf8f5] text-sm font-bold hover:bg-[#2c2419] transition-colors whitespace-nowrap"
+                        >
+                          <Zap className="w-4 h-4" />
+                          Upgrade Now
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Other Links */}
+          {otherLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className={`text-lg font-medium font-inter transition-colors hover:text-[#8b6834] ${
-                pathname === link.href
-                  ? "text-[#2c2419] border-b-2 border-[#8b6834] pb-1"
-                  : "text-[#5d4e37]"
+              className={`text-sm font-bold font-inter transition-colors hover:text-[#8b6834] ${
+                pathname === link.href ? "text-[#2c2419]" : "text-[#5d4e37]"
               }`}
             >
               {link.label}
@@ -144,25 +431,95 @@ export default function Navbar() {
 
       {/* Mobile Navigation Menu */}
       {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-[#faf8f5] shadow-lg border-t-2 border-[#d4c4b0] z-50 md:hidden">
-          <div className="flex flex-col py-4 px-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`text-sm font-medium font-inter transition-colors hover:text-[#8b6834] px-3 py-3 ${
-                  pathname === link.href
-                    ? "text-[#2c2419] bg-[#f5f0e8]"
-                    : "text-[#5d4e37]"
-                }`}
-              >
-                {link.label}
-              </Link>
+        <div className="absolute top-full left-0 right-0 bg-[#faf8f5] shadow-lg border-t-2 border-[#d4c4b0] z-50 md:hidden max-h-[80vh] overflow-y-auto">
+          <div className="flex flex-col py-2 px-2">
+            {cardCategories.map((category) => (
+              <div key={category.name}>
+                <div className="px-2 py-2 border-b border-[#d4c4b0]/30">
+                  <p className="text-xs font-semibold text-[#8b6834] uppercase tracking-wide">
+                    {category.name}
+                  </p>
+                </div>
+
+                {category.cards.map((card) => (
+                  <Link
+                    key={card.id}
+                    href={card.locked ? "#" : card.href}
+                    onClick={(e) => {
+                      if (card.locked) {
+                        e.preventDefault();
+                        if (isFreeUser) {
+                          setUpgradeFeature(card.label);
+                          setShowUpgradeModal(true);
+                          setIsMobileMenuOpen(false);
+                        }
+                        return;
+                      }
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`flex items-start gap-3 px-3 py-3 transition-colors ${
+                      pathname === card.href
+                        ? "text-[#2c2419] bg-[#e8dcc8]"
+                        : card.locked
+                          ? "text-[#5d4e37]/50"
+                          : "text-[#5d4e37] hover:bg-[#f5f0e8]"
+                    }`}
+                  >
+                    <div
+                      className={`mt-0.5 ${card.locked ? "text-[#8b6834]/30" : "text-[#8b6834]"}`}
+                    >
+                      {card.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold font-inter">
+                          {card.label}
+                        </p>
+                        {card.locked && (
+                          <Lock className="w-3 h-3 text-[#8b6834]/70" />
+                        )}
+                      </div>
+                      <p
+                        className={`text-xs ${
+                          card.locked ? "text-[#5d4e37]/40" : "text-[#5d4e37]/70"
+                        }`}
+                      >
+                        {card.description}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             ))}
+
+            {isFreeUser && (
+              <div className="px-3 py-3 border-t border-[#d4c4b0]/30 bg-[#8b6834]/5 mt-2">
+                <p className="text-xs text-[#5d4e37] mb-2">
+                  Unlock all card types with premium
+                </p>
+                <button
+                  onClick={() => {
+                    setUpgradeFeature("All Premium Card Types");
+                    setShowUpgradeModal(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center justify-center gap-2 px-3 py-2 bg-[#8b6834] text-[#faf8f5] text-xs font-semibold w-full"
+                >
+                  <Zap className="w-3 h-3" />
+                  Upgrade Now
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        feature={upgradeFeature}
+        requiredPlan="Basic"
+      />
     </nav>
   );
 }

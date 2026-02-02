@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { BackgroundOptions } from "@/types";
-import { Plus, Lock, RefreshCw, X, Upload } from "lucide-react";
+import { useState, useRef } from "react";
+import { BackgroundOptions, CardFontStyles, VisibilitySettings } from "@/types";
+import { Plus, Lock, RefreshCw, X, Upload, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "./UpgradeModal";
 
@@ -14,8 +14,14 @@ interface CustomizationPanelProps {
   onFrameChange?: (color: string, thickness: number) => void;
   adBannerImage?: string | null;
   onAdBannerChange?: (image: string | null) => void;
+  adBannerZoom?: number;
+  onAdBannerZoomChange?: (zoom: number) => void;
   theme?: string;
   onThemeChange?: (theme: string) => void;
+  fontStyles?: CardFontStyles;
+  onFontStylesChange?: (fontStyles: CardFontStyles) => void;
+  visibilitySettings?: VisibilitySettings;
+  onVisibilityChange?: (visibilitySettings: VisibilitySettings) => void;
 }
 
 const SOLID_COLORS = [
@@ -57,7 +63,7 @@ const THEMES = [
   },
 ];
 
-type Tab = "Background" | "Pattern" | "Theme" | "Fonts" | "Frame" | "Ad Banner";
+type Tab = "Background" | "Pattern" | "Theme" | "Fonts" | "Visibility" | "Frame" | "Ad Banner";
 
 const PATTERNS = [
   { id: "none", name: "None" },
@@ -78,8 +84,14 @@ export default function CustomizationPanel({
   onFrameChange,
   adBannerImage,
   onAdBannerChange,
+  adBannerZoom = 100,
+  onAdBannerZoomChange,
   theme = "classic",
   onThemeChange,
+  fontStyles,
+  onFontStylesChange,
+  visibilitySettings,
+  onVisibilityChange,
 }: CustomizationPanelProps) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("Background");
@@ -90,6 +102,44 @@ export default function CustomizationPanel({
   const [selectedFontType, setSelectedFontType] = useState<
     "weekDate" | "headline" | null
   >(null);
+  
+  // Custom colors state
+  const [customSolidColors, setCustomSolidColors] = useState<string[]>([]);
+  const [customGradients, setCustomGradients] = useState<Array<{ from: string; to: string }>>([]);
+  const [showSolidColorPicker, setShowSolidColorPicker] = useState(false);
+  const [showGradientColorPicker, setShowGradientColorPicker] = useState(false);
+  const [tempSolidColor, setTempSolidColor] = useState("#000000");
+  const [tempGradientFrom, setTempGradientFrom] = useState("#000000");
+  const [tempGradientTo, setTempGradientTo] = useState("#FFFFFF");
+  
+  // Drag to scroll state
+  const tabsScrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!tabsScrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - tabsScrollRef.current.offsetLeft);
+    setScrollLeft(tabsScrollRef.current.scrollLeft);
+    tabsScrollRef.current.style.cursor = 'grabbing';
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !tabsScrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - tabsScrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    tabsScrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUpOrLeave = () => {
+    setIsDragging(false);
+    if (tabsScrollRef.current) {
+      tabsScrollRef.current.style.cursor = 'grab';
+    }
+  };
   const [frameBorderColor, setFrameBorderColor] = useState(
     initialFrameBorderColor,
   );
@@ -137,6 +187,15 @@ export default function CustomizationPanel({
     setActiveTab("Fonts");
   };
 
+  const handleVisibilityTabClick = () => {
+    if (isFreeUser) {
+      setUpgradeFeature("Visibility Controls");
+      setShowUpgradeModal(true);
+      return;
+    }
+    setActiveTab("Visibility");
+  };
+
   const handleFrameColorChange = (color: string) => {
     setFrameBorderColor(color);
     onFrameChange?.(color, frameBorderThickness);
@@ -152,40 +211,64 @@ export default function CustomizationPanel({
     "Pattern",
     "Theme",
     "Fonts",
+    "Visibility",
     "Frame",
     "Ad Banner",
   ];
 
   return (
     <div className="bg-[#f5f0e8] p-6 border-2 border-[#d4c4b0]">
-      {/* Tab Navigation - Scrollable on small devices */}
-      <div className="border-b-2 border-[#d4c4b0] mb-6 -mx-6 px-6 overflow-x-auto no-scrollbar">
-        <div className="flex gap-6 min-w-max">
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => {
-                if (tab === "Fonts") {
-                  handleFontsTabClick();
-                } else {
-                  setActiveTab(tab);
-                }
-              }}
-              className={`pb-3 text-sm font-medium font-inter transition-colors relative whitespace-nowrap ${
-                activeTab === tab
-                  ? "text-[#2c2419]"
-                  : "text-[#5d4e37] hover:text-[#8b6834]"
-              }`}
-            >
-              <span className="flex items-center gap-1.5">
-                {tab}
-                {tab === "Fonts" && isFreeUser && <Lock className="w-3 h-3" />}
-              </span>
-              {activeTab === tab && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8b6834]" />
-              )}
-            </button>
-          ))}
+      {/* Tab Navigation - Modern Scrollable with fade indicators */}
+      <div className="relative mb-6 -mx-6">
+        {/* Left fade indicator */}
+        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#f5f0e8] to-transparent z-10 pointer-events-none" />
+        
+        {/* Right fade indicator */}
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#f5f0e8] to-transparent z-10 pointer-events-none" />
+        
+        <div 
+          ref={tabsScrollRef}
+          className="px-6 overflow-x-auto no-scrollbar scroll-smooth cursor-grab select-none"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUpOrLeave}
+          onMouseLeave={handleMouseUpOrLeave}
+        >
+          <div className="flex gap-1 min-w-max border-b-2 border-[#d4c4b0]">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={(e) => {
+                  // Only trigger click if not dragging
+                  if (isDragging) {
+                    e.preventDefault();
+                    return;
+                  }
+                  if (tab === "Fonts") {
+                    handleFontsTabClick();
+                  } else if (tab === "Visibility") {
+                    handleVisibilityTabClick();
+                  } else {
+                    setActiveTab(tab);
+                  }
+                }}
+                className={`px-4 py-3 text-sm font-medium font-inter transition-all relative whitespace-nowrap ${
+                  activeTab === tab
+                    ? "text-[#2c2419] bg-[#e8dcc8]"
+                    : "text-[#5d4e37] hover:text-[#8b6834] hover:bg-[#faf8f5]"
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  {tab}
+                  {tab === "Fonts" && isFreeUser && <Lock className="w-3 h-3" />}
+                  {tab === "Visibility" && isFreeUser && <Lock className="w-3 h-3" />}
+                </span>
+                {activeTab === tab && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#8b6834]" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -199,10 +282,11 @@ export default function CustomizationPanel({
               <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
                 Solid Colors{" "}
                 <span className="text-xs text-[#5d4e37]">
-                  ({SOLID_COLORS.length} colors)
+                  ({SOLID_COLORS.length + customSolidColors.length} colors)
                 </span>
               </h3>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                {/* Preset Colors */}
                 {SOLID_COLORS.map((item, index) => {
                   const isLocked = isFreeUser && index > 0;
                   return (
@@ -242,7 +326,138 @@ export default function CustomizationPanel({
                     </button>
                   );
                 })}
+                
+                {/* Custom Colors */}
+                {customSolidColors.map((color, index) => (
+                  <button
+                    key={`custom-${color}`}
+                    onClick={() => {
+                      onBackgroundChange({
+                        type: "solid",
+                        color: color,
+                      });
+                    }}
+                    className={`relative w-14 h-14 border-2 transition-all overflow-visible flex-shrink-0 group ${
+                      background.type === "solid" &&
+                      background.color === color
+                        ? "border-[#8b6834] shadow-md"
+                        : "border-[#d4c4b0] hover:scale-95"
+                    }`}
+                    style={{ backgroundColor: color }}
+                  >
+                    {background.type === "solid" &&
+                      background.color === color && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-[#8b6834] text-[#faf8f5] text-[10px] font-inter text-center py-0.5">
+                          selected
+                        </div>
+                      )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCustomSolidColors(prev => prev.filter((_, i) => i !== index));
+                      }}
+                      className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10"
+                      title="Remove color"
+                    >
+                      <X className="w-2.5 h-2.5" />
+                    </button>
+                  </button>
+                ))}
+                
+                {/* Add Custom Color Button */}
+                {customSolidColors.length < 2 && (
+                  <button
+                    onClick={() => {
+                      if (isFreeUser) {
+                        setUpgradeFeature("Custom Colors");
+                        setShowUpgradeModal(true);
+                        return;
+                      }
+                      setShowSolidColorPicker(!showSolidColorPicker);
+                    }}
+                    className={`relative w-14 h-14 flex-shrink-0 border-2 border-dashed transition-all overflow-hidden flex items-center justify-center ${
+                      isFreeUser 
+                        ? "border-[#d4c4b0] bg-[#faf8f5]" 
+                        : "border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8]"
+                    }`}
+                    title={isFreeUser ? "Upgrade to add custom colors" : "Add custom color"}
+                  >
+                    {isFreeUser ? (
+                      <Lock className="w-5 h-5 text-[#5d4e37]" />
+                    ) : (
+                      <Plus className="w-5 h-5 text-[#8b6834]" />
+                    )}
+                  </button>
+                )}
               </div>
+              
+              {/* Color Picker Modal for Solid */}
+              {showSolidColorPicker && (
+                <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-sm font-medium text-[#2c2419] font-inter">
+                      Pick a custom color
+                    </label>
+                    <button
+                      onClick={() => setShowSolidColorPicker(false)}
+                      className="text-[#5d4e37] hover:text-[#2c2419]"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex gap-3">
+                    <input
+                      type="color"
+                      value={tempSolidColor}
+                      onChange={(e) => setTempSolidColor(e.target.value)}
+                      className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                    />
+                    <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                      <input
+                        type="text"
+                        value={tempSolidColor.toUpperCase()}
+                        onChange={(e) => {
+                          let value = e.target.value.toUpperCase();
+                          // Always start with #
+                          if (!value.startsWith('#')) {
+                            value = '#' + value.replace(/[^0-9A-F]/g, '');
+                          } else {
+                            value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                          }
+                          value = value.slice(0, 7);
+                          setTempSolidColor(value);
+                        }}
+                        onBlur={(e) => {
+                          const value = e.target.value;
+                          if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
+                            setTempSolidColor('#000000');
+                          }
+                        }}
+                        placeholder="#000000"
+                        className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                        maxLength={7}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (tempSolidColor.length === 7 && !customSolidColors.includes(tempSolidColor)) {
+                        setCustomSolidColors(prev => [...prev, tempSolidColor]);
+                        onBackgroundChange({
+                          type: "solid",
+                          color: tempSolidColor,
+                        });
+                        setShowSolidColorPicker(false);
+                        setTempSolidColor("#000000");
+                      }
+                    }}
+                    className="w-full mt-3 py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
+                    disabled={tempSolidColor.length !== 7}
+                  >
+                    Add Color
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Gradients Section */}
@@ -250,10 +465,11 @@ export default function CustomizationPanel({
               <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
                 Gradients{" "}
                 <span className="text-xs text-[#5d4e37]">
-                  ({GRADIENTS.length} colors)
+                  ({GRADIENTS.length + customGradients.length} colors)
                 </span>
               </h3>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                {/* Preset Gradients */}
                 {GRADIENTS.map((grad, index) => {
                   const isLocked = isFreeUser;
                   return (
@@ -299,7 +515,211 @@ export default function CustomizationPanel({
                     </button>
                   );
                 })}
+                
+                {/* Custom Gradients */}
+                {customGradients.map((grad, index) => (
+                  <button
+                    key={`custom-grad-${index}`}
+                    onClick={() => {
+                      onBackgroundChange({
+                        type: "gradient",
+                        color: "",
+                        gradientFrom: grad.from,
+                        gradientTo: grad.to,
+                      });
+                    }}
+                    className={`relative w-14 h-14 border-2 transition-all overflow-visible flex-shrink-0 group ${
+                      background.type === "gradient" &&
+                      background.gradientFrom === grad.from &&
+                      background.gradientTo === grad.to
+                        ? "border-[#8b6834] shadow-md"
+                        : "border-[#d4c4b0] hover:scale-95"
+                    }`}
+                    style={{
+                      backgroundImage: `linear-gradient(135deg, ${grad.from}, ${grad.to})`,
+                    }}
+                  >
+                    {background.type === "gradient" &&
+                      background.gradientFrom === grad.from &&
+                      background.gradientTo === grad.to && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-[#2c2419]/70 text-[#faf8f5] text-[10px] font-inter text-center py-1">
+                          selected
+                        </div>
+                      )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCustomGradients(prev => prev.filter((_, i) => i !== index));
+                      }}
+                      className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10"
+                      title="Remove gradient"
+                    >
+                      <X className="w-2.5 h-2.5" />
+                    </button>
+                  </button>
+                ))}
+                
+                {/* Add Custom Gradient Button */}
+                {customGradients.length < 2 && (
+                  <button
+                    onClick={() => {
+                      if (isFreeUser) {
+                        setUpgradeFeature("Custom Gradients");
+                        setShowUpgradeModal(true);
+                        return;
+                      }
+                      setShowGradientColorPicker(!showGradientColorPicker);
+                    }}
+                    className={`relative w-14 h-14 flex-shrink-0 border-2 border-dashed transition-all overflow-hidden flex items-center justify-center ${
+                      isFreeUser 
+                        ? "border-[#d4c4b0] bg-[#faf8f5]" 
+                        : "border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8]"
+                    }`}
+                    title={isFreeUser ? "Upgrade to add custom gradients" : "Add custom gradient"}
+                  >
+                    {isFreeUser ? (
+                      <Lock className="w-5 h-5 text-[#5d4e37]" />
+                    ) : (
+                      <Plus className="w-5 h-5 text-[#8b6834]" />
+                    )}
+                  </button>
+                )}
               </div>
+              
+              {/* Gradient Picker Modal */}
+              {showGradientColorPicker && (
+                <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-sm font-medium text-[#2c2419] font-inter">
+                      Create custom gradient
+                    </label>
+                    <button
+                      onClick={() => setShowGradientColorPicker(false)}
+                      className="text-[#5d4e37] hover:text-[#2c2419]"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  {/* From Color */}
+                  <div className="mb-3">
+                    <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
+                      From Color
+                    </label>
+                    <div className="flex gap-3">
+                      <input
+                        type="color"
+                        value={tempGradientFrom}
+                        onChange={(e) => setTempGradientFrom(e.target.value)}
+                        className="h-10 w-16 border-2 border-[#d4c4b0] cursor-pointer"
+                      />
+                      <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-3 py-2 flex items-center">
+                        <input
+                          type="text"
+                          value={tempGradientFrom.toUpperCase()}
+                          onChange={(e) => {
+                            let value = e.target.value.toUpperCase();
+                            if (!value.startsWith('#')) {
+                              value = '#' + value.replace(/[^0-9A-F]/g, '');
+                            } else {
+                              value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                            }
+                            value = value.slice(0, 7);
+                            setTempGradientFrom(value);
+                          }}
+                          onBlur={(e) => {
+                            const value = e.target.value;
+                            if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
+                              setTempGradientFrom('#000000');
+                            }
+                          }}
+                          placeholder="#000000"
+                          className="w-full text-sm font-mono text-[#2c2419] bg-transparent outline-none"
+                          maxLength={7}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* To Color */}
+                  <div className="mb-3">
+                    <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
+                      To Color
+                    </label>
+                    <div className="flex gap-3">
+                      <input
+                        type="color"
+                        value={tempGradientTo}
+                        onChange={(e) => setTempGradientTo(e.target.value)}
+                        className="h-10 w-16 border-2 border-[#d4c4b0] cursor-pointer"
+                      />
+                      <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-3 py-2 flex items-center">
+                        <input
+                          type="text"
+                          value={tempGradientTo.toUpperCase()}
+                          onChange={(e) => {
+                            let value = e.target.value.toUpperCase();
+                            if (!value.startsWith('#')) {
+                              value = '#' + value.replace(/[^0-9A-F]/g, '');
+                            } else {
+                              value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                            }
+                            value = value.slice(0, 7);
+                            setTempGradientTo(value);
+                          }}
+                          onBlur={(e) => {
+                            const value = e.target.value;
+                            if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
+                              setTempGradientTo('#FFFFFF');
+                            }
+                          }}
+                          placeholder="#FFFFFF"
+                          className="w-full text-sm font-mono text-[#2c2419] bg-transparent outline-none"
+                          maxLength={7}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Preview */}
+                  <div className="mb-3">
+                    <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
+                      Preview
+                    </label>
+                    <div 
+                      className="w-full h-16 border-2 border-[#d4c4b0]"
+                      style={{
+                        backgroundImage: `linear-gradient(135deg, ${tempGradientFrom}, ${tempGradientTo})`,
+                      }}
+                    />
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      if (tempGradientFrom.length === 7 && tempGradientTo.length === 7) {
+                        const newGrad = { from: tempGradientFrom, to: tempGradientTo };
+                        const exists = customGradients.some(g => g.from === newGrad.from && g.to === newGrad.to);
+                        if (!exists) {
+                          setCustomGradients(prev => [...prev, newGrad]);
+                          onBackgroundChange({
+                            type: "gradient",
+                            color: "",
+                            gradientFrom: tempGradientFrom,
+                            gradientTo: tempGradientTo,
+                          });
+                          setShowGradientColorPicker(false);
+                          setTempGradientFrom("#000000");
+                          setTempGradientTo("#FFFFFF");
+                        }
+                      }
+                    }}
+                    className="w-full py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
+                    disabled={tempGradientFrom.length !== 7 || tempGradientTo.length !== 7}
+                  >
+                    Add Gradient
+                  </button>
+                </div>
+              )}
             </div>
           </>
         )}
@@ -615,54 +1035,501 @@ export default function CustomizationPanel({
           </div>
         )}
 
-        {/* Fonts Tab - Placeholder */}
-        {activeTab === "Fonts" && (
-          <div className="space-y-4">
-            {/* Week & Date Font */}
+        {/* Fonts Tab */}
+        {activeTab === "Fonts" && fontStyles && onFontStylesChange && (
+          <div className="space-y-5">
+            {/* Week & Date Font Settings - Combined */}
             <div>
-              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-2">
-                Week & Date :
+              {/* Header */}
+              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-8">
+                Week & Date
               </h3>
-              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] px-3 py-2 flex items-center justify-between">
-                <div className="flex-1 text-left">
-                  <span className="font-noto-bengali text-[#2c2419] text-lg">
-                    আমার সোনার বাংলা
-                  </span>
+              
+              {/* Content */}
+              <div className="space-y-4">
+                {/* Font Size */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-medium text-[#2c2419] font-inter">
+                      Font Size
+                    </label>
+                    <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                      {fontStyles.week.fontSize}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="12"
+                    max="32"
+                    value={parseInt(fontStyles.week.fontSize)}
+                    onChange={(e) =>
+                      onFontStylesChange({
+                        ...fontStyles,
+                        week: {
+                          ...fontStyles.week,
+                          fontSize: `${e.target.value}px`,
+                        },
+                        date: {
+                          ...fontStyles.date,
+                          fontSize: `${e.target.value}px`,
+                        },
+                      })
+                    }
+                    className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 100%)`
+                    }}
+                  />
                 </div>
-                <button
-                  onClick={() => {
-                    setSelectedFontType("weekDate");
-                    setShowFontModal(true);
-                  }}
-                  className="flex items-center gap-2 px-3 py-2 bg-gray-300 hover:bg-gray-200 rounded-md transition-colors text-slate-600 text-xs"
-                >
-                  <span>change</span>
-                  <RefreshCw className="w-4 h-4" />
-                </button>
+
+                {/* Font Weight */}
+                <div>
+                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                    Font Weight
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {["400", "500", "600", "700"].map((weight) => (
+                      <button
+                        key={weight}
+                        onClick={() =>
+                          onFontStylesChange({
+                            ...fontStyles,
+                            week: { ...fontStyles.week, fontWeight: weight },
+                            date: { ...fontStyles.date, fontWeight: weight },
+                          })
+                        }
+                        className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
+                          fontStyles.week.fontWeight === weight
+                            ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                            : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                        }`}
+                      >
+                        {weight === "400"
+                          ? "Normal"
+                          : weight === "500"
+                            ? "Medium"
+                            : weight === "600"
+                              ? "Semi"
+                              : "Bold"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Color */}
+                <div>
+                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                    Text Color
+                  </label>
+                  <div className="flex gap-3">
+                    <input
+                      type="color"
+                      value={fontStyles.week.color}
+                      onChange={(e) =>
+                        onFontStylesChange({
+                          ...fontStyles,
+                          week: { ...fontStyles.week, color: e.target.value },
+                          date: { ...fontStyles.date, color: e.target.value },
+                        })
+                      }
+                      className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                    />
+                    <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                      <input
+                        type="text"
+                        value={fontStyles.week.color.toUpperCase()}
+                        onChange={(e) => {
+                          let value = e.target.value.toUpperCase();
+                          // Always start with #
+                          if (!value.startsWith('#')) {
+                            value = '#' + value.replace(/[^0-9A-F]/g, '');
+                          } else {
+                            // Remove # temporarily, filter invalid chars, then add # back
+                            value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                          }
+                          // Limit to 7 characters (#XXXXXX)
+                          value = value.slice(0, 7);
+                          
+                          if (value.length === 7) {
+                            onFontStylesChange({
+                              ...fontStyles,
+                              week: { ...fontStyles.week, color: value },
+                              date: { ...fontStyles.date, color: value },
+                            });
+                          }
+                        }}
+                        onBlur={(e) => {
+                          // On blur, ensure we have a valid hex or revert
+                          const value = e.target.value;
+                          if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
+                            // Revert to current valid color if invalid
+                            e.target.value = fontStyles.week.color.toUpperCase();
+                          }
+                        }}
+                        placeholder="#000000"
+                        className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                        maxLength={7}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Headline Font */}
+            {/* Headline Font Settings */}
             <div>
-              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-2">
-                Headline :
+              {/* Header */}
+              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3 pt-4 border-t-2 border-[#d4c4b0]">
+                Headline
               </h3>
-              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] px-3 py-2 flex items-center justify-between">
-                <div className="flex-1 text-left">
-                  <span className="font-noto-bengali text-[#2c2419] text-lg">
-                    আমার সোনার বাংলা
-                  </span>
+              
+              {/* Content */}
+              <div className="space-y-4">
+                {/* Font Size */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-medium text-[#2c2419] font-inter">
+                      Font Size
+                    </label>
+                    <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                      {fontStyles.headline.fontSize}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="16"
+                    max="48"
+                    value={parseInt(fontStyles.headline.fontSize)}
+                    onChange={(e) =>
+                      onFontStylesChange({
+                        ...fontStyles,
+                        headline: {
+                          ...fontStyles.headline,
+                          fontSize: `${e.target.value}px`,
+                        },
+                      })
+                    }
+                    className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 100%)`
+                    }}
+                  />
                 </div>
-                <button
-                  onClick={() => {
-                    setSelectedFontType("headline");
-                    setShowFontModal(true);
-                  }}
-                  className="flex items-center gap-2 px-3 py-2 bg-gray-300 hover:bg-gray-200 rounded-md transition-colors text-slate-600 text-xs"
-                >
-                  <span>change</span>
-                  <RefreshCw className="w-4 h-4" />
-                </button>
+
+                {/* Font Weight */}
+                <div>
+                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                    Font Weight
+                  </label>
+                  <div className="grid grid-cols-5 gap-2">
+                    {["400", "500", "600", "700", "800"].map((weight) => (
+                      <button
+                        key={weight}
+                        onClick={() =>
+                          onFontStylesChange({
+                            ...fontStyles,
+                            headline: {
+                              ...fontStyles.headline,
+                              fontWeight: weight,
+                            },
+                          })
+                        }
+                        className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
+                          fontStyles.headline.fontWeight === weight
+                            ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                            : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                        }`}
+                        style={{ fontWeight: weight }}
+                      >
+                        {weight === "400"
+                          ? "Light"
+                          : weight === "500"
+                            ? "Medium"
+                            : weight === "600"
+                              ? "Semi"
+                              : weight === "700"
+                                ? "Bold"
+                                : "XBold"}
+                      </button>
+                    ))}\n                  </div>
+                </div>
+
+                {/* Color */}
+                <div>
+                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                    Text Color
+                  </label>
+                  <div className="flex gap-3">
+                    <input
+                      type="color"
+                      value={fontStyles.headline.color}
+                      onChange={(e) =>
+                        onFontStylesChange({
+                          ...fontStyles,
+                          headline: {
+                            ...fontStyles.headline,
+                            color: e.target.value,
+                          },
+                        })
+                      }
+                      className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                    />
+                    <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                      <input
+                        type="text"
+                        value={fontStyles.headline.color.toUpperCase()}
+                        onChange={(e) => {
+                          let value = e.target.value.toUpperCase();
+                          // Always start with #
+                          if (!value.startsWith('#')) {
+                            value = '#' + value.replace(/[^0-9A-F]/g, '');
+                          } else {
+                            // Remove # temporarily, filter invalid chars, then add # back
+                            value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                          }
+                          // Limit to 7 characters (#XXXXXX)
+                          value = value.slice(0, 7);
+                          
+                          if (value.length === 7) {
+                            onFontStylesChange({
+                              ...fontStyles,
+                              headline: {
+                                ...fontStyles.headline,
+                                color: value,
+                              },
+                            });
+                          }
+                        }}
+                        onBlur={(e) => {
+                          // On blur, ensure we have a valid hex or revert
+                          const value = e.target.value;
+                          if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
+                            // Revert to current valid color if invalid
+                            e.target.value = fontStyles.headline.color.toUpperCase();
+                          }
+                        }}
+                        placeholder="#000000"
+                        className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                        maxLength={7}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Text Align */}
+                <div>
+                  <label className="text-sm font-medium text-[#2c2419] mb-2 flex items-center gap-1.5 font-inter">
+                    <svg className="w-3.5 h-3.5 text-[#8b6834]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+                    </svg>
+                    Text Alignment
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(["left", "center", "right"] as const).map((align) => (
+                      <button
+                        key={align}
+                        onClick={() =>
+                          onFontStylesChange({
+                            ...fontStyles,
+                            headline: {
+                              ...fontStyles.headline,
+                              textAlign: align,
+                            },
+                          })
+                        }
+                        className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 capitalize flex items-center justify-center gap-1 ${
+                          fontStyles.headline.textAlign === align
+                            ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                            : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                        }`}
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          {align === "left" && (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" />
+                          )}
+                          {align === "center" && (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M5 18h14" />
+                          )}
+                          {align === "right" && (
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M10 12h10M6 18h14" />
+                          )}
+                        </svg>
+                        {align}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Text Shadow */}
+                <div>
+                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                    Text Shadow
+                  </label>
+                  <div className="grid grid-cols-5 gap-2 mb-3">
+                    {(["none", "soft", "hard", "glow", "outline"] as const).map((preset) => (
+                      <button
+                        key={preset}
+                        onClick={() =>
+                          onFontStylesChange({
+                            ...fontStyles,
+                            headline: {
+                              ...fontStyles.headline,
+                              textShadow: {
+                                preset,
+                                angle: fontStyles.headline.textShadow?.angle || 135,
+                              },
+                            },
+                          })
+                        }
+                        className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 capitalize ${
+                          (fontStyles.headline.textShadow?.preset || "none") === preset
+                            ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                            : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                        }`}
+                      >
+                        {preset}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* Shadow Angle - Only show if not "none" */}
+                  {fontStyles.headline.textShadow?.preset && fontStyles.headline.textShadow.preset !== "none" && (
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-medium text-[#2c2419] font-inter">
+                          Shadow Angle
+                        </label>
+                        <span className="text-xs font-bold text-[#8b6834] bg-[#e8dcc8] px-2 py-0.5 border border-[#d4c4b0]">
+                          {fontStyles.headline.textShadow?.angle || 135}°
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="360"
+                        step="15"
+                        value={fontStyles.headline.textShadow?.angle || 135}
+                        onChange={(e) =>
+                          onFontStylesChange({
+                            ...fontStyles,
+                            headline: {
+                              ...fontStyles.headline,
+                              textShadow: {
+                                preset: fontStyles.headline.textShadow?.preset || "soft",
+                                angle: parseInt(e.target.value),
+                              },
+                            },
+                          })
+                        }
+                        className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((fontStyles.headline.textShadow?.angle || 135) / 360) * 100}%, #e8dcc8 ${((fontStyles.headline.textShadow?.angle || 135) / 360) * 100}%, #e8dcc8 100%)`
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Text Stroke */}
+                <div>
+                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                    Text Stroke
+                  </label>
+                  
+                  {/* Stroke Width */}
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-xs font-medium text-[#2c2419] font-inter">
+                        Stroke Width
+                      </label>
+                      <span className="text-xs font-bold text-[#8b6834] bg-[#e8dcc8] px-2 py-0.5 border border-[#d4c4b0]">
+                        {fontStyles.headline.textStroke?.width || 0}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="5"
+                      step="0.5"
+                      value={fontStyles.headline.textStroke?.width || 0}
+                      onChange={(e) =>
+                        onFontStylesChange({
+                          ...fontStyles,
+                          headline: {
+                            ...fontStyles.headline,
+                            textStroke: {
+                              width: parseFloat(e.target.value),
+                              color: fontStyles.headline.textStroke?.color || "#000000",
+                            },
+                          },
+                        })
+                      }
+                      className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((fontStyles.headline.textStroke?.width || 0) / 5) * 100}%, #e8dcc8 ${((fontStyles.headline.textStroke?.width || 0) / 5) * 100}%, #e8dcc8 100%)`
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Stroke Color - Only show if width > 0 */}
+                  {(fontStyles.headline.textStroke?.width || 0) > 0 && (
+                    <div>
+                      <label className="text-xs font-medium text-[#2c2419] mb-1 block font-inter">
+                        Stroke Color
+                      </label>
+                      <div className="flex gap-3">
+                        <input
+                          type="color"
+                          value={fontStyles.headline.textStroke?.color || "#000000"}
+                          onChange={(e) =>
+                            onFontStylesChange({
+                              ...fontStyles,
+                              headline: {
+                                ...fontStyles.headline,
+                                textStroke: {
+                                  width: fontStyles.headline.textStroke?.width || 0,
+                                  color: e.target.value,
+                                },
+                              },
+                            })
+                          }
+                          className="h-10 w-16 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                        />
+                        <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-3 py-2 flex items-center">
+                          <input
+                            type="text"
+                            value={(fontStyles.headline.textStroke?.color || "#000000").toUpperCase()}
+                            onChange={(e) => {
+                              let value = e.target.value.toUpperCase();
+                              if (!value.startsWith('#')) {
+                                value = '#' + value.replace(/[^0-9A-F]/g, '');
+                              } else {
+                                value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                              }
+                              value = value.slice(0, 7);
+                              
+                              if (value.length === 7) {
+                                onFontStylesChange({
+                                  ...fontStyles,
+                                  headline: {
+                                    ...fontStyles.headline,
+                                    textStroke: {
+                                      width: fontStyles.headline.textStroke?.width || 0,
+                                      color: value,
+                                    },
+                                  },
+                                });
+                              }
+                            }}
+                            placeholder="#000000"
+                            className="w-full text-sm font-mono text-[#2c2419] bg-transparent outline-none"
+                            maxLength={7}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -739,6 +1606,190 @@ export default function CustomizationPanel({
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Visibility Tab */}
+        {activeTab === "Visibility" && visibilitySettings && onVisibilityChange && (
+          <div className="space-y-3">
+            <p className="text-sm text-[#5d4e37] font-inter mb-4">
+              Toggle elements visibility on your card
+            </p>
+
+            {/* Week Toggle */}
+            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {visibilitySettings.showWeek ? (
+                  <Eye className="w-5 h-5 text-[#8b6834]" />
+                ) : (
+                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                )}
+                <span className="text-sm font-medium font-inter text-[#2c2419]">
+                  Week
+                </span>
+              </div>
+              <button
+                onClick={() =>
+                  onVisibilityChange({
+                    ...visibilitySettings,
+                    showWeek: !visibilitySettings.showWeek,
+                  })
+                }
+                className={`relative w-14 h-7 transition-colors border-2 ${
+                  visibilitySettings.showWeek
+                    ? "bg-[#8b6834] border-[#8b6834]"
+                    : "bg-[#d4c4b0] border-[#d4c4b0]"
+                }`}
+              >
+                <div
+                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                    visibilitySettings.showWeek
+                      ? "right-0.5"
+                      : "left-0.5"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Date Toggle */}
+            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {visibilitySettings.showDate ? (
+                  <Eye className="w-5 h-5 text-[#8b6834]" />
+                ) : (
+                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                )}
+                <span className="text-sm font-medium font-inter text-[#2c2419]">
+                  Date
+                </span>
+              </div>
+              <button
+                onClick={() =>
+                  onVisibilityChange({
+                    ...visibilitySettings,
+                    showDate: !visibilitySettings.showDate,
+                  })
+                }
+                className={`relative w-14 h-7 transition-colors border-2 ${
+                  visibilitySettings.showDate
+                    ? "bg-[#8b6834] border-[#8b6834]"
+                    : "bg-[#d4c4b0] border-[#d4c4b0]"
+                }`}
+              >
+                <div
+                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                    visibilitySettings.showDate
+                      ? "right-0.5"
+                      : "left-0.5"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Logo Toggle */}
+            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {visibilitySettings.showLogo ? (
+                  <Eye className="w-5 h-5 text-[#8b6834]" />
+                ) : (
+                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                )}
+                <span className="text-sm font-medium font-inter text-[#2c2419]">
+                  Logo
+                </span>
+              </div>
+              <button
+                onClick={() =>
+                  onVisibilityChange({
+                    ...visibilitySettings,
+                    showLogo: !visibilitySettings.showLogo,
+                  })
+                }
+                className={`relative w-14 h-7 transition-colors border-2 ${
+                  visibilitySettings.showLogo
+                    ? "bg-[#8b6834] border-[#8b6834]"
+                    : "bg-[#d4c4b0] border-[#d4c4b0]"
+                }`}
+              >
+                <div
+                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                    visibilitySettings.showLogo
+                      ? "right-0.5"
+                      : "left-0.5"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* QR Code Toggle */}
+            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {visibilitySettings.showQrCode ? (
+                  <Eye className="w-5 h-5 text-[#8b6834]" />
+                ) : (
+                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                )}
+                <span className="text-sm font-medium font-inter text-[#2c2419]">
+                  QR Code
+                </span>
+              </div>
+              <button
+                onClick={() =>
+                  onVisibilityChange({
+                    ...visibilitySettings,
+                    showQrCode: !visibilitySettings.showQrCode,
+                  })
+                }
+                className={`relative w-14 h-7 transition-colors border-2 ${
+                  visibilitySettings.showQrCode
+                    ? "bg-[#8b6834] border-[#8b6834]"
+                    : "bg-[#d4c4b0] border-[#d4c4b0]"
+                }`}
+              >
+                <div
+                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                    visibilitySettings.showQrCode
+                      ? "right-0.5"
+                      : "left-0.5"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Title Toggle */}
+            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {visibilitySettings.showTitle ? (
+                  <Eye className="w-5 h-5 text-[#8b6834]" />
+                ) : (
+                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                )}
+                <span className="text-sm font-medium font-inter text-[#2c2419]">
+                  Title
+                </span>
+              </div>
+              <button
+                onClick={() =>
+                  onVisibilityChange({
+                    ...visibilitySettings,
+                    showTitle: !visibilitySettings.showTitle,
+                  })
+                }
+                className={`relative w-14 h-7 transition-colors border-2 ${
+                  visibilitySettings.showTitle
+                    ? "bg-[#8b6834] border-[#8b6834]"
+                    : "bg-[#d4c4b0] border-[#d4c4b0]"
+                }`}
+              >
+                <div
+                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                    visibilitySettings.showTitle
+                      ? "right-0.5"
+                      : "left-0.5"
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         )}
 
@@ -852,6 +1903,31 @@ export default function CustomizationPanel({
                     />
                   </div>
                 </div>
+                
+                {/* Zoom Control */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-medium text-slate-700">
+                      Image Zoom
+                    </label>
+                    <span className="text-xs font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                      {adBannerZoom}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="50"
+                    max="200"
+                    step="5"
+                    value={adBannerZoom}
+                    onChange={(e) => onAdBannerZoomChange?.(parseInt(e.target.value))}
+                    className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((adBannerZoom - 50) / 150) * 100}%, #e8dcc8 ${((adBannerZoom - 50) / 150) * 100}%, #e8dcc8 100%)`,
+                    }}
+                  />
+                </div>
+
                 <div className="flex justify-end">
                   <button
                     onClick={() => onAdBannerChange?.(null)}
@@ -875,5 +1951,6 @@ export default function CustomizationPanel({
         requiredPlan="Basic"
       />
     </div>
+
   );
 }

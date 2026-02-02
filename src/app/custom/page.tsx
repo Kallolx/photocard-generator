@@ -1,15 +1,17 @@
 "use client";
 
 import { DotBackground } from "@/components/DotBackground";
+import EditingToolbar from "@/components/EditingToolbar";
 
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import ClassicCustomCard from "@/components/cards/custom-cards/ClassicCustomCard";
 import ModernCustomCard from "@/components/cards/custom-cards/ModernCustomCard";
+import dynamic from "next/dynamic";
 import DownloadControls from "@/components/DownloadControls";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import CreditDisplay from "@/components/CreditDisplay";
-import { PhotocardData, BackgroundOptions } from "@/types";
+import { PhotocardData, BackgroundOptions, CardFontStyles, VisibilitySettings } from "@/types";
 import { Upload, Edit, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -38,12 +40,198 @@ export default function CustomPage() {
   const [isResizing, setIsResizing] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
   const [adBannerImage, setAdBannerImage] = useState<string | null>(null);
+  const [adBannerZoom, setAdBannerZoom] = useState<number>(100);
   const [theme, setTheme] = useState<string>("classic");
   const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isDragMode, setIsDragMode] = useState(false);
+  const [elementLayout, setElementLayout] = useState<{
+    topLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'cta';
+    topRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'cta';
+    bottomLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'cta';
+    bottomRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'cta';
+  }>({
+    topLeft: 'logo',
+    topRight: 'dateWeek',
+    bottomLeft: 'socialMedia',
+    bottomRight: 'cta',
+  });
+  const [ctaAlignment, setCtaAlignment] = useState<'left' | 'center' | 'right'>('center');
+
+  // Editing state - same as URL page
+  const [currentLogo, setCurrentLogo] = useState<string>("");
+  const [currentImage, setCurrentImage] = useState<string>("");
+  const [currentTitle, setCurrentTitle] = useState<string>("");
+  const [isLogoFavicon, setIsLogoFavicon] = useState(false);
+
+  // Font styles state - same as URL page
+  const [fontStyles, setFontStyles] = useState<CardFontStyles>({
+    week: {
+      fontFamily: "Noto Sans Bengali",
+      fontSize: "18px",
+      fontWeight: "500",
+      color: "#FFFFFF",
+      textAlign: "center",
+      letterSpacing: "0px",
+    },
+    date: {
+      fontFamily: "Noto Sans Bengali",
+      fontSize: "18px",
+      fontWeight: "500",
+      color: "#FFFFFF",
+      textAlign: "center",
+      letterSpacing: "0px",
+    },
+    headline: {
+      fontFamily: "Noto Sans Bengali",
+      fontSize: "24px",
+      fontWeight: "700",
+      color: "#FFFFFF",
+      textAlign: "center",
+      letterSpacing: "0px",
+      textShadow: {
+        preset: "none",
+        angle: 135,
+      },
+      textStroke: {
+        width: 0,
+        color: "#000000",
+      },
+    },
+  });
+
+  // Visibility settings state - same as URL page
+  const [visibilitySettings, setVisibilitySettings] =
+    useState<VisibilitySettings>({
+      showWeek: true,
+      showDate: true,
+      showLogo: true,
+      showQrCode: false, // Not used in custom cards
+      showTitle: true,
+    });
+
+  // Mock data for preview - same as URL page
+  const mockData: PhotocardData = {
+    title: currentTitle || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
+    image: currentImage || "",
+    logo: currentLogo || "",
+    favicon: "https://www.google.com/favicon.ico",
+    siteName: "Custom Card",
+    url: "https://example.com",
+    weekName: "শনিবার",
+    date: "২৪ জানুয়ারি ২০২৬",
+  };
+
+  // Update current data when main data changes
+  useEffect(() => {
+    setCurrentTitle(title || mockData.title);
+    setCurrentImage(newsImage || mockData.image);
+    setCurrentLogo(logo || mockData.logo);
+  }, [title, newsImage, logo]);
 
   const handleFrameChange = (color: string, thickness: number) => {
     setFrameBorderColor(color);
     setFrameBorderThickness(thickness);
+  };
+
+  // Editing toolbar handlers - same as URL page
+  const handleLogoChange = (logoUrl: string, isFavicon: boolean) => {
+    setCurrentLogo(logoUrl);
+    setIsLogoFavicon(isFavicon);
+    setLogo(logoUrl); // Also update main logo state
+  };
+
+  const handleImageChange = (imageUrl: string) => {
+    setCurrentImage(imageUrl);
+    setNewsImage(imageUrl); // Also update main image state
+  };
+
+  const handleTitleChange = (titleText: string) => {
+    setCurrentTitle(titleText);
+    setTitle(titleText); // Also update main title state
+  };
+
+  // Logo upload from drag menu
+  const handleLogoUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setCurrentLogo(result);
+      setLogo(result);
+      setIsLogoFavicon(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Restore all settings to defaults
+  const handleRestoreDefaults = () => {
+    // Reset element layout
+    setElementLayout({
+      topLeft: 'logo',
+      topRight: 'dateWeek',
+      bottomLeft: 'socialMedia',
+      bottomRight: 'cta',
+    });
+    setCtaAlignment('center');
+    
+    // Reset visibility settings
+    setVisibilitySettings({
+      showWeek: true,
+      showDate: true,
+      showLogo: true,
+      showQrCode: false,
+      showTitle: true,
+    });
+    
+    // Reset font styles to defaults
+    setFontStyles({
+      week: {
+        fontFamily: "Noto Sans Bengali",
+        fontSize: "18px",
+        fontWeight: "500",
+        color: "#FFFFFF",
+        textAlign: "center",
+        letterSpacing: "0px",
+      },
+      date: {
+        fontFamily: "Noto Sans Bengali",
+        fontSize: "18px",
+        fontWeight: "500",
+        color: "#FFFFFF",
+        textAlign: "center",
+        letterSpacing: "0px",
+      },
+      headline: {
+        fontFamily: "Noto Sans Bengali",
+        fontSize: "24px",
+        fontWeight: "700",
+        color: "#FFFFFF",
+        textAlign: "center",
+        letterSpacing: "0px",
+        textShadow: {
+          preset: "none",
+          angle: 135,
+        },
+        textStroke: {
+          width: 0,
+          color: "#000000",
+        },
+      },
+    });
+    
+    // Reset frame border
+    setFrameBorderColor("#FFFFFF");
+    setFrameBorderThickness(0);
+    
+    // Reset ad banner
+    setAdBannerImage(null);
+    setAdBannerZoom(100);
+    
+    // Reset background to default
+    setBackground({
+      type: "solid",
+      color: "#dc2626",
+    });
   };
 
   // Render the appropriate card based on theme
@@ -64,7 +252,12 @@ export default function CustomPage() {
     );
 
     const cardProps = {
-      data: cardData,
+      data: {
+        ...cardData,
+        title: currentTitle || cardData.title,
+        image: currentImage || cardData.image,
+        logo: currentLogo || cardData.logo,
+      },
       background,
       id: cardId,
       fullSize: isFullSize,
@@ -72,14 +265,29 @@ export default function CustomPage() {
       frameBorderThickness,
       socialMedia: socialOnly,
       adBannerImage,
+      adBannerZoom,
       website,
       footerText,
+      fontStyles,
+      visibilitySettings,
+      isLogoFavicon,
+      isDragMode,
+      elementLayout,
+      ctaAlignment,
+      onLayoutChange: setElementLayout,
+      onVisibilityChange: setVisibilitySettings,
+      onLogoUpload: handleLogoUpload,
+      onRestoreDefaults: handleRestoreDefaults,
     };
 
-    return theme === "modern" ? (
-      <ModernCustomCard {...cardProps} />
-    ) : (
-      <ClassicCustomCard {...cardProps} />
+    return (
+      <div key={cardData.title + cardData.url + Date.now()}>
+        {theme === "modern" ? (
+          <ModernCustomCard {...cardProps} />
+        ) : (
+          <ClassicCustomCard {...cardProps} />
+        )}
+      </div>
     );
   };
 
@@ -123,7 +331,20 @@ export default function CustomPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const STORAGE_KEY = "photocard-app-custom-state-v1";
+  // Fix hydration error
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const STORAGE_KEY = "photocard-app-custom-state-v2";
+
+  // Clear everything when leaving the page
+  useEffect(() => {
+    return () => {
+      // Cleanup: Remove localStorage data when component unmounts (user navigates away)
+      localStorage.removeItem(STORAGE_KEY);
+    };
+  }, []);
 
   // Load state from local storage on mount
   useEffect(() => {
@@ -142,6 +363,13 @@ export default function CustomPage() {
         if (parsed.socialMedia) setSocialMedia(parsed.socialMedia);
         if (parsed.adBannerImage) setAdBannerImage(parsed.adBannerImage);
         if (parsed.theme) setTheme(parsed.theme);
+        if (parsed.visibilitySettings) setVisibilitySettings(parsed.visibilitySettings);
+        if (parsed.fontStyles) setFontStyles(parsed.fontStyles);
+        if (parsed.currentLogo) setCurrentLogo(parsed.currentLogo);
+        if (parsed.currentImage) setCurrentImage(parsed.currentImage);
+        if (parsed.currentTitle) setCurrentTitle(parsed.currentTitle);
+        if (parsed.elementLayout) setElementLayout(parsed.elementLayout);
+        if (parsed.ctaAlignment) setCtaAlignment(parsed.ctaAlignment);
       }
     } catch (error) {
       console.error("Failed to load custom state from local storage:", error);
@@ -162,6 +390,13 @@ export default function CustomPage() {
           socialMedia,
           adBannerImage,
           theme,
+          visibilitySettings,
+          fontStyles,
+          currentLogo,
+          currentImage,
+          currentTitle,
+          elementLayout,
+          ctaAlignment,
           timestamp: Date.now(),
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
@@ -182,6 +417,8 @@ export default function CustomPage() {
               frameBorderThickness,
               socialMedia,
               theme,
+              visibilitySettings,
+              fontStyles,
               timestamp: Date.now(),
             };
             localStorage.setItem(STORAGE_KEY, JSON.stringify(fallbackState));
@@ -206,9 +443,16 @@ export default function CustomPage() {
     socialMedia,
     adBannerImage,
     theme,
+    visibilitySettings,
+    fontStyles,
+    currentLogo,
+    currentImage,
+    currentTitle,
+    elementLayout,
+    ctaAlignment,
   ]);
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUploadInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -219,7 +463,7 @@ export default function CustomPage() {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUploadInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -230,15 +474,13 @@ export default function CustomPage() {
     }
   };
 
-  // Create photocard data from custom inputs
+
+
+  // Create photocard data from custom inputs or use mock data
   const photocardData: PhotocardData = {
-    title: title || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
-    image:
-      newsImage ||
-      "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=225&fit=crop&crop=center",
-    logo:
-      logo ||
-      "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png",
+    title: title || mockData.title,
+    image: newsImage || mockData.image,
+    logo: logo || mockData.logo,
     favicon: "",
     siteName: "Custom Card",
     url: "",
@@ -249,6 +491,19 @@ export default function CustomPage() {
       day: "numeric",
     }),
   };
+
+  if (!isMounted) {
+    return (
+      <ProtectedRoute>
+        <div className="h-screen bg-[#faf8f5] flex flex-col">
+          <Navbar />
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-[#5d4e37] font-inter">Loading...</div>
+          </div>
+        </div>
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>
@@ -301,7 +556,7 @@ export default function CustomPage() {
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={handleLogoUpload}
+                      onChange={handleLogoUploadInput}
                     />
                     {/* Icon + label (bigger) */}
                     <div className="flex items-center gap-2">
@@ -324,7 +579,7 @@ export default function CustomPage() {
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={handleImageUpload}
+                      onChange={handleImageUploadInput}
                     />
                     {/* Icon + label (bigger) */}
                     <div className="flex items-center gap-2">
@@ -541,8 +796,14 @@ export default function CustomPage() {
                 onFrameChange={handleFrameChange}
                 adBannerImage={adBannerImage}
                 onAdBannerChange={setAdBannerImage}
+                adBannerZoom={adBannerZoom}
+                onAdBannerZoomChange={setAdBannerZoom}
                 theme={theme}
                 onThemeChange={setTheme}
+                visibilitySettings={visibilitySettings}
+                onVisibilityChange={setVisibilitySettings}
+                fontStyles={fontStyles}
+                onFontStylesChange={setFontStyles}
               />
             </div>
           </div>
@@ -704,17 +965,35 @@ export default function CustomPage() {
                   </>
                 ) : (
                   /* Desktop Full View */
-                  <div className="flex flex-col items-center">
-                    <div className="flex-shrink-0 mt-12">
-                      {renderCard(photocardData, "photocard-custom")}
-                    </div>
+                  <div className="relative w-full h-full">
+                    {/* Editing Toolbar - Same as URL page */}
+                    <EditingToolbar
+                      currentLogo={currentLogo || mockData.logo}
+                      currentImage={currentImage || mockData.image}
+                      currentTitle={currentTitle || mockData.title}
+                      isDragMode={isDragMode}
+                      onLogoChange={handleLogoChange}
+                      onImageChange={handleImageChange}
+                      onTitleChange={handleTitleChange}
+                      onDragModeToggle={() => setIsDragMode(!isDragMode)}
+                      showImageTool={false}
+                      showLogoTool={false}
+                      showTitleTool={false}
+                      showDragTool={true}
+                    />
+                    
+                    <div className="flex flex-col items-center pt-16">
+                      <div className="flex-shrink-0">
+                        {renderCard(photocardData, "photocard-custom")}
+                      </div>
 
-                    {/* Download controls */}
-                    <div className="mt-6">
-                      <DownloadControls
-                        isVisible={!!(logo || newsImage || title)}
-                        targetId="photocard-custom"
-                      />
+                      {/* Download controls */}
+                      <div className="mt-6">
+                        <DownloadControls
+                          isVisible={!!(logo || newsImage || title)}
+                          targetId="photocard-custom"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
