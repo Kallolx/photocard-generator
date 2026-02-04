@@ -351,7 +351,7 @@ export default function CustomPage() {
       (s) => s.platform !== "website" && s.platform !== "text",
     );
 
-    const cardProps = {
+    const baseProps = {
       data: {
         ...cardData,
         title: currentTitle || cardData.title,
@@ -372,9 +372,7 @@ export default function CustomPage() {
       visibilitySettings,
       isLogoFavicon,
       isDragMode,
-      elementLayout: theme === "vertical" ? verticalElementLayout : elementLayout,
       ctaAlignment,
-      onLayoutChange: theme === "vertical" ? setVerticalElementLayout : setElementLayout,
       onVisibilityChange: setVisibilitySettings,
       onLogoUpload: handleLogoUpload,
       onRestoreDefaults: handleRestoreDefaults,
@@ -383,11 +381,23 @@ export default function CustomPage() {
     return (
       <div key={cardData.title + cardData.url + Date.now()}>
         {theme === "vertical" ? (
-          <VerticalCustomCard {...cardProps} />
+          <VerticalCustomCard 
+            {...baseProps} 
+            elementLayout={verticalElementLayout}
+            onLayoutChange={setVerticalElementLayout}
+          />
         ) : theme === "modern" ? (
-          <ModernCustomCard {...cardProps} />
+          <ModernCustomCard 
+            {...baseProps} 
+            elementLayout={elementLayout}
+            onLayoutChange={setElementLayout}
+          />
         ) : (
-          <ClassicCustomCard {...cardProps} />
+          <ClassicCustomCard 
+            {...baseProps} 
+            elementLayout={elementLayout}
+            onLayoutChange={setElementLayout}
+          />
         )}
       </div>
     );
