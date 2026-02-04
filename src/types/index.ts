@@ -39,7 +39,7 @@ export interface FontStyles {
   letterSpacing: string;
   textShadow?: {
     preset: "none" | "soft" | "hard" | "glow" | "outline";
-    angle?: number; // 0-360 degrees
+    angle?: number; 
   };
   textStroke?: {
     width: number; // 0-5px

@@ -61,6 +61,12 @@ const THEMES = [
     locked: false,
     thumbnail: "/themes/cus-2.png",
   },
+  {
+    id: "vertical",
+    name: "Vertical",
+    locked: false,
+    thumbnail: "/themes/cus-3.png",
+  },
 ];
 
 type Tab = "Background" | "Pattern" | "Theme" | "Fonts" | "Visibility" | "Frame" | "Ad Banner";
@@ -147,7 +153,7 @@ export default function CustomizationPanel({
     initialFrameBorderThickness,
   );
 
-  const isFreeUser = user?.plan === "Free";
+  const isFreeUser = !user?.plan || user?.plan === "Free";
 
   const gettingLockedCheck = (isLocked: boolean) => {
     return isLocked ? "" : "";
@@ -166,11 +172,18 @@ export default function CustomizationPanel({
       locked: isFreeUser, // Lock Modern theme for Free users
       thumbnail: "/themes/cus-2.png",
     },
+    {
+      id: "vertical",
+      name: "Vertical",
+      locked: isFreeUser, // Lock Vertical theme for Free users
+      thumbnail: "/themes/cus-3.png",
+    },
   ];
 
   const handleThemeChange = (themeId: string, isLocked: boolean) => {
     if (isLocked) {
-      setUpgradeFeature("Modern Theme");
+      const featureName = themeId === "modern" ? "Modern Theme" : themeId === "vertical" ? "Vertical Theme" : "Premium Theme";
+      setUpgradeFeature(featureName);
       setShowUpgradeModal(true);
       return;
     }
@@ -313,7 +326,7 @@ export default function CustomizationPanel({
                       title={item.name}
                     >
                       {isLocked && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                           <Lock className="w-4 h-4 text-white drop-shadow-md" />
                         </div>
                       )}
@@ -501,7 +514,7 @@ export default function CustomizationPanel({
                       title={grad.name}
                     >
                       {isLocked && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                           <Lock className="w-4 h-4 text-white drop-shadow-md" />
                         </div>
                       )}
@@ -841,7 +854,7 @@ export default function CustomizationPanel({
 
                         {/* Lock Overlay for restricted patterns */}
                         {isLocked && (
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px] z-10">
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
                             <Lock className="w-5 h-5 text-white drop-shadow-md" />
                           </div>
                         )}
@@ -1009,7 +1022,7 @@ export default function CustomizationPanel({
                       />
 
                       {theme.locked && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-sm">
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                           <Lock className="w-8 h-8 text-white drop-shadow-lg" />
                         </div>
                       )}

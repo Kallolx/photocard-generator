@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import UrlComponent from "@/components/UrlComponent";
 import ModernUrlCard from "@/components/cards/url-cards/ModernUrlCard";
+import VerticalUrlCard from "@/components/cards/url-cards/VerticalUrlCard";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import {
   PhotocardData,
@@ -70,6 +71,19 @@ export default function Home() {
     topRight: 'dateWeek',
     bottomLeft: 'qrCode',
     bottomRight: 'cta',
+  });
+
+  // Vertical theme layout (4-slot system: left content + right positions)
+  const [verticalElementLayout, setVerticalElementLayout] = useState<{
+    left: 'logo' | 'cta' | 'qrCode' | 'empty';
+    right: 'logo' | 'cta' | 'qrCode' | 'empty';
+    rightTop: 'logo' | 'cta' | 'qrCode' | 'empty';
+    rightBottom: 'logo' | 'cta' | 'qrCode' | 'empty';
+  }>({
+    left: 'logo',
+    right: 'cta',
+    rightTop: 'empty',
+    rightBottom: 'qrCode',
   });
 
   // Font styles state
@@ -140,6 +154,45 @@ export default function Home() {
       setCurrentLogo(mockData.logo);
     }
   }, [photocardData]);
+
+  // Update font styles when theme changes
+  useEffect(() => {
+    if (theme === "vertical") {
+      // Set specific defaults for vertical theme
+      setFontStyles(prev => ({
+        ...prev,
+        week: {
+          ...prev.week,
+          fontSize: "12px",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "12px",
+        },
+        headline: {
+          ...prev.headline,
+          fontSize: "25px",
+        },
+      }));
+    } else {
+      // Reset to default for other themes
+      setFontStyles(prev => ({
+        ...prev,
+        week: {
+          ...prev.week,
+          fontSize: "18px",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "18px",
+        },
+        headline: {
+          ...prev.headline,
+          fontSize: "24px",
+        },
+      }));
+    }
+  }, [theme]);
 
   const handleUrlSubmit = async (url: string) => {
     // Check if user can generate cards
@@ -259,12 +312,20 @@ export default function Home() {
 
   // Restore all settings to defaults
   const handleRestoreDefaults = () => {
-    // Reset element layout
+    // Reset element layout for regular themes
     setElementLayout({
       topLeft: 'logo',
       topRight: 'dateWeek',
       bottomLeft: 'qrCode',
       bottomRight: 'cta',
+    });
+    
+    // Reset vertical element layout
+    setVerticalElementLayout({
+      left: 'logo',
+      right: 'cta',
+      rightTop: 'empty',
+      rightBottom: 'qrCode',
     });
     
     // Reset visibility settings
@@ -276,33 +337,62 @@ export default function Home() {
       showTitle: true,
     });
     
-    // Reset font styles to defaults
-    setFontStyles({
-      week: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "18px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
-      date: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "18px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
-      headline: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "24px",
-        fontWeight: "700",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
-    });
+    // Reset font styles based on current theme
+    if (theme === "vertical") {
+      setFontStyles({
+        week: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+        date: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+        headline: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "25px",
+          fontWeight: "700",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+      });
+    } else {
+      setFontStyles({
+        week: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "18px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+        date: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "18px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+        headline: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "24px",
+          fontWeight: "700",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+      });
+    }
     
     // Reset frame border
     setFrameBorderColor("#FFFFFF");
@@ -325,13 +415,15 @@ export default function Home() {
     cardId: string,
     isFullSize = false,
   ) => {
-    const cardProps = {
-      data: {
-        ...cardData,
-        title: currentTitle || cardData.title,
-        image: currentImage || cardData.image,
-        logo: currentLogo || cardData.logo,
-      },
+    const baseCardData = {
+      ...cardData,
+      title: currentTitle || cardData.title,
+      image: currentImage || cardData.image,
+      logo: currentLogo || cardData.logo,
+    };
+
+    const commonProps = {
+      data: baseCardData,
       isGenerating: isLoading,
       background,
       id: cardId,
@@ -344,8 +436,6 @@ export default function Home() {
       visibilitySettings,
       isLogoFavicon,
       isDragMode,
-      elementLayout,
-      onLayoutChange: setElementLayout,
       onVisibilityChange: setVisibilitySettings,
       onLogoUpload: handleLogoUpload,
       onRestoreDefaults: handleRestoreDefaults,
@@ -353,10 +443,24 @@ export default function Home() {
 
     return (
       <div key={cardData.title + cardData.url + Date.now()}>
-        {theme === "modern" ? (
-          <ModernUrlCard {...cardProps} />
+        {theme === "vertical" ? (
+          <VerticalUrlCard
+            {...commonProps}
+            elementLayout={verticalElementLayout}
+            onLayoutChange={setVerticalElementLayout}
+          />
+        ) : theme === "modern" ? (
+          <ModernUrlCard
+            {...commonProps}
+            elementLayout={elementLayout}
+            onLayoutChange={setElementLayout}
+          />
         ) : (
-          <ClassicUrlCard {...cardProps} />
+          <ClassicUrlCard
+            {...commonProps}
+            elementLayout={elementLayout}
+            onLayoutChange={setElementLayout}
+          />
         )}
       </div>
     );
@@ -580,27 +684,62 @@ export default function Home() {
         
         // Wrap in a promise to wait for render
         await new Promise<void>((resolve) => {
-           // Create the component instance
-           const Component = theme === "modern" ? ModernUrlCard : ClassicUrlCard;
-           
-           // We need to render it
-           root.render(
-             <Component 
-               data={item.data}
-               background={background}
-               id={`temp-card-${i}`}
-               fullSize={true}
-               frameBorderColor={frameBorderColor}
-               frameBorderThickness={frameBorderThickness}
-               adBannerImage={adBannerImage}
-               adBannerZoom={adBannerZoom}
-               fontStyles={fontStyles}
-               visibilitySettings={visibilitySettings}
-               isLogoFavicon={isLogoFavicon}
-               isDragMode={false}
-               elementLayout={elementLayout}
-             />
-           );
+           // Render the appropriate component based on theme
+           if (theme === "vertical") {
+             root.render(
+               <VerticalUrlCard 
+                 data={item.data}
+                 background={background}
+                 id={`temp-card-${i}`}
+                 fullSize={true}
+                 frameBorderColor={frameBorderColor}
+                 frameBorderThickness={frameBorderThickness}
+                 adBannerImage={adBannerImage}
+                 adBannerZoom={adBannerZoom}
+                 fontStyles={fontStyles}
+                 visibilitySettings={visibilitySettings}
+                 isLogoFavicon={isLogoFavicon}
+                 isDragMode={false}
+                 elementLayout={verticalElementLayout}
+               />
+             );
+           } else if (theme === "modern") {
+             root.render(
+               <ModernUrlCard 
+                 data={item.data}
+                 background={background}
+                 id={`temp-card-${i}`}
+                 fullSize={true}
+                 frameBorderColor={frameBorderColor}
+                 frameBorderThickness={frameBorderThickness}
+                 adBannerImage={adBannerImage}
+                 adBannerZoom={adBannerZoom}
+                 fontStyles={fontStyles}
+                 visibilitySettings={visibilitySettings}
+                 isLogoFavicon={isLogoFavicon}
+                 isDragMode={false}
+                 elementLayout={elementLayout}
+               />
+             );
+           } else {
+             root.render(
+               <ClassicUrlCard 
+                 data={item.data}
+                 background={background}
+                 id={`temp-card-${i}`}
+                 fullSize={true}
+                 frameBorderColor={frameBorderColor}
+                 frameBorderThickness={frameBorderThickness}
+                 adBannerImage={adBannerImage}
+                 adBannerZoom={adBannerZoom}
+                 fontStyles={fontStyles}
+                 visibilitySettings={visibilitySettings}
+                 isLogoFavicon={isLogoFavicon}
+                 isDragMode={false}
+                 elementLayout={elementLayout}
+               />
+             );
+           }
            
            // Give it a moment to mount
            setTimeout(resolve, 100);

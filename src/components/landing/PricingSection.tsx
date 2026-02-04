@@ -27,157 +27,149 @@ export default function PricingSection({ t }: PricingSectionProps) {
   };
 
   return (
-    <section
-      id="pricing"
-      className="py-24 px-4 bg-[#f5f0e8] border-b-2 border-[#d4c4b0]"
-    >
+    <section id="pricing" className="py-24 px-4 bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-lora font-bold text-[#2c2419] mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200 mb-4">
+            <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+            </svg>
+            <span className="text-sm font-semibold text-green-700">Simple & Transparent Pricing</span>
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
             {t.pricing.title}
           </h2>
-          <p className="text-xl text-[#5d4e37] font-inter">
+          <p className="text-xl text-gray-600">
             {t.pricing.subtitle}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* Free Plan */}
-          <div className="p-8 border-2 border-[#d4c4b0] bg-white hover:border-[#8b6834] transition-colors">
-            <h3 className="text-2xl font-lora font-bold text-[#2c2419] mb-2">
-              {t.pricing.free.name}
-            </h3>
-            <div className="mb-4">
-              <span className="text-5xl font-lora font-bold text-[#8b6834]">
-                ৳{t.pricing.free.price}
-              </span>
-              <span className="text-[#5d4e37] ml-2 font-inter">
-                / {t.pricing.free.period}
-              </span>
+          <div className="relative bg-white rounded-3xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all duration-300">
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                {t.pricing.free.name}
+              </h3>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-5xl font-bold bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+                  ৳{t.pricing.free.price}
+                </span>
+                <span className="text-gray-500">/ {t.pricing.free.period}</span>
+              </div>
+              <p className="text-gray-600">
+                {t.pricing.free.description}
+              </p>
             </div>
-            <p className="text-[#5d4e37] mb-8 h-12 font-inter">
-              {t.pricing.free.description}
-            </p>
+
             <ul className="space-y-4 mb-8">
               {t.pricing.free.features.map((feature: string, i: number) => (
                 <li key={i} className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-[#8b6834] flex-shrink-0 mt-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
+                  <svg className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-[#5d4e37] font-inter">{feature}</span>
+                  <span className="text-gray-700">{feature}</span>
                 </li>
               ))}
             </ul>
+
             <button
               onClick={handleFreePlan}
-              className="block w-full text-center px-6 py-4 border-2 border-[#8b6834] text-[#8b6834] font-inter font-semibold hover:bg-[#f5f0e8] transition-all"
+              className="w-full px-6 py-4 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all"
             >
               {t.pricing.free.cta}
             </button>
           </div>
 
           {/* Basic Plan - Popular */}
-          <div className="relative p-8 border-2 border-[#8b6834] bg-white">
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-[#8b6834] text-[#faf8f5] text-sm font-inter font-bold uppercase tracking-wider">
-              {t.pricing.basic.popular}
+          <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 rounded-3xl p-8 shadow-2xl transform lg:-translate-y-4">
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+              <div className="px-6 py-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 shadow-lg">
+                <span className="text-sm font-bold text-white uppercase tracking-wider">
+                  {t.pricing.basic.popular}
+                </span>
+              </div>
             </div>
-            <h3 className="text-2xl font-lora font-bold text-[#2c2419] mb-2 mt-2">
-              {t.pricing.basic.name}
-            </h3>
-            <div className="mb-4">
-              <span className="text-5xl font-lora font-bold text-[#8b6834]">
-                ৳{t.pricing.basic.price}
-              </span>
-              <span className="text-[#5d4e37] ml-2 font-inter">
-                / {t.pricing.basic.period}
-              </span>
+
+            <div className="mb-8 mt-4">
+              <h3 className="text-2xl font-bold text-white mb-2">
+                {t.pricing.basic.name}
+              </h3>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-5xl font-bold text-white">
+                  ৳{t.pricing.basic.price}
+                </span>
+                <span className="text-blue-100">/ {t.pricing.basic.period}</span>
+              </div>
+              <p className="text-blue-100">
+                {t.pricing.basic.description}
+              </p>
             </div>
-            <p className="text-[#5d4e37] mb-8 h-12 font-inter">
-              {t.pricing.basic.description}
-            </p>
+
             <ul className="space-y-4 mb-8">
               {t.pricing.basic.features.map((feature: string, i: number) => (
                 <li key={i} className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-[#8b6834] flex-shrink-0 mt-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
+                  <svg className="w-5 h-5 text-yellow-300 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-[#5d4e37] font-inter font-medium">
-                    {feature}
-                  </span>
+                  <span className="text-white font-medium">{feature}</span>
                 </li>
               ))}
             </ul>
+
             <button
-              onClick={() =>
-                handleUpgrade(t.pricing.basic.name, `৳${t.pricing.basic.price}`)
-              }
-              className="block w-full text-center px-6 py-4 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold border-2 border-[#6b4e25] hover:bg-[#6b4e25] transition-all"
+              onClick={() => handleUpgrade(t.pricing.basic.name, `৳${t.pricing.basic.price}`)}
+              className="w-full px-6 py-4 rounded-xl bg-white text-purple-600 font-bold hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl"
             >
               {t.pricing.basic.cta}
             </button>
           </div>
 
           {/* Premium Plan */}
-          <div className="p-8 border-2 border-[#d4c4b0] bg-white hover:border-[#8b6834] transition-colors">
-            <h3 className="text-2xl font-lora font-bold text-[#2c2419] mb-2">
-              {t.pricing.premium.name}
-            </h3>
-            <div className="mb-4">
-              <span className="text-5xl font-lora font-bold text-[#8b6834]">
-                ৳{t.pricing.premium.price}
-              </span>
-              <span className="text-[#5d4e37] ml-2 font-inter">
-                / {t.pricing.premium.period}
-              </span>
+          <div className="relative bg-white rounded-3xl p-8 border border-gray-200 hover:border-purple-300 hover:shadow-xl transition-all duration-300">
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                {t.pricing.premium.name}
+              </h3>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  ৳{t.pricing.premium.price}
+                </span>
+                <span className="text-gray-500">/ {t.pricing.premium.period}</span>
+              </div>
+              <p className="text-gray-600">
+                {t.pricing.premium.description}
+              </p>
             </div>
-            <p className="text-[#5d4e37] mb-8 h-12 font-inter">
-              {t.pricing.premium.description}
-            </p>
+
             <ul className="space-y-4 mb-8">
               {t.pricing.premium.features.map((feature: string, i: number) => (
                 <li key={i} className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-[#8b6834] flex-shrink-0 mt-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
+                  <svg className="w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span className="text-[#5d4e37] font-inter">{feature}</span>
+                  <span className="text-gray-700">{feature}</span>
                 </li>
               ))}
             </ul>
+
             <button
-              onClick={() =>
-                handleUpgrade(
-                  t.pricing.premium.name,
-                  `৳${t.pricing.premium.price}`,
-                )
-              }
-              className="block w-full text-center px-6 py-4 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold border-2 border-[#6b4e25] hover:bg-[#6b4e25] transition-all"
+              onClick={() => handleUpgrade(t.pricing.premium.name, `৳${t.pricing.premium.price}`)}
+              className="w-full px-6 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold hover:shadow-xl transition-all"
             >
               {t.pricing.premium.cta}
             </button>
+          </div>
+        </div>
+
+        {/* Money-back guarantee */}
+        <div className="mt-16 text-center">
+          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200">
+            <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+            </svg>
+            <span className="text-green-700 font-semibold">Cancel anytime • No hidden fees • Secure payment</span>
           </div>
         </div>
       </div>

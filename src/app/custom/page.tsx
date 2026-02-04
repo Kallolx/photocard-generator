@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import ClassicCustomCard from "@/components/cards/custom-cards/ClassicCustomCard";
 import ModernCustomCard from "@/components/cards/custom-cards/ModernCustomCard";
+import VerticalCustomCard from "@/components/cards/custom-cards/VerticalCustomCard";
 import dynamic from "next/dynamic";
 import DownloadControls from "@/components/DownloadControls";
 import CustomizationPanel from "@/components/CustomizationPanel";
@@ -56,6 +57,20 @@ export default function CustomPage() {
     bottomLeft: 'socialMedia',
     bottomRight: 'cta',
   });
+  
+  // Vertical theme layout (4-slot system: left content + right positions)
+  const [verticalElementLayout, setVerticalElementLayout] = useState<{
+    left: 'logo' | 'cta' | 'empty';
+    right: 'logo' | 'cta' | 'empty';
+    rightTop: 'logo' | 'cta' | 'empty';
+    rightBottom: 'logo' | 'cta' | 'empty';
+  }>({
+    left: 'logo',
+    right: 'cta',
+    rightTop: 'empty',
+    rightBottom: 'empty',
+  });
+  
   const [ctaAlignment, setCtaAlignment] = useState<'left' | 'center' | 'right'>('center');
 
   // Editing state - same as URL page
@@ -129,6 +144,45 @@ export default function CustomPage() {
     setCurrentLogo(logo || mockData.logo);
   }, [title, newsImage, logo]);
 
+  // Update font styles when theme changes
+  useEffect(() => {
+    if (theme === "vertical") {
+      // Set specific defaults for vertical theme
+      setFontStyles(prev => ({
+        ...prev,
+        week: {
+          ...prev.week,
+          fontSize: "12px",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "12px",
+        },
+        headline: {
+          ...prev.headline,
+          fontSize: "25px",
+        },
+      }));
+    } else {
+      // Reset to default for other themes
+      setFontStyles(prev => ({
+        ...prev,
+        week: {
+          ...prev.week,
+          fontSize: "18px",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "18px",
+        },
+        headline: {
+          ...prev.headline,
+          fontSize: "24px",
+        },
+      }));
+    }
+  }, [theme]);
+
   const handleFrameChange = (color: string, thickness: number) => {
     setFrameBorderColor(color);
     setFrameBorderThickness(thickness);
@@ -172,6 +226,15 @@ export default function CustomPage() {
       bottomLeft: 'socialMedia',
       bottomRight: 'cta',
     });
+    
+    // Reset vertical element layout
+    setVerticalElementLayout({
+      left: 'logo',
+      right: 'cta',
+      rightTop: 'empty',
+      rightBottom: 'empty',
+    });
+    
     setCtaAlignment('center');
     
     // Reset visibility settings
@@ -183,41 +246,78 @@ export default function CustomPage() {
       showTitle: true,
     });
     
-    // Reset font styles to defaults
-    setFontStyles({
-      week: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "18px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
-      date: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "18px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
-      headline: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "24px",
-        fontWeight: "700",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-        textShadow: {
-          preset: "none",
-          angle: 135,
+    // Reset font styles based on current theme
+    if (theme === "vertical") {
+      setFontStyles({
+        week: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
         },
-        textStroke: {
-          width: 0,
-          color: "#000000",
+        date: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
         },
-      },
-    });
+        headline: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "25px",
+          fontWeight: "700",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+          textShadow: {
+            preset: "none",
+            angle: 135,
+          },
+          textStroke: {
+            width: 0,
+            color: "#000000",
+          },
+        },
+      });
+    } else {
+      setFontStyles({
+        week: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "18px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+        date: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "18px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+        headline: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "24px",
+          fontWeight: "700",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+          textShadow: {
+            preset: "none",
+            angle: 135,
+          },
+          textStroke: {
+            width: 0,
+            color: "#000000",
+          },
+        },
+      });
+    }
     
     // Reset frame border
     setFrameBorderColor("#FFFFFF");
@@ -272,9 +372,9 @@ export default function CustomPage() {
       visibilitySettings,
       isLogoFavicon,
       isDragMode,
-      elementLayout,
+      elementLayout: theme === "vertical" ? verticalElementLayout : elementLayout,
       ctaAlignment,
-      onLayoutChange: setElementLayout,
+      onLayoutChange: theme === "vertical" ? setVerticalElementLayout : setElementLayout,
       onVisibilityChange: setVisibilitySettings,
       onLogoUpload: handleLogoUpload,
       onRestoreDefaults: handleRestoreDefaults,
@@ -282,7 +382,9 @@ export default function CustomPage() {
 
     return (
       <div key={cardData.title + cardData.url + Date.now()}>
-        {theme === "modern" ? (
+        {theme === "vertical" ? (
+          <VerticalCustomCard {...cardProps} />
+        ) : theme === "modern" ? (
           <ModernCustomCard {...cardProps} />
         ) : (
           <ClassicCustomCard {...cardProps} />
@@ -369,6 +471,7 @@ export default function CustomPage() {
         if (parsed.currentImage) setCurrentImage(parsed.currentImage);
         if (parsed.currentTitle) setCurrentTitle(parsed.currentTitle);
         if (parsed.elementLayout) setElementLayout(parsed.elementLayout);
+        if (parsed.verticalElementLayout) setVerticalElementLayout(parsed.verticalElementLayout);
         if (parsed.ctaAlignment) setCtaAlignment(parsed.ctaAlignment);
       }
     } catch (error) {
@@ -396,6 +499,7 @@ export default function CustomPage() {
           currentImage,
           currentTitle,
           elementLayout,
+          verticalElementLayout,
           ctaAlignment,
           timestamp: Date.now(),
         };
@@ -449,6 +553,7 @@ export default function CustomPage() {
     currentImage,
     currentTitle,
     elementLayout,
+    verticalElementLayout,
     ctaAlignment,
   ]);
 
