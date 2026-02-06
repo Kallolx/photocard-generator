@@ -144,6 +144,7 @@ interface VerticalCustomCardProps {
   frameBorderThickness?: number;
   adBannerImage?: string | null;
   adBannerZoom?: number;
+  adBannerPosition?: { x: number; y: number };
   fontStyles?: CardFontStyles;
   visibilitySettings?: VisibilitySettings;
   isDragMode?: boolean;
@@ -252,6 +253,7 @@ export default function VerticalCustomCard({
   frameBorderThickness = 0,
   adBannerImage = null,
   adBannerZoom = 100,
+  adBannerPosition = { x: 0, y: 0 },
   fontStyles,
   visibilitySettings = {
     showWeek: true,
@@ -980,10 +982,16 @@ export default function VerticalCustomCard({
           <img
             src={adBannerImage}
             alt="Advertisement"
-            className="w-full h-full object-cover"
+            className="absolute top-1/2 left-1/2 pointer-events-none"
             style={{
-              transform: `scale(${adBannerZoom / 100})`,
-              transformOrigin: 'center',
+              transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${adBannerZoom / 100})`,
+              transformOrigin: 'center center',
+              maxWidth: 'none',
+              maxHeight: 'none',
+              width: 'auto',
+              height: 'auto',
+              minWidth: '100%',
+              minHeight: '100%'
             }}
           />
         </div>

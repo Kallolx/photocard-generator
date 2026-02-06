@@ -145,6 +145,7 @@ interface ModernCustomCardProps {
   socialMedia?: Array<{ platform: string; username: string }>;
   adBannerImage?: string | null;
   adBannerZoom?: number;
+  adBannerPosition?: { x: number; y: number };
   website?: string;
   footerText?: string;
   fontStyles?: CardFontStyles;
@@ -279,6 +280,7 @@ export default function ModernCustomCard({
   socialMedia = [],
   adBannerImage = null,
   adBannerZoom = 100,
+  adBannerPosition = { x: 0, y: 0 },
   website = "",
   footerText = "",
   fontStyles,
@@ -905,10 +907,16 @@ export default function ModernCustomCard({
           <img
             src={adBannerImage}
             alt="Advertisement"
-            className="w-full h-full object-cover"
+            className="absolute top-1/2 left-1/2 pointer-events-none"
             style={{
-              transform: `scale(${adBannerZoom / 100})`,
-              transformOrigin: 'center',
+              transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${adBannerZoom / 100})`,
+              transformOrigin: 'center center',
+              maxWidth: 'none',
+              maxHeight: 'none',
+              width: 'auto',
+              height: 'auto',
+              minWidth: '100%',
+              minHeight: '100%'
             }}
           />
         </div>

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { BackgroundOptions, CardFontStyles, VisibilitySettings } from "@/types";
-import { Plus, Lock, RefreshCw, X, Upload, Eye, EyeOff } from "lucide-react";
+import { Plus, Lock, RefreshCw, X, Upload, Eye, EyeOff, RotateCcw } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "./UpgradeModal";
 
@@ -16,6 +16,8 @@ interface CustomizationPanelProps {
   onAdBannerChange?: (image: string | null) => void;
   adBannerZoom?: number;
   onAdBannerZoomChange?: (zoom: number) => void;
+  adBannerPosition?: { x: number; y: number };
+  onAdBannerPositionChange?: (position: { x: number; y: number }) => void;
   theme?: string;
   onThemeChange?: (theme: string) => void;
   fontStyles?: CardFontStyles;
@@ -105,6 +107,8 @@ export default function CustomizationPanel({
   onAdBannerChange,
   adBannerZoom = 100,
   onAdBannerZoomChange,
+  adBannerPosition = { x: 0, y: 0 },
+  onAdBannerPositionChange,
   theme = "classic",
   onThemeChange,
   fontStyles,
@@ -2038,14 +2042,69 @@ export default function CustomizationPanel({
             {adBannerImage && (
               <>
                 <div>
-                  <h3 className="text-xs font-medium text-slate-700 mb-3">
-                    Ad banner Preview
-                  </h3>
-                  <div className="bg-gray-300 p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xs font-medium text-slate-700">
+                      Preview
+                    </h3>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAdBannerPositionChange?.({ x: 0, y: 0 });
+                        onAdBannerZoomChange?.(100);
+                      }}
+                      className="p-1 bg-[#8b6834] hover:bg-[#6d5228] text-white text-xs transition-colors"
+                      title="Reset"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                    </button>
+                  </div>
+                  
+                  {/* Interactive Preview Container */}
+                  <div 
+                    className="bg-gray-200 border border-gray-400 overflow-hidden cursor-move relative"
+                    style={{ height: "60px" }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      const startX = e.clientX;
+                      const startY = e.clientY;
+                      const startPosX = adBannerPosition?.x || 0;
+                      const startPosY = adBannerPosition?.y || 0;
+
+                      const handleMouseMove = (moveEvent: MouseEvent) => {
+                        const deltaX = moveEvent.clientX - startX;
+                        const deltaY = moveEvent.clientY - startY;
+                        if (onAdBannerPositionChange) {
+                          onAdBannerPositionChange({
+                            x: Math.max(-200, Math.min(200, startPosX + deltaX)),
+                            y: Math.max(-200, Math.min(200, startPosY + deltaY))
+                          });
+                        }
+                      };
+
+                      const handleMouseUp = () => {
+                        document.removeEventListener('mousemove', handleMouseMove);
+                        document.removeEventListener('mouseup', handleMouseUp);
+                      };
+
+                      document.addEventListener('mousemove', handleMouseMove);
+                      document.addEventListener('mouseup', handleMouseUp);
+                    }}
+                  >
                     <img
                       src={adBannerImage}
-                      alt="Ad Banner Preview"
-                      className="w-full h-auto object-contain"
+                      alt="Ad Banner"
+                      className="absolute top-1/2 left-1/2 pointer-events-none select-none"
+                      style={{
+                        transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${(adBannerZoom || 100) / 100})`,
+                        transformOrigin: 'center center',
+                        maxWidth: 'none',
+                        maxHeight: 'none',
+                        width: 'auto',
+                        height: 'auto',
+                        minWidth: '100%',
+                        minHeight: '100%'
+                      }}
+                      draggable={false}
                     />
                   </div>
                 </div>
@@ -2054,7 +2113,7 @@ export default function CustomizationPanel({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-xs font-medium text-slate-700">
-                      Image Zoom
+                      Zoom
                     </label>
                     <span className="text-xs font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
                       {adBannerZoom}%
@@ -2078,7 +2137,12 @@ export default function CustomizationPanel({
 
                 <div className="flex justify-end">
                   <button
-                    onClick={() => onAdBannerChange?.(null)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAdBannerChange?.(null);
+                      onAdBannerPositionChange?.({ x: 0, y: 0 });
+                      onAdBannerZoomChange?.(100);
+                    }}
                     className="flex items-center gap-2 px-4 py-2 bg-gray-300 hover:bg-gray-400 transition-colors text-slate-700 text-sm"
                   >
                     <RefreshCw className="w-4 h-4" />

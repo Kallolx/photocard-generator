@@ -145,11 +145,12 @@ interface ClassicCustomCardProps {
   frameBorderThickness?: number;
   socialMedia?: Array<{ platform: string; username: string }>;
   adBannerImage?: string | null;
+  adBannerZoom?: number;
+  adBannerPosition?: { x: number; y: number };
   website?: string;
   footerText?: string;
   fontStyles?: CardFontStyles;
   visibilitySettings?: VisibilitySettings;
-  adBannerZoom?: number;
   isDragMode?: boolean;
   elementLayout?: {
     topLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'cta';
@@ -281,6 +282,8 @@ export default function ClassicCustomCard({
   frameBorderThickness = 0,
   socialMedia = [],
   adBannerImage = null,
+  adBannerZoom = 100,
+  adBannerPosition = { x: 0, y: 0 },
   website = "",
   footerText = "",
   fontStyles,
@@ -291,7 +294,6 @@ export default function ClassicCustomCard({
     showQrCode: false,
     showTitle: true,
   },
-  adBannerZoom = 100,
   isDragMode = false,
   elementLayout = {
     topLeft: 'logo',
@@ -905,10 +907,16 @@ export default function ClassicCustomCard({
           <img
             src={adBannerImage}
             alt="Advertisement"
-            className="w-full h-full object-cover"
+            className="absolute top-1/2 left-1/2 pointer-events-none"
             style={{
-              transform: `scale(${adBannerZoom / 100})`,
-              transformOrigin: 'center',
+              transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${adBannerZoom / 100})`,
+              transformOrigin: 'center center',
+              maxWidth: 'none',
+              maxHeight: 'none',
+              width: 'auto',
+              height: 'auto',
+              minWidth: '100%',
+              minHeight: '100%'
             }}
           />
         </div>

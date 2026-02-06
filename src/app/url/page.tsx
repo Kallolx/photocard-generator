@@ -2,7 +2,7 @@
 
 import { DotBackground } from "@/components/DotBackground";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
 import UrlComponent from "@/components/UrlComponent";
 import ModernUrlCard from "@/components/cards/url-cards/ModernUrlCard";
@@ -61,6 +61,7 @@ export default function Home() {
   const [isDesktop, setIsDesktop] = useState(true);
   const [adBannerImage, setAdBannerImage] = useState<string | null>(null);
   const [adBannerZoom, setAdBannerZoom] = useState<number>(100);
+  const [adBannerPosition, setAdBannerPosition] = useState({ x: 0, y: 0 });
   const [theme, setTheme] = useState<string>("classic");
   const [isDragMode, setIsDragMode] = useState(false);
   const [elementLayout, setElementLayout] = useState<{
@@ -458,6 +459,7 @@ export default function Home() {
     // Reset ad banner
     setAdBannerImage(null);
     setAdBannerZoom(100);
+    setAdBannerPosition({ x: 0, y: 0 });
     
     // Reset background to default
     setBackground({
@@ -493,6 +495,7 @@ export default function Home() {
       frameBorderThickness,
       adBannerImage,
       adBannerZoom,
+      adBannerPosition,
       fontStyles,
       visibilitySettings,
       isLogoFavicon,
@@ -544,18 +547,18 @@ export default function Home() {
     setIsResizing(true);
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing) return;
 
     const newWidth = (e.clientX / window.innerWidth) * 100;
     if (newWidth > 20 && newWidth < 60) {
       setLeftPanelWidth(newWidth);
     }
-  };
+  }, [isResizing]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsResizing(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (isResizing) {
@@ -567,7 +570,7 @@ export default function Home() {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isResizing]);
+  }, [isResizing, handleMouseMove, handleMouseUp]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -998,6 +1001,8 @@ export default function Home() {
                 onAdBannerChange={setAdBannerImage}
                 adBannerZoom={adBannerZoom}
                 onAdBannerZoomChange={setAdBannerZoom}
+                adBannerPosition={adBannerPosition}
+                onAdBannerPositionChange={setAdBannerPosition}
                 theme={theme}
                 onThemeChange={setTheme}
                 fontStyles={fontStyles}
