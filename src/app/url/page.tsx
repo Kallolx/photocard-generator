@@ -471,14 +471,17 @@ export default function Home() {
     cardData: PhotocardData,
     cardId: string,
     isFullSize = false,
+    useOverrides = true,
   ) => {
-    const baseCardData = {
-      ...cardData,
-      title: currentTitle || cardData.title,
-      image: currentImage || cardData.image,
-      logo: currentLogo || cardData.logo,
-      favicon: currentFavicon || cardData.favicon,
-    };
+    const baseCardData = useOverrides
+      ? {
+          ...cardData,
+          title: currentTitle || cardData.title,
+          image: currentImage || cardData.image,
+          logo: currentLogo || cardData.logo,
+          favicon: currentFavicon || cardData.favicon,
+        }
+      : cardData;
 
     const commonProps = {
       data: baseCardData,
@@ -1558,7 +1561,7 @@ export default function Home() {
                   {/* Close button */}
                   <button
                     onClick={() => setSelectedPhotocardIndex(null)}
-                    className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors z-10"
+                    className="absolute -top-2 -right-2 text-white hover:text-gray-300 transition-colors z-10 bg-black/40 rounded-full p-1 hover:bg-black/60"
                   >
                     <svg
                       className="w-8 h-8"
@@ -1588,7 +1591,7 @@ export default function Home() {
                                 : completedPhotocards.length - 1,
                           )
                         }
-                        className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10 bg-black/20 p-2"
+                        className="absolute -left-12 md:-left-16 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10 bg-black/40 hover:bg-black/60 p-3 rounded-full"
                       >
                         <svg
                           className="w-6 h-6"
@@ -1614,7 +1617,7 @@ export default function Home() {
                                 : 0,
                           )
                         }
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10 bg-black/20 p-2"
+                        className="absolute -right-12 md:-right-16 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-10 bg-black/40 hover:bg-black/60 p-3 rounded-full"
                       >
                         <svg
                           className="w-6 h-6"
@@ -1639,6 +1642,7 @@ export default function Home() {
                       completedPhotocards[selectedPhotocardIndex].data,
                       "photocard",
                       true,
+                      false,
                     )}
                   </div>
 

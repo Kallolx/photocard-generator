@@ -184,6 +184,7 @@ interface Modern2CustomCardProps {
   onLayoutChange?: (layout: any) => void;
   onVisibilityChange?: (settings: VisibilitySettings) => void;
   onLogoUpload?: (file: File) => void;
+  onFaviconUpload?: (file: File) => void;
   onRestoreDefaults?: () => void;
 }
 
@@ -220,11 +221,13 @@ export default function Modern2CustomCard({
   onLayoutChange,
   onVisibilityChange,
   onLogoUpload,
+  onFaviconUpload,
   onRestoreDefaults,
 }: Modern2CustomCardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedElement, setSelectedElement] = useState<{ id: string; position: { x: number; y: number } } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
 
   // Filter valid social media entries
   const validSocialMedia = socialMedia.filter(
@@ -302,6 +305,8 @@ export default function Modern2CustomCard({
     
     if (elementId === 'logo' && onLogoUpload) {
       fileInputRef.current?.click();
+    } else if (elementId === 'favicon' && onFaviconUpload) {
+      faviconInputRef.current?.click();
     }
     setSelectedElement(null);
   };
@@ -580,9 +585,9 @@ export default function Modern2CustomCard({
             onClick={(e) => handleElementClick('favicon', e)}
           >
             <div className="w-12 h-12 bg-gray-100 border-4 border-white rounded-full shadow-xl flex items-center justify-center overflow-hidden">
-              {data.logo ? (
+              {data.favicon || data.logo ? (
                 <img
-                  src={data.logo}
+                  src={data.favicon || data.logo}
                   alt="Favicon"
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -659,8 +664,8 @@ export default function Modern2CustomCard({
       case 'favicon':
         return (
           <div className="w-12 h-12 bg-gray-100 border-4 border-white rounded-full shadow-xl flex items-center justify-center overflow-hidden">
-            {data.logo ? (
-              <img src={data.logo} alt="Favicon" className="w-full h-full object-cover" />
+            {data.favicon || data.logo ? (
+              <img src={data.favicon || data.logo} alt="Favicon" className="w-full h-full object-cover" />
             ) : (
               <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -830,7 +835,7 @@ export default function Modern2CustomCard({
           elementType={selectedElement.id.replace(/\d+$/, '')}
           onHide={handleHideElement}
           onClear={handleClearElement}
-          onUpload={selectedElement.id === 'logo' ? handleUploadElement : undefined}
+          onUpload={(selectedElement.id === 'logo' || selectedElement.id === 'favicon') ? handleUploadElement : undefined}
           position={selectedElement.position}
           isVisible={true}
         />
@@ -859,6 +864,21 @@ export default function Modern2CustomCard({
           const file = e.target.files?.[0];
           if (file && onLogoUpload) {
             onLogoUpload(file);
+          }
+          e.target.value = '';
+        }}
+      />
+
+      {/* Hidden file input for favicon upload */}
+      <input
+        ref={faviconInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file && onFaviconUpload) {
+            onFaviconUpload(file);
           }
           e.target.value = '';
         }}
