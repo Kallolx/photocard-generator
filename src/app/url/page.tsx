@@ -8,6 +8,7 @@ import UrlComponent from "@/components/UrlComponent";
 import ModernUrlCard from "@/components/cards/url-cards/ModernUrlCard";
 import Modern2UrlCard from "@/components/cards/url-cards/Modern2UrlCard";
 import VerticalUrlCard from "@/components/cards/url-cards/VerticalUrlCard";
+import MinimalUrlCard from "@/components/cards/url-cards/MinimalUrlCard";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import {
   PhotocardData,
@@ -100,6 +101,19 @@ export default function Home() {
     bottomLeft: 'qrCode',
     bottomRight: 'cta',
     center: 'favicon',
+  });
+
+  // Minimal theme layout (4-slot system: dateWeek, favicon, qrCode, cta)
+  const [minimalElementLayout, setMinimalElementLayout] = useState<{
+    topLeft: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
+    topRight: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
+    bottomLeft: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
+    bottomRight: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
+  }>({
+    topLeft: 'dateWeek',
+    topRight: 'favicon',
+    bottomLeft: 'qrCode',
+    bottomRight: 'cta',
   });
 
   // Font styles state
@@ -363,6 +377,14 @@ export default function Home() {
       rightBottom: 'qrCode',
     });
     
+    // Reset minimal element layout
+    setMinimalElementLayout({
+      topLeft: 'dateWeek',
+      topRight: 'favicon',
+      bottomLeft: 'qrCode',
+      bottomRight: 'cta',
+    });
+    
     // Reset visibility settings
     setVisibilitySettings({
       showWeek: true,
@@ -497,6 +519,12 @@ export default function Home() {
             {...commonProps}
             elementLayout={modern2ElementLayout}
             onLayoutChange={setModern2ElementLayout}
+          />
+        ) : theme === "minimal" ? (
+          <MinimalUrlCard
+            {...commonProps}
+            elementLayout={minimalElementLayout}
+            onLayoutChange={setMinimalElementLayout}
           />
         ) : (
           <ClassicUrlCard
@@ -764,6 +792,22 @@ export default function Home() {
                  isLogoFavicon={isLogoFavicon}
                  isDragMode={false}
                  elementLayout={elementLayout}
+               />
+             );
+           } else if (theme === "minimal") {
+             root.render(
+               <MinimalUrlCard 
+                 data={item.data}
+                 isGenerating={true}
+                 background={background}
+                 id={`temp-card-${i}`}
+                 fullSize={true}
+                 frameBorderColor={frameBorderColor}
+                 frameBorderThickness={frameBorderThickness}
+                 adBannerImage={adBannerImage}
+                 adBannerZoom={adBannerZoom}
+                 fontStyles={fontStyles}
+                 visibilitySettings={visibilitySettings}
                />
              );
            } else {

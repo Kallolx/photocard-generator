@@ -766,7 +766,7 @@ export default function Modern2CustomCard({
             {/* CTA Text centered */}
             <div className="bg-white border border-gray-300 py-1 px-3 text-center max-w-[230px] rounded-sm">
               <p className="font-noto-bengali text-md font-bold text-gray-900">
-                পুরো খবর দেখুন{" "}
+                বিস্তারিত {" "}
                 <span style={{ color: getHighlightColor() }}>
                   কমেন্টের লিংকে
                 </span>

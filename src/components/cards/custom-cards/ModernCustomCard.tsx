@@ -870,7 +870,7 @@ export default function ModernCustomCard({
         <div className="flex justify-center pb-2">
           <div className="bg-white border border-gray-300 py-.5 px-3 text-center max-w-[230px] rounded-sm">
             <p className="font-noto-bengali text-md font-bold text-gray-900">
-              পুরো খবর দেখুন{" "}
+              বিস্তারিত {" "}
               <span style={{ color: getHighlightColor() }}>কমেন্টের লিংকে</span>
             </p>
           </div>

@@ -67,9 +67,22 @@ const THEMES = [
     locked: false,
     thumbnail: "/themes/cus-3.png",
   },
+  {
+    id: "minimal",
+    name: "Minimal",
+    locked: true,
+    thumbnail: "/themes/cus-1.png",
+  },
 ];
 
-type Tab = "Background" | "Pattern" | "Theme" | "Fonts" | "Visibility" | "Frame" | "Ad Banner";
+type Tab =
+  | "Background"
+  | "Pattern"
+  | "Theme"
+  | "Fonts"
+  | "Visibility"
+  | "Frame"
+  | "Ad Banner";
 
 const PATTERNS = [
   { id: "none", name: "None" },
@@ -108,16 +121,18 @@ export default function CustomizationPanel({
   const [selectedFontType, setSelectedFontType] = useState<
     "weekDate" | "headline" | null
   >(null);
-  
+
   // Custom colors state
   const [customSolidColors, setCustomSolidColors] = useState<string[]>([]);
-  const [customGradients, setCustomGradients] = useState<Array<{ from: string; to: string }>>([]);
+  const [customGradients, setCustomGradients] = useState<
+    Array<{ from: string; to: string }>
+  >([]);
   const [showSolidColorPicker, setShowSolidColorPicker] = useState(false);
   const [showGradientColorPicker, setShowGradientColorPicker] = useState(false);
   const [tempSolidColor, setTempSolidColor] = useState("#000000");
   const [tempGradientFrom, setTempGradientFrom] = useState("#000000");
   const [tempGradientTo, setTempGradientTo] = useState("#FFFFFF");
-  
+
   // Drag to scroll state
   const tabsScrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -129,7 +144,7 @@ export default function CustomizationPanel({
     setIsDragging(true);
     setStartX(e.pageX - tabsScrollRef.current.offsetLeft);
     setScrollLeft(tabsScrollRef.current.scrollLeft);
-    tabsScrollRef.current.style.cursor = 'grabbing';
+    tabsScrollRef.current.style.cursor = "grabbing";
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -143,7 +158,7 @@ export default function CustomizationPanel({
   const handleMouseUpOrLeave = () => {
     setIsDragging(false);
     if (tabsScrollRef.current) {
-      tabsScrollRef.current.style.cursor = 'grab';
+      tabsScrollRef.current.style.cursor = "grab";
     }
   };
   const [frameBorderColor, setFrameBorderColor] = useState(
@@ -167,6 +182,12 @@ export default function CustomizationPanel({
       thumbnail: "/themes/cus-1.png",
     },
     {
+      id: "minimal",
+      name: "Minimal",
+      locked: isFreeUser,
+      thumbnail: "/themes/cus-5.png",
+    },
+    {
       id: "modern",
       name: "Modern",
       locked: isFreeUser, // Lock Modern theme for Free users
@@ -188,10 +209,16 @@ export default function CustomizationPanel({
 
   const handleThemeChange = (themeId: string, isLocked: boolean) => {
     if (isLocked) {
-      const featureName = themeId === "modern" ? "Modern Theme" 
-        : themeId === "modern2" ? "Modern 2 Theme"
-        : themeId === "vertical" ? "Vertical Theme" 
-        : "Premium Theme";
+      const featureName =
+        themeId === "modern"
+          ? "Modern Theme"
+          : themeId === "modern2"
+            ? "Modern 2 Theme"
+            : themeId === "minimal"
+              ? "Minimal Theme"
+              : themeId === "vertical"
+                ? "Vertical Theme"
+                : "Premium Theme";
       setUpgradeFeature(featureName);
       setShowUpgradeModal(true);
       return;
@@ -244,11 +271,11 @@ export default function CustomizationPanel({
       <div className="relative mb-6 -mx-6 flex-shrink-0">
         {/* Left fade indicator */}
         <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#f5f0e8] to-transparent z-10 pointer-events-none" />
-        
+
         {/* Right fade indicator */}
         <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#f5f0e8] to-transparent z-10 pointer-events-none" />
-        
-        <div 
+
+        <div
           ref={tabsScrollRef}
           className="px-6 overflow-x-auto no-scrollbar scroll-smooth cursor-grab select-none"
           onMouseDown={handleMouseDown}
@@ -282,8 +309,12 @@ export default function CustomizationPanel({
               >
                 <span className="flex items-center gap-1.5">
                   {tab}
-                  {tab === "Fonts" && isFreeUser && <Lock className="w-3 h-3" />}
-                  {tab === "Visibility" && isFreeUser && <Lock className="w-3 h-3" />}
+                  {tab === "Fonts" && isFreeUser && (
+                    <Lock className="w-3 h-3" />
+                  )}
+                  {tab === "Visibility" && isFreeUser && (
+                    <Lock className="w-3 h-3" />
+                  )}
                 </span>
                 {activeTab === tab && (
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#8b6834]" />
@@ -348,7 +379,7 @@ export default function CustomizationPanel({
                     </button>
                   );
                 })}
-                
+
                 {/* Custom Colors */}
                 {customSolidColors.map((color, index) => (
                   <button
@@ -360,8 +391,7 @@ export default function CustomizationPanel({
                       });
                     }}
                     className={`relative w-14 h-14 border-2 transition-all overflow-visible flex-shrink-0 group ${
-                      background.type === "solid" &&
-                      background.color === color
+                      background.type === "solid" && background.color === color
                         ? "border-[#8b6834] shadow-md"
                         : "border-[#d4c4b0] hover:scale-95"
                     }`}
@@ -376,7 +406,9 @@ export default function CustomizationPanel({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setCustomSolidColors(prev => prev.filter((_, i) => i !== index));
+                        setCustomSolidColors((prev) =>
+                          prev.filter((_, i) => i !== index),
+                        );
                       }}
                       className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10"
                       title="Remove color"
@@ -385,7 +417,7 @@ export default function CustomizationPanel({
                     </button>
                   </button>
                 ))}
-                
+
                 {/* Add Custom Color Button */}
                 {customSolidColors.length < 2 && (
                   <button
@@ -398,11 +430,15 @@ export default function CustomizationPanel({
                       setShowSolidColorPicker(!showSolidColorPicker);
                     }}
                     className={`relative w-14 h-14 flex-shrink-0 border-2 border-dashed transition-all overflow-hidden flex items-center justify-center ${
-                      isFreeUser 
-                        ? "border-[#d4c4b0] bg-[#faf8f5]" 
+                      isFreeUser
+                        ? "border-[#d4c4b0] bg-[#faf8f5]"
                         : "border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8]"
                     }`}
-                    title={isFreeUser ? "Upgrade to add custom colors" : "Add custom color"}
+                    title={
+                      isFreeUser
+                        ? "Upgrade to add custom colors"
+                        : "Add custom color"
+                    }
                   >
                     {isFreeUser ? (
                       <Lock className="w-5 h-5 text-[#5d4e37]" />
@@ -412,7 +448,7 @@ export default function CustomizationPanel({
                   </button>
                 )}
               </div>
-              
+
               {/* Color Picker Modal for Solid */}
               {showSolidColorPicker && (
                 <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
@@ -441,18 +477,22 @@ export default function CustomizationPanel({
                         onChange={(e) => {
                           let value = e.target.value.toUpperCase();
                           // Always start with #
-                          if (!value.startsWith('#')) {
-                            value = '#' + value.replace(/[^0-9A-F]/g, '');
+                          if (!value.startsWith("#")) {
+                            value = "#" + value.replace(/[^0-9A-F]/g, "");
                           } else {
-                            value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                            value =
+                              "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
                           }
                           value = value.slice(0, 7);
                           setTempSolidColor(value);
                         }}
                         onBlur={(e) => {
                           const value = e.target.value;
-                          if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
-                            setTempSolidColor('#000000');
+                          if (
+                            value.length !== 7 ||
+                            !/^#[0-9A-F]{6}$/i.test(value)
+                          ) {
+                            setTempSolidColor("#000000");
                           }
                         }}
                         placeholder="#000000"
@@ -463,8 +503,14 @@ export default function CustomizationPanel({
                   </div>
                   <button
                     onClick={() => {
-                      if (tempSolidColor.length === 7 && !customSolidColors.includes(tempSolidColor)) {
-                        setCustomSolidColors(prev => [...prev, tempSolidColor]);
+                      if (
+                        tempSolidColor.length === 7 &&
+                        !customSolidColors.includes(tempSolidColor)
+                      ) {
+                        setCustomSolidColors((prev) => [
+                          ...prev,
+                          tempSolidColor,
+                        ]);
                         onBackgroundChange({
                           type: "solid",
                           color: tempSolidColor,
@@ -537,7 +583,7 @@ export default function CustomizationPanel({
                     </button>
                   );
                 })}
-                
+
                 {/* Custom Gradients */}
                 {customGradients.map((grad, index) => (
                   <button
@@ -571,7 +617,9 @@ export default function CustomizationPanel({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        setCustomGradients(prev => prev.filter((_, i) => i !== index));
+                        setCustomGradients((prev) =>
+                          prev.filter((_, i) => i !== index),
+                        );
                       }}
                       className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10"
                       title="Remove gradient"
@@ -580,7 +628,7 @@ export default function CustomizationPanel({
                     </button>
                   </button>
                 ))}
-                
+
                 {/* Add Custom Gradient Button */}
                 {customGradients.length < 2 && (
                   <button
@@ -593,11 +641,15 @@ export default function CustomizationPanel({
                       setShowGradientColorPicker(!showGradientColorPicker);
                     }}
                     className={`relative w-14 h-14 flex-shrink-0 border-2 border-dashed transition-all overflow-hidden flex items-center justify-center ${
-                      isFreeUser 
-                        ? "border-[#d4c4b0] bg-[#faf8f5]" 
+                      isFreeUser
+                        ? "border-[#d4c4b0] bg-[#faf8f5]"
                         : "border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8]"
                     }`}
-                    title={isFreeUser ? "Upgrade to add custom gradients" : "Add custom gradient"}
+                    title={
+                      isFreeUser
+                        ? "Upgrade to add custom gradients"
+                        : "Add custom gradient"
+                    }
                   >
                     {isFreeUser ? (
                       <Lock className="w-5 h-5 text-[#5d4e37]" />
@@ -607,7 +659,7 @@ export default function CustomizationPanel({
                   </button>
                 )}
               </div>
-              
+
               {/* Gradient Picker Modal */}
               {showGradientColorPicker && (
                 <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
@@ -622,7 +674,7 @@ export default function CustomizationPanel({
                       <X className="w-4 h-4" />
                     </button>
                   </div>
-                  
+
                   {/* From Color */}
                   <div className="mb-3">
                     <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
@@ -641,18 +693,22 @@ export default function CustomizationPanel({
                           value={tempGradientFrom.toUpperCase()}
                           onChange={(e) => {
                             let value = e.target.value.toUpperCase();
-                            if (!value.startsWith('#')) {
-                              value = '#' + value.replace(/[^0-9A-F]/g, '');
+                            if (!value.startsWith("#")) {
+                              value = "#" + value.replace(/[^0-9A-F]/g, "");
                             } else {
-                              value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                              value =
+                                "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
                             }
                             value = value.slice(0, 7);
                             setTempGradientFrom(value);
                           }}
                           onBlur={(e) => {
                             const value = e.target.value;
-                            if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
-                              setTempGradientFrom('#000000');
+                            if (
+                              value.length !== 7 ||
+                              !/^#[0-9A-F]{6}$/i.test(value)
+                            ) {
+                              setTempGradientFrom("#000000");
                             }
                           }}
                           placeholder="#000000"
@@ -662,7 +718,7 @@ export default function CustomizationPanel({
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* To Color */}
                   <div className="mb-3">
                     <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
@@ -681,18 +737,22 @@ export default function CustomizationPanel({
                           value={tempGradientTo.toUpperCase()}
                           onChange={(e) => {
                             let value = e.target.value.toUpperCase();
-                            if (!value.startsWith('#')) {
-                              value = '#' + value.replace(/[^0-9A-F]/g, '');
+                            if (!value.startsWith("#")) {
+                              value = "#" + value.replace(/[^0-9A-F]/g, "");
                             } else {
-                              value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                              value =
+                                "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
                             }
                             value = value.slice(0, 7);
                             setTempGradientTo(value);
                           }}
                           onBlur={(e) => {
                             const value = e.target.value;
-                            if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
-                              setTempGradientTo('#FFFFFF');
+                            if (
+                              value.length !== 7 ||
+                              !/^#[0-9A-F]{6}$/i.test(value)
+                            ) {
+                              setTempGradientTo("#FFFFFF");
                             }
                           }}
                           placeholder="#FFFFFF"
@@ -702,27 +762,35 @@ export default function CustomizationPanel({
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Preview */}
                   <div className="mb-3">
                     <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
                       Preview
                     </label>
-                    <div 
+                    <div
                       className="w-full h-16 border-2 border-[#d4c4b0]"
                       style={{
                         backgroundImage: `linear-gradient(135deg, ${tempGradientFrom}, ${tempGradientTo})`,
                       }}
                     />
                   </div>
-                  
+
                   <button
                     onClick={() => {
-                      if (tempGradientFrom.length === 7 && tempGradientTo.length === 7) {
-                        const newGrad = { from: tempGradientFrom, to: tempGradientTo };
-                        const exists = customGradients.some(g => g.from === newGrad.from && g.to === newGrad.to);
+                      if (
+                        tempGradientFrom.length === 7 &&
+                        tempGradientTo.length === 7
+                      ) {
+                        const newGrad = {
+                          from: tempGradientFrom,
+                          to: tempGradientTo,
+                        };
+                        const exists = customGradients.some(
+                          (g) => g.from === newGrad.from && g.to === newGrad.to,
+                        );
                         if (!exists) {
-                          setCustomGradients(prev => [...prev, newGrad]);
+                          setCustomGradients((prev) => [...prev, newGrad]);
                           onBackgroundChange({
                             type: "gradient",
                             color: "",
@@ -736,7 +804,10 @@ export default function CustomizationPanel({
                       }
                     }}
                     className="w-full py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
-                    disabled={tempGradientFrom.length !== 7 || tempGradientTo.length !== 7}
+                    disabled={
+                      tempGradientFrom.length !== 7 ||
+                      tempGradientTo.length !== 7
+                    }
                   >
                     Add Gradient
                   </button>
@@ -1066,7 +1137,7 @@ export default function CustomizationPanel({
               <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-8">
                 Week & Date
               </h3>
-              
+
               {/* Content */}
               <div className="space-y-4">
                 {/* Font Size */}
@@ -1099,7 +1170,7 @@ export default function CustomizationPanel({
                     }
                     className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 100%)`
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 100%)`,
                     }}
                   />
                 </div>
@@ -1163,15 +1234,16 @@ export default function CustomizationPanel({
                         onChange={(e) => {
                           let value = e.target.value.toUpperCase();
                           // Always start with #
-                          if (!value.startsWith('#')) {
-                            value = '#' + value.replace(/[^0-9A-F]/g, '');
+                          if (!value.startsWith("#")) {
+                            value = "#" + value.replace(/[^0-9A-F]/g, "");
                           } else {
                             // Remove # temporarily, filter invalid chars, then add # back
-                            value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                            value =
+                              "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
                           }
                           // Limit to 7 characters (#XXXXXX)
                           value = value.slice(0, 7);
-                          
+
                           if (value.length === 7) {
                             onFontStylesChange({
                               ...fontStyles,
@@ -1183,9 +1255,13 @@ export default function CustomizationPanel({
                         onBlur={(e) => {
                           // On blur, ensure we have a valid hex or revert
                           const value = e.target.value;
-                          if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
+                          if (
+                            value.length !== 7 ||
+                            !/^#[0-9A-F]{6}$/i.test(value)
+                          ) {
                             // Revert to current valid color if invalid
-                            e.target.value = fontStyles.week.color.toUpperCase();
+                            e.target.value =
+                              fontStyles.week.color.toUpperCase();
                           }
                         }}
                         placeholder="#000000"
@@ -1204,7 +1280,7 @@ export default function CustomizationPanel({
               <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3 pt-4 border-t-2 border-[#d4c4b0]">
                 Headline
               </h3>
-              
+
               {/* Content */}
               <div className="space-y-4">
                 {/* Font Size */}
@@ -1233,7 +1309,7 @@ export default function CustomizationPanel({
                     }
                     className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 100%)`
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 100%)`,
                     }}
                   />
                 </div>
@@ -1273,7 +1349,9 @@ export default function CustomizationPanel({
                                 ? "Bold"
                                 : "XBold"}
                       </button>
-                    ))}\n                  </div>
+                    ))}
+                    \n{" "}
+                  </div>
                 </div>
 
                 {/* Color */}
@@ -1303,15 +1381,16 @@ export default function CustomizationPanel({
                         onChange={(e) => {
                           let value = e.target.value.toUpperCase();
                           // Always start with #
-                          if (!value.startsWith('#')) {
-                            value = '#' + value.replace(/[^0-9A-F]/g, '');
+                          if (!value.startsWith("#")) {
+                            value = "#" + value.replace(/[^0-9A-F]/g, "");
                           } else {
                             // Remove # temporarily, filter invalid chars, then add # back
-                            value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                            value =
+                              "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
                           }
                           // Limit to 7 characters (#XXXXXX)
                           value = value.slice(0, 7);
-                          
+
                           if (value.length === 7) {
                             onFontStylesChange({
                               ...fontStyles,
@@ -1325,9 +1404,13 @@ export default function CustomizationPanel({
                         onBlur={(e) => {
                           // On blur, ensure we have a valid hex or revert
                           const value = e.target.value;
-                          if (value.length !== 7 || !/^#[0-9A-F]{6}$/i.test(value)) {
+                          if (
+                            value.length !== 7 ||
+                            !/^#[0-9A-F]{6}$/i.test(value)
+                          ) {
                             // Revert to current valid color if invalid
-                            e.target.value = fontStyles.headline.color.toUpperCase();
+                            e.target.value =
+                              fontStyles.headline.color.toUpperCase();
                           }
                         }}
                         placeholder="#000000"
@@ -1341,8 +1424,18 @@ export default function CustomizationPanel({
                 {/* Text Align */}
                 <div>
                   <label className="text-sm font-medium text-[#2c2419] mb-2 flex items-center gap-1.5 font-inter">
-                    <svg className="w-3.5 h-3.5 text-[#8b6834]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+                    <svg
+                      className="w-3.5 h-3.5 text-[#8b6834]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h8m-8 6h16"
+                      />
                     </svg>
                     Text Alignment
                   </label>
@@ -1365,15 +1458,35 @@ export default function CustomizationPanel({
                             : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
                         }`}
                       >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           {align === "left" && (
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6h16M4 12h10M4 18h14"
+                            />
                           )}
                           {align === "center" && (
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M5 18h14" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6h16M7 12h10M5 18h14"
+                            />
                           )}
                           {align === "right" && (
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M10 12h10M6 18h14" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6h16M10 12h10M6 18h14"
+                            />
                           )}
                         </svg>
                         {align}
@@ -1388,68 +1501,76 @@ export default function CustomizationPanel({
                     Text Shadow
                   </label>
                   <div className="grid grid-cols-5 gap-2 mb-3">
-                    {(["none", "soft", "hard", "glow", "outline"] as const).map((preset) => (
-                      <button
-                        key={preset}
-                        onClick={() =>
-                          onFontStylesChange({
-                            ...fontStyles,
-                            headline: {
-                              ...fontStyles.headline,
-                              textShadow: {
-                                preset,
-                                angle: fontStyles.headline.textShadow?.angle || 135,
+                    {(["none", "soft", "hard", "glow", "outline"] as const).map(
+                      (preset) => (
+                        <button
+                          key={preset}
+                          onClick={() =>
+                            onFontStylesChange({
+                              ...fontStyles,
+                              headline: {
+                                ...fontStyles.headline,
+                                textShadow: {
+                                  preset,
+                                  angle:
+                                    fontStyles.headline.textShadow?.angle ||
+                                    135,
+                                },
                               },
-                            },
-                          })
-                        }
-                        className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 capitalize ${
-                          (fontStyles.headline.textShadow?.preset || "none") === preset
-                            ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
-                            : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
-                        }`}
-                      >
-                        {preset}
-                      </button>
-                    ))}
+                            })
+                          }
+                          className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 capitalize ${
+                            (fontStyles.headline.textShadow?.preset ||
+                              "none") === preset
+                              ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                              : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                          }`}
+                        >
+                          {preset}
+                        </button>
+                      ),
+                    )}
                   </div>
-                  
+
                   {/* Shadow Angle - Only show if not "none" */}
-                  {fontStyles.headline.textShadow?.preset && fontStyles.headline.textShadow.preset !== "none" && (
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <label className="text-xs font-medium text-[#2c2419] font-inter">
-                          Shadow Angle
-                        </label>
-                        <span className="text-xs font-bold text-[#8b6834] bg-[#e8dcc8] px-2 py-0.5 border border-[#d4c4b0]">
-                          {fontStyles.headline.textShadow?.angle || 135}°
-                        </span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="360"
-                        step="15"
-                        value={fontStyles.headline.textShadow?.angle || 135}
-                        onChange={(e) =>
-                          onFontStylesChange({
-                            ...fontStyles,
-                            headline: {
-                              ...fontStyles.headline,
-                              textShadow: {
-                                preset: fontStyles.headline.textShadow?.preset || "soft",
-                                angle: parseInt(e.target.value),
+                  {fontStyles.headline.textShadow?.preset &&
+                    fontStyles.headline.textShadow.preset !== "none" && (
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-xs font-medium text-[#2c2419] font-inter">
+                            Shadow Angle
+                          </label>
+                          <span className="text-xs font-bold text-[#8b6834] bg-[#e8dcc8] px-2 py-0.5 border border-[#d4c4b0]">
+                            {fontStyles.headline.textShadow?.angle || 135}°
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="360"
+                          step="15"
+                          value={fontStyles.headline.textShadow?.angle || 135}
+                          onChange={(e) =>
+                            onFontStylesChange({
+                              ...fontStyles,
+                              headline: {
+                                ...fontStyles.headline,
+                                textShadow: {
+                                  preset:
+                                    fontStyles.headline.textShadow?.preset ||
+                                    "soft",
+                                  angle: parseInt(e.target.value),
+                                },
                               },
-                            },
-                          })
-                        }
-                        className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                        style={{
-                          background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((fontStyles.headline.textShadow?.angle || 135) / 360) * 100}%, #e8dcc8 ${((fontStyles.headline.textShadow?.angle || 135) / 360) * 100}%, #e8dcc8 100%)`
-                        }}
-                      />
-                    </div>
-                  )}
+                            })
+                          }
+                          className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                          style={{
+                            background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((fontStyles.headline.textShadow?.angle || 135) / 360) * 100}%, #e8dcc8 ${((fontStyles.headline.textShadow?.angle || 135) / 360) * 100}%, #e8dcc8 100%)`,
+                          }}
+                        />
+                      </div>
+                    )}
                 </div>
 
                 {/* Text Stroke */}
@@ -1457,7 +1578,7 @@ export default function CustomizationPanel({
                   <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
                     Text Stroke
                   </label>
-                  
+
                   {/* Stroke Width */}
                   <div className="mb-3">
                     <div className="flex items-center justify-between mb-2">
@@ -1481,18 +1602,20 @@ export default function CustomizationPanel({
                             ...fontStyles.headline,
                             textStroke: {
                               width: parseFloat(e.target.value),
-                              color: fontStyles.headline.textStroke?.color || "#000000",
+                              color:
+                                fontStyles.headline.textStroke?.color ||
+                                "#000000",
                             },
                           },
                         })
                       }
                       className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
                       style={{
-                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((fontStyles.headline.textStroke?.width || 0) / 5) * 100}%, #e8dcc8 ${((fontStyles.headline.textStroke?.width || 0) / 5) * 100}%, #e8dcc8 100%)`
+                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((fontStyles.headline.textStroke?.width || 0) / 5) * 100}%, #e8dcc8 ${((fontStyles.headline.textStroke?.width || 0) / 5) * 100}%, #e8dcc8 100%)`,
                       }}
                     />
                   </div>
-                  
+
                   {/* Stroke Color - Only show if width > 0 */}
                   {(fontStyles.headline.textStroke?.width || 0) > 0 && (
                     <div>
@@ -1502,14 +1625,17 @@ export default function CustomizationPanel({
                       <div className="flex gap-3">
                         <input
                           type="color"
-                          value={fontStyles.headline.textStroke?.color || "#000000"}
+                          value={
+                            fontStyles.headline.textStroke?.color || "#000000"
+                          }
                           onChange={(e) =>
                             onFontStylesChange({
                               ...fontStyles,
                               headline: {
                                 ...fontStyles.headline,
                                 textStroke: {
-                                  width: fontStyles.headline.textStroke?.width || 0,
+                                  width:
+                                    fontStyles.headline.textStroke?.width || 0,
                                   color: e.target.value,
                                 },
                               },
@@ -1520,23 +1646,29 @@ export default function CustomizationPanel({
                         <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-3 py-2 flex items-center">
                           <input
                             type="text"
-                            value={(fontStyles.headline.textStroke?.color || "#000000").toUpperCase()}
+                            value={(
+                              fontStyles.headline.textStroke?.color || "#000000"
+                            ).toUpperCase()}
                             onChange={(e) => {
                               let value = e.target.value.toUpperCase();
-                              if (!value.startsWith('#')) {
-                                value = '#' + value.replace(/[^0-9A-F]/g, '');
+                              if (!value.startsWith("#")) {
+                                value = "#" + value.replace(/[^0-9A-F]/g, "");
                               } else {
-                                value = '#' + value.slice(1).replace(/[^0-9A-F]/g, '');
+                                value =
+                                  "#" +
+                                  value.slice(1).replace(/[^0-9A-F]/g, "");
                               }
                               value = value.slice(0, 7);
-                              
+
                               if (value.length === 7) {
                                 onFontStylesChange({
                                   ...fontStyles,
                                   headline: {
                                     ...fontStyles.headline,
                                     textStroke: {
-                                      width: fontStyles.headline.textStroke?.width || 0,
+                                      width:
+                                        fontStyles.headline.textStroke?.width ||
+                                        0,
                                       color: value,
                                     },
                                   },
@@ -1632,188 +1764,180 @@ export default function CustomizationPanel({
         )}
 
         {/* Visibility Tab */}
-        {activeTab === "Visibility" && visibilitySettings && onVisibilityChange && (
-          <div className="space-y-3">
-            <p className="text-sm text-[#5d4e37] font-inter mb-4">
-              Toggle elements visibility on your card
-            </p>
+        {activeTab === "Visibility" &&
+          visibilitySettings &&
+          onVisibilityChange && (
+            <div className="space-y-3">
+              <p className="text-sm text-[#5d4e37] font-inter mb-4">
+                Toggle elements visibility on your card
+              </p>
 
-            {/* Week Toggle */}
-            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {visibilitySettings.showWeek ? (
-                  <Eye className="w-5 h-5 text-[#8b6834]" />
-                ) : (
-                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
-                )}
-                <span className="text-sm font-medium font-inter text-[#2c2419]">
-                  Week
-                </span>
-              </div>
-              <button
-                onClick={() =>
-                  onVisibilityChange({
-                    ...visibilitySettings,
-                    showWeek: !visibilitySettings.showWeek,
-                  })
-                }
-                className={`relative w-14 h-7 transition-colors border-2 ${
-                  visibilitySettings.showWeek
-                    ? "bg-[#8b6834] border-[#8b6834]"
-                    : "bg-[#d4c4b0] border-[#d4c4b0]"
-                }`}
-              >
-                <div
-                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+              {/* Week Toggle */}
+              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {visibilitySettings.showWeek ? (
+                    <Eye className="w-5 h-5 text-[#8b6834]" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                  )}
+                  <span className="text-sm font-medium font-inter text-[#2c2419]">
+                    Week
+                  </span>
+                </div>
+                <button
+                  onClick={() =>
+                    onVisibilityChange({
+                      ...visibilitySettings,
+                      showWeek: !visibilitySettings.showWeek,
+                    })
+                  }
+                  className={`relative w-14 h-7 transition-colors border-2 ${
                     visibilitySettings.showWeek
-                      ? "right-0.5"
-                      : "left-0.5"
+                      ? "bg-[#8b6834] border-[#8b6834]"
+                      : "bg-[#d4c4b0] border-[#d4c4b0]"
                   }`}
-                />
-              </button>
-            </div>
-
-            {/* Date Toggle */}
-            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {visibilitySettings.showDate ? (
-                  <Eye className="w-5 h-5 text-[#8b6834]" />
-                ) : (
-                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
-                )}
-                <span className="text-sm font-medium font-inter text-[#2c2419]">
-                  Date
-                </span>
+                >
+                  <div
+                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                      visibilitySettings.showWeek ? "right-0.5" : "left-0.5"
+                    }`}
+                  />
+                </button>
               </div>
-              <button
-                onClick={() =>
-                  onVisibilityChange({
-                    ...visibilitySettings,
-                    showDate: !visibilitySettings.showDate,
-                  })
-                }
-                className={`relative w-14 h-7 transition-colors border-2 ${
-                  visibilitySettings.showDate
-                    ? "bg-[#8b6834] border-[#8b6834]"
-                    : "bg-[#d4c4b0] border-[#d4c4b0]"
-                }`}
-              >
-                <div
-                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+
+              {/* Date Toggle */}
+              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {visibilitySettings.showDate ? (
+                    <Eye className="w-5 h-5 text-[#8b6834]" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                  )}
+                  <span className="text-sm font-medium font-inter text-[#2c2419]">
+                    Date
+                  </span>
+                </div>
+                <button
+                  onClick={() =>
+                    onVisibilityChange({
+                      ...visibilitySettings,
+                      showDate: !visibilitySettings.showDate,
+                    })
+                  }
+                  className={`relative w-14 h-7 transition-colors border-2 ${
                     visibilitySettings.showDate
-                      ? "right-0.5"
-                      : "left-0.5"
+                      ? "bg-[#8b6834] border-[#8b6834]"
+                      : "bg-[#d4c4b0] border-[#d4c4b0]"
                   }`}
-                />
-              </button>
-            </div>
-
-            {/* Logo Toggle */}
-            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {visibilitySettings.showLogo ? (
-                  <Eye className="w-5 h-5 text-[#8b6834]" />
-                ) : (
-                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
-                )}
-                <span className="text-sm font-medium font-inter text-[#2c2419]">
-                  Logo
-                </span>
+                >
+                  <div
+                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                      visibilitySettings.showDate ? "right-0.5" : "left-0.5"
+                    }`}
+                  />
+                </button>
               </div>
-              <button
-                onClick={() =>
-                  onVisibilityChange({
-                    ...visibilitySettings,
-                    showLogo: !visibilitySettings.showLogo,
-                  })
-                }
-                className={`relative w-14 h-7 transition-colors border-2 ${
-                  visibilitySettings.showLogo
-                    ? "bg-[#8b6834] border-[#8b6834]"
-                    : "bg-[#d4c4b0] border-[#d4c4b0]"
-                }`}
-              >
-                <div
-                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+
+              {/* Logo Toggle */}
+              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {visibilitySettings.showLogo ? (
+                    <Eye className="w-5 h-5 text-[#8b6834]" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                  )}
+                  <span className="text-sm font-medium font-inter text-[#2c2419]">
+                    Logo
+                  </span>
+                </div>
+                <button
+                  onClick={() =>
+                    onVisibilityChange({
+                      ...visibilitySettings,
+                      showLogo: !visibilitySettings.showLogo,
+                    })
+                  }
+                  className={`relative w-14 h-7 transition-colors border-2 ${
                     visibilitySettings.showLogo
-                      ? "right-0.5"
-                      : "left-0.5"
+                      ? "bg-[#8b6834] border-[#8b6834]"
+                      : "bg-[#d4c4b0] border-[#d4c4b0]"
                   }`}
-                />
-              </button>
-            </div>
-
-            {/* QR Code Toggle */}
-            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {visibilitySettings.showQrCode ? (
-                  <Eye className="w-5 h-5 text-[#8b6834]" />
-                ) : (
-                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
-                )}
-                <span className="text-sm font-medium font-inter text-[#2c2419]">
-                  QR Code
-                </span>
+                >
+                  <div
+                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                      visibilitySettings.showLogo ? "right-0.5" : "left-0.5"
+                    }`}
+                  />
+                </button>
               </div>
-              <button
-                onClick={() =>
-                  onVisibilityChange({
-                    ...visibilitySettings,
-                    showQrCode: !visibilitySettings.showQrCode,
-                  })
-                }
-                className={`relative w-14 h-7 transition-colors border-2 ${
-                  visibilitySettings.showQrCode
-                    ? "bg-[#8b6834] border-[#8b6834]"
-                    : "bg-[#d4c4b0] border-[#d4c4b0]"
-                }`}
-              >
-                <div
-                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+
+              {/* QR Code Toggle */}
+              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {visibilitySettings.showQrCode ? (
+                    <Eye className="w-5 h-5 text-[#8b6834]" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                  )}
+                  <span className="text-sm font-medium font-inter text-[#2c2419]">
+                    QR Code
+                  </span>
+                </div>
+                <button
+                  onClick={() =>
+                    onVisibilityChange({
+                      ...visibilitySettings,
+                      showQrCode: !visibilitySettings.showQrCode,
+                    })
+                  }
+                  className={`relative w-14 h-7 transition-colors border-2 ${
                     visibilitySettings.showQrCode
-                      ? "right-0.5"
-                      : "left-0.5"
+                      ? "bg-[#8b6834] border-[#8b6834]"
+                      : "bg-[#d4c4b0] border-[#d4c4b0]"
                   }`}
-                />
-              </button>
-            </div>
-
-            {/* Title Toggle */}
-            <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {visibilitySettings.showTitle ? (
-                  <Eye className="w-5 h-5 text-[#8b6834]" />
-                ) : (
-                  <EyeOff className="w-5 h-5 text-[#5d4e37]" />
-                )}
-                <span className="text-sm font-medium font-inter text-[#2c2419]">
-                  Title
-                </span>
+                >
+                  <div
+                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                      visibilitySettings.showQrCode ? "right-0.5" : "left-0.5"
+                    }`}
+                  />
+                </button>
               </div>
-              <button
-                onClick={() =>
-                  onVisibilityChange({
-                    ...visibilitySettings,
-                    showTitle: !visibilitySettings.showTitle,
-                  })
-                }
-                className={`relative w-14 h-7 transition-colors border-2 ${
-                  visibilitySettings.showTitle
-                    ? "bg-[#8b6834] border-[#8b6834]"
-                    : "bg-[#d4c4b0] border-[#d4c4b0]"
-                }`}
-              >
-                <div
-                  className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+
+              {/* Title Toggle */}
+              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {visibilitySettings.showTitle ? (
+                    <Eye className="w-5 h-5 text-[#8b6834]" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                  )}
+                  <span className="text-sm font-medium font-inter text-[#2c2419]">
+                    Title
+                  </span>
+                </div>
+                <button
+                  onClick={() =>
+                    onVisibilityChange({
+                      ...visibilitySettings,
+                      showTitle: !visibilitySettings.showTitle,
+                    })
+                  }
+                  className={`relative w-14 h-7 transition-colors border-2 ${
                     visibilitySettings.showTitle
-                      ? "right-0.5"
-                      : "left-0.5"
+                      ? "bg-[#8b6834] border-[#8b6834]"
+                      : "bg-[#d4c4b0] border-[#d4c4b0]"
                   }`}
-                />
-              </button>
+                >
+                  <div
+                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                      visibilitySettings.showTitle ? "right-0.5" : "left-0.5"
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         {/* Frame Tab */}
         {activeTab === "Frame" && (
@@ -1925,7 +2049,7 @@ export default function CustomizationPanel({
                     />
                   </div>
                 </div>
-                
+
                 {/* Zoom Control */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -1942,7 +2066,9 @@ export default function CustomizationPanel({
                     max="200"
                     step="5"
                     value={adBannerZoom}
-                    onChange={(e) => onAdBannerZoomChange?.(parseInt(e.target.value))}
+                    onChange={(e) =>
+                      onAdBannerZoomChange?.(parseInt(e.target.value))
+                    }
                     className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
                     style={{
                       background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((adBannerZoom - 50) / 150) * 100}%, #e8dcc8 ${((adBannerZoom - 50) / 150) * 100}%, #e8dcc8 100%)`,
@@ -1973,6 +2099,5 @@ export default function CustomizationPanel({
         requiredPlan="Basic"
       />
     </div>
-
   );
 }

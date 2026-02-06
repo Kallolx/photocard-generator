@@ -561,7 +561,7 @@ export default function ModernUrlCard({
         return (
           <div className="bg-white border border-gray-300 py-.5 px-3 text-center rounded-sm">
             <p className="font-noto-bengali text-md font-bold text-gray-900">
-              পুরো খবর দেখুন <span style={{ color: getHighlightColor() }}>কমেন্টের লিংকে</span>
+              বিস্তারিত <span style={{ color: getHighlightColor() }}>কমেন্টের লিংকে</span>
             </p>
           </div>
         );
@@ -631,6 +631,7 @@ export default function ModernUrlCard({
               className="text-white font-noto-bengali tracking-wide px-3 py-1 rounded shadow-lg"
               style={{
                 ...getBackgroundStyle(),
+                fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
                 fontSize: fontStyles?.week.fontSize || "14px",
                 fontWeight: fontStyles?.week.fontWeight || "500",
                 color: fontStyles?.week.color || "#FFFFFF",
@@ -668,7 +669,7 @@ export default function ModernUrlCard({
           >
             <div className="bg-white border border-gray-300 py-.5 px-3 text-center max-w-[230px] rounded-sm">
               <p className="font-noto-bengali text-md font-bold text-gray-900">
-                পুরো খবর দেখুন{" "}
+                বিস্তারিত{" "}
                 <span style={{ color: getHighlightColor() }}>
                   কমেন্টের লিংকে
                 </span>

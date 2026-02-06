@@ -4,6 +4,7 @@ import { PhotocardData, BackgroundOptions, CardFontStyles, VisibilitySettings } 
 import QRCode from "qrcode";
 import { useEffect, useState, useRef } from "react";
 import { getProxiedImageUrl } from "@/utils/imageProxy";
+import { Globe, EyeOff, RotateCcw, Upload } from "lucide-react";
 import { 
   DndContext, 
   useDraggable, 
@@ -12,7 +13,6 @@ import {
   DragOverlay,
   DragStartEvent,
 } from "@dnd-kit/core";
-import { EyeOff, RotateCcw, Upload } from "lucide-react";
 
 // Floating menu for element actions
 function FloatingMenu({
@@ -136,7 +136,7 @@ function DraggableSwappable({
   );
 }
 
-interface Modern2UrlCardProps {
+interface MinimalUrlCardProps {
   data: PhotocardData;
   isGenerating?: boolean;
   background?: BackgroundOptions;
@@ -151,11 +151,10 @@ interface Modern2UrlCardProps {
   isLogoFavicon?: boolean;
   isDragMode?: boolean;
   elementLayout?: {
-    topLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
-    topRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
-    bottomLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
-    bottomRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
-    center: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
+    topLeft: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
+    topRight: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
+    bottomLeft: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
+    bottomRight: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
   };
   onLayoutChange?: (layout: any) => void;
   onVisibilityChange?: (settings: any) => void;
@@ -164,33 +163,49 @@ interface Modern2UrlCardProps {
   onRestoreDefaults?: () => void;
 }
 
-const getBengaliDate = () => {
-  const now = new Date();
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long", 
-    day: "numeric",
-  };
-  return now.toLocaleDateString("bn-BD", options);
-};
+// Helper function to get text shadow based on preset
+function getTextShadow(preset: string, angle: number, textColor: string): string {
+  if (preset === "none") return "none";
+  
+  const angleRad = (angle * Math.PI) / 180;
+  const offsetX = Math.cos(angleRad);
+  const offsetY = Math.sin(angleRad);
+  
+  switch (preset) {
+    case "soft":
+      return `${offsetX * 2}px ${offsetY * 2}px 4px rgba(0, 0, 0, 0.3)`;
+    case "hard":
+      return `${offsetX * 3}px ${offsetY * 3}px 0px rgba(0, 0, 0, 0.8)`;
+    case "glow":
+      return `0 0 10px ${textColor}, 0 0 20px ${textColor}, 0 0 30px ${textColor}`;
+    case "outline":
+      return `-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000`;
+    default:
+      return "none";
+  }
+}
 
-const getBengaliWeekday = () => {
-  const days = [
-    "রবিবার",
-    "সোমবার", 
-    "মঙ্গলবার",
-    "বুধবার",
-    "বৃহস্পতিবার",
-    "শুক্রবার",
-    "শনিবার",
-  ];
-  return days[new Date().getDay()];
-};
+// Helper function to generate text stroke using text-shadow
+function getTextStroke(width: number, color: string): string {
+  if (!width || width === 0) return "none";
+  
+  const shadows: string[] = [];
+  const steps = 8;
+  
+  for (let i = 0; i < steps; i++) {
+    const angle = (i * 2 * Math.PI) / steps;
+    const offsetX = Math.cos(angle) * width;
+    const offsetY = Math.sin(angle) * width;
+    shadows.push(`${offsetX.toFixed(2)}px ${offsetY.toFixed(2)}px 0px ${color}`);
+  }
+  
+  return shadows.join(", ");
+}
 
-export default function Modern2UrlCard({
+export default function MinimalUrlCard({
   data,
-  isGenerating,
-  background,
+  isGenerating = false,
+  background = { type: "solid", color: "#2c2419" },
   id = "photocard",
   fullSize = false,
   frameBorderColor = "#FFFFFF",
@@ -208,18 +223,17 @@ export default function Modern2UrlCard({
   isLogoFavicon = false,
   isDragMode = false,
   elementLayout = {
-    topLeft: 'logo',
-    topRight: 'dateWeek',
+    topLeft: 'dateWeek',
+    topRight: 'favicon',
     bottomLeft: 'qrCode',
     bottomRight: 'cta',
-    center: 'favicon',
   },
   onLayoutChange,
   onVisibilityChange,
   onLogoUpload,
   onFaviconUpload,
   onRestoreDefaults,
-}: Modern2UrlCardProps) {
+}: MinimalUrlCardProps) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedElement, setSelectedElement] = useState<{ id: string; position: { x: number; y: number } } | null>(null);
@@ -258,10 +272,9 @@ export default function Modern2UrlCard({
     if (!selectedElement || !onVisibilityChange) return;
     const elementId = selectedElement.id;
     
-    // Determine which visibility setting to toggle
     const newSettings = { ...visibilitySettings };
     
-    if (elementId === 'logo') {
+    if (elementId === 'favicon') {
       newSettings.showLogo = !newSettings.showLogo;
     } else if (elementId === 'dateWeek') {
       newSettings.showWeek = !newSettings.showWeek;
@@ -270,10 +283,6 @@ export default function Modern2UrlCard({
       newSettings.showQrCode = !newSettings.showQrCode;
     } else if (elementId === 'cta') {
       newSettings.showTitle = !newSettings.showTitle;
-    } else if (elementId === 'favicon') {
-      // Favicon doesn't have a visibility setting - just close menu
-      setSelectedElement(null);
-      return;
     }
     
     onVisibilityChange(newSettings);
@@ -284,13 +293,11 @@ export default function Modern2UrlCard({
   const handleClearElement = () => {
     if (!selectedElement || !onLayoutChange) return;
     
-    // Reset to default layout
     const defaultLayout = {
-      topLeft: 'logo' as const,
-      topRight: 'dateWeek' as const,
+      topLeft: 'dateWeek' as const,
+      topRight: 'favicon' as const,
       bottomLeft: 'qrCode' as const,
       bottomRight: 'cta' as const,
-      center: 'favicon' as const,
     };
     
     onLayoutChange(defaultLayout);
@@ -302,10 +309,8 @@ export default function Modern2UrlCard({
     if (!selectedElement) return;
     const elementId = selectedElement.id;
     
-    // Allow upload for logo
-    if (elementId === 'logo' && onLogoUpload) {
-      fileInputRef.current?.click();
-    } else if (elementId === 'favicon' && onFaviconUpload) {
+    // Allow upload for favicon
+    if (elementId === 'favicon' && onFaviconUpload) {
       faviconInputRef.current?.click();
     }
     setSelectedElement(null);
@@ -314,7 +319,7 @@ export default function Modern2UrlCard({
   // Handle drag start
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
-    setSelectedElement(null); // Close menu when dragging
+    setSelectedElement(null);
   };
 
   // Handle drag end - swap positions
@@ -328,10 +333,8 @@ export default function Modern2UrlCard({
     const activeId = active.id as string;
     const overId = over.id as string;
     
-    // Create new layout by swapping
     const newLayout = { ...elementLayout };
     
-    // Find where activeId and overId are in the layout
     let activeSlot: keyof typeof elementLayout | null = null;
     let overSlot: keyof typeof elementLayout | null = null;
     
@@ -340,7 +343,6 @@ export default function Modern2UrlCard({
       if (element === overId) overSlot = slot as keyof typeof elementLayout;
     });
     
-    // Swap them
     if (activeSlot && overSlot) {
       newLayout[activeSlot] = elementLayout[overSlot];
       newLayout[overSlot] = elementLayout[activeSlot];
@@ -351,39 +353,66 @@ export default function Modern2UrlCard({
     }
   };
 
-  // Generate QR code whenever the URL changes
+  // Get the background color for highlighted text (used in CTA)
+  const getHighlightColor = () => {
+    if (!background) return "#8b6834";
+    if (background.type === "gradient" && background.gradientFrom)
+      return background.gradientFrom;
+    return background.color;
+  };
+
+  // Extract domain from URL for site name
+  const getSiteDomain = () => {
+    try {
+      const url = new URL(data.url);
+      return url.hostname.toLowerCase().replace('www.', '');
+    } catch {
+      return data.siteName?.toLowerCase() || 'example.com';
+    }
+  };
+
+  // Generate QR Code
   useEffect(() => {
     if (data.url) {
       QRCode.toDataURL(data.url, {
-        errorCorrectionLevel: "M",
-        type: "image/png",
+        width: 200,
         margin: 1,
         color: {
           dark: "#000000",
           light: "#FFFFFF",
         },
-        width: 200,
       }).then(setQrCodeUrl);
     }
   }, [data.url]);
 
-  // EXACT COPY of background functions from ModernUrlCard
+  // Background styling
   const getBackgroundStyle = () => {
-    if (!background) return { backgroundColor: "#8b6834" }; // default brown
-
-    if (
-      background.type === "gradient" &&
-      background.gradientFrom &&
-      background.gradientTo
-    ) {
+    if (background.type === "gradient") {
       return {
-        backgroundImage: `linear-gradient(135deg, ${background.gradientFrom}, ${background.gradientTo})`,
+        background: `linear-gradient(135deg, ${background.gradientFrom || background.color}, ${background.gradientTo || background.color})`,
       };
     }
-
-    return { backgroundColor: background.color };
+    return {
+      background: background.color,
+    };
   };
 
+  // Get gradient for image blend - converts background color to rgba
+  const getImageBlendGradient = () => {
+    const baseColor = background.type === 'gradient' 
+      ? (background.gradientFrom || background.color)
+      : background.color;
+    
+    // Convert hex to RGB
+    const hex = baseColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    return `linear-gradient(to bottom, rgba(${r}, ${g}, ${b}, 0) 0%, rgba(${r}, ${g}, ${b}, 1) 100%)`;
+  };
+
+  // Pattern overlay styling
   const getPatternStyle = () => {
     if (!background?.pattern || background.pattern === "none") return {};
 
@@ -436,74 +465,23 @@ export default function Modern2UrlCard({
           opacity,
         };
       case "custom":
-        return background.patternImage
-          ? {
-              backgroundImage: `url(${background.patternImage})`,
-              backgroundSize: "cover",
-              backgroundRepeat: "repeat",
-              opacity,
-            }
-          : {};
+        if (background.patternImage) {
+          return {
+            backgroundImage: `url(${background.patternImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity,
+          };
+        }
+        return {};
       default:
         return {};
     }
   };
 
-  // Get the background color for highlighted text (used in CTA)
-  const getHighlightColor = () => {
-    if (!background) return "#8b6834";
-    if (background.type === "gradient" && background.gradientFrom)
-      return background.gradientFrom;
-    return background.color;
-  };
-
-  const renderElement = (elementType: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon') => {
+  // Render element based on type
+  const renderElement = (elementType: 'favicon' | 'dateWeek' | 'qrCode' | 'cta') => {
     switch (elementType) {
-      case 'logo':
-        if (!visibilitySettings.showLogo) return null;
-        return (
-          <DraggableSwappable 
-            id="logo" 
-            disabled={!isDragMode} 
-            isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('logo', e)}
-          >
-            <div className="flex items-center">
-              <div
-                className={`bg-white border border-gray-200 p-2 min-w-[60px] min-h-[30px] shadow-lg flex items-center justify-center ${
-                  isLogoFavicon ? "rounded-full" : "rounded-lg"
-                }`}
-              >
-                {data.logo ? (
-                  <img
-                    src={getProxiedImageUrl(data.logo)}
-                    alt="Site logo"
-                    className="object-contain w-auto h-auto max-w-[100px] max-h-8"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "/placeholder-icon.png";
-                    }}
-                  />
-                ) : (
-                  <svg
-                    className="w-6 h-6 text-gray-300"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                )}
-              </div>
-            </div>
-          </DraggableSwappable>
-        );
-      
       case 'dateWeek':
         if (!visibilitySettings.showWeek && !visibilitySettings.showDate) return null;
         return (
@@ -513,58 +491,53 @@ export default function Modern2UrlCard({
             isDragMode={isDragMode}
             onClick={(e) => handleElementClick('dateWeek', e)}
           >
-            <div
-              className="text-white font-noto-bengali tracking-wide px-3 py-1 rounded shadow-lg"
-              style={{
-                ...getBackgroundStyle(),
-                fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
-                fontSize: fontStyles?.week.fontSize || "14px",
-                fontWeight: fontStyles?.week.fontWeight || "500",
-                color: fontStyles?.week.color || "#FFFFFF",
-              }}
-            >
-              {visibilitySettings.showWeek && getBengaliWeekday()}
-              {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
-              {visibilitySettings.showDate && getBengaliDate()}
-            </div>
-          </DraggableSwappable>
-        );
-      
-      case 'qrCode':
-        if (!visibilitySettings.showQrCode || !qrCodeUrl) return null;
-        return (
-          <DraggableSwappable 
-            id="qrCode" 
-            disabled={!isDragMode} 
-            isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('qrCode', e)}
-          >
-            <div className="bg-white p-1 rounded-lg flex-shrink-0">
-              <img src={qrCodeUrl} alt="QR Code" className="w-12 h-12" />
-            </div>
-          </DraggableSwappable>
-        );
-      
-      case 'cta':
-        return (
-          <DraggableSwappable 
-            id="cta" 
-            disabled={!isDragMode} 
-            isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('cta', e)}
-          >
-            <div className="bg-white border border-gray-300 py-.5 px-3 text-center max-w-[230px] rounded-sm">
-              <p className="font-noto-bengali text-md font-bold text-gray-900">
-                বিস্তারিত{" "}
-                <span style={{ color: getHighlightColor() }}>
-                  কমেন্টের লিংকে
-                </span>
-              </p>
+            <div className="inline-flex items-center z-[2] relative">
+              <div 
+                className="relative px-4 py-1 backdrop-blur-sm"
+                style={{
+                  background: 'rgba(0, 0, 0, 0.4)',
+                }}
+              >
+                {/* Top border with gap */}
+                <div 
+                  className="absolute left-0 right-2 h-[2px] bg-white"
+                  style={{
+                    top: '-4px',
+                    borderRadius: '2px',
+                  }}
+                />
+                
+                {/* Bottom border with gap */}
+                <div 
+                  className="absolute left-0 right-2 h-[2px] bg-white"
+                  style={{
+                    bottom: '-4px',
+                    borderRadius: '2px',
+                  }}
+                />
+
+                {/* Week and Date - Single Row */}
+                <div
+                  className="font-noto-bengali font-bold text-left whitespace-nowrap"
+                  style={{
+                    fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
+                    fontSize: fontStyles?.week.fontSize || "14px",
+                    fontWeight: fontStyles?.week.fontWeight || "700",
+                    color: fontStyles?.week.color || "#FFFFFF",
+                    letterSpacing: fontStyles?.week.letterSpacing || "0px",
+                  }}
+                >
+                  {visibilitySettings.showWeek && data.weekName}
+                  {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
+                  {visibilitySettings.showDate && data.date}
+                </div>
+              </div>
             </div>
           </DraggableSwappable>
         );
       
       case 'favicon':
+        if (!visibilitySettings.showLogo) return null;
         return (
           <DraggableSwappable 
             id="favicon" 
@@ -572,14 +545,14 @@ export default function Modern2UrlCard({
             isDragMode={isDragMode}
             onClick={(e) => handleElementClick('favicon', e)}
           >
-            <div className="w-12 h-12 bg-gray-100 border-4 border-white rounded-full shadow-xl flex items-center justify-center overflow-hidden">
-              {data.favicon ? (
+            <div className="w-12 h-12 bg-gray-100 shadow-lg rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+              {(data.favicon || data.logo) ? (
                 <img
-                  src={getProxiedImageUrl(data.favicon)}
+                  src={getProxiedImageUrl(data.favicon || data.logo)}
                   alt="Favicon"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain border-2 border-white rounded-full"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/placeholder-icon.png";
+                    (e.target as HTMLImageElement).src = "/placeholder-logo.png";
                   }}
                 />
               ) : (
@@ -601,6 +574,44 @@ export default function Modern2UrlCard({
           </DraggableSwappable>
         );
       
+      case 'qrCode':
+        if (!visibilitySettings.showQrCode || !qrCodeUrl) return null;
+        return (
+          <DraggableSwappable 
+            id="qrCode" 
+            disabled={!isDragMode} 
+            isDragMode={isDragMode}
+            onClick={(e) => handleElementClick('qrCode', e)}
+          >
+            <div className="w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0">
+              <img
+                src={qrCodeUrl}
+                alt="QR Code"
+                className="w-full h-full"
+              />
+            </div>
+          </DraggableSwappable>
+        );
+      
+      case 'cta':
+        return (
+          <DraggableSwappable 
+            id="cta" 
+            disabled={!isDragMode} 
+            isDragMode={isDragMode}
+            onClick={(e) => handleElementClick('cta', e)}
+          >
+            <div className="bg-white border border-gray-300 py-0.5 px-3 text-center max-w-[230px] rounded-sm">
+              <p className="font-noto-bengali text-md font-bold text-gray-900">
+                বিস্তারিত{" "}
+                <span style={{ color: getHighlightColor() }}>
+                  কমেন্টের লিংকে
+                </span>
+              </p>
+            </div>
+          </DraggableSwappable>
+        );
+      
       default:
         return null;
     }
@@ -610,64 +621,55 @@ export default function Modern2UrlCard({
     if (!activeId) return null;
 
     switch (activeId) {
-      case 'logo':
+      case 'dateWeek':
         return (
-          <div className="flex items-center">
-            <div
-              className={`bg-white border border-gray-200 p-2 min-w-[60px] min-h-[30px] shadow-lg flex items-center justify-center ${
-                isLogoFavicon ? "rounded-full" : "rounded-lg"
-              }`}
+          <div className="inline-flex items-center z-[2] relative">
+            <div 
+              className="relative px-4 py-1 backdrop-blur-sm"
+              style={{
+                background: 'rgba(0, 0, 0, 0.4)',
+              }}
             >
-              {data.logo ? (
-                <img
-                  src={getProxiedImageUrl(data.logo)}
-                  alt="Site logo"
-                  className="object-contain w-auto h-auto max-w-[100px] max-h-8"
-                />
-              ) : (
-                <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              )}
+              <div 
+                className="absolute left-0 right-2 h-[2px] bg-white"
+                style={{
+                  top: '-4px',
+                  borderRadius: '2px',
+                }}
+              />
+              <div 
+                className="absolute left-0 right-2 h-[2px] bg-white"
+                style={{
+                  bottom: '-4px',
+                  borderRadius: '2px',
+                }}
+              />
+              <div
+                className="font-noto-bengali font-bold text-left whitespace-nowrap"
+                style={{
+                  fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
+                  fontSize: fontStyles?.week.fontSize || "14px",
+                  fontWeight: fontStyles?.week.fontWeight || "700",
+                  color: fontStyles?.week.color || "#FFFFFF",
+                  letterSpacing: fontStyles?.week.letterSpacing || "0px",
+                }}
+              >
+                {visibilitySettings.showWeek && data.weekName}
+                {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
+                {visibilitySettings.showDate && data.date}
+              </div>
             </div>
           </div>
         );
-      case 'dateWeek':
-        return (
-          <div className="text-white font-noto-bengali tracking-wide px-3 py-1 rounded shadow-lg" style={{
-            ...getBackgroundStyle(),
-            fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
-            fontSize: fontStyles?.week.fontSize || "14px",
-            fontWeight: fontStyles?.week.fontWeight || "500",
-            color: fontStyles?.week.color || "#FFFFFF",
-          }}>
-            {visibilitySettings.showWeek && getBengaliWeekday()}
-            {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
-            {visibilitySettings.showDate && getBengaliDate()}
-          </div>
-        );
-      case 'qrCode':
-        return (
-          <div className="bg-white p-1 rounded-lg flex-shrink-0">
-            <img src={qrCodeUrl} alt="QR Code" className="w-12 h-12" />
-          </div>
-        );
-      case 'cta':
-        return (
-          <div className="bg-white border border-gray-300 py-.5 px-3 text-center max-w-[230px] rounded-sm">
-            <p className="font-noto-bengali text-md font-bold text-gray-900">
-              বিস্তারিত <span style={{ color: getHighlightColor() }}>কমেন্টের লিংকে</span>
-            </p>
-          </div>
-        );
+      
       case 'favicon':
         return (
-          <div className="w-12 h-12 bg-gray-100 border-4 border-white rounded-full shadow-xl flex items-center justify-center overflow-hidden">
-            {data.favicon ? (
+          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+            {(data.favicon || data.logo) ? (
               <img
-                src={getProxiedImageUrl(data.favicon)}
+                src={getProxiedImageUrl(data.favicon || data.logo)}
                 alt="Favicon"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain border-2 border-white rounded-full"
               />
             ) : (
               <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -676,6 +678,26 @@ export default function Modern2UrlCard({
             )}
           </div>
         );
+      
+      case 'qrCode':
+        return (
+          <div className="w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0">
+            <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
+          </div>
+        );
+      
+      case 'cta':
+        return (
+          <div className="bg-white border border-gray-300 py-0.5 px-3 text-center max-w-[230px] rounded-sm">
+            <p className="font-noto-bengali text-md font-bold text-gray-900">
+              বিস্তারিত{" "}
+              <span style={{ color: getHighlightColor() }}>
+                কমেন্টের লিংকে
+              </span>
+            </p>
+          </div>
+        );
+      
       default:
         return null;
     }
@@ -701,23 +723,25 @@ export default function Modern2UrlCard({
         style={getPatternStyle()}
       />
 
-      {/* Image with overlay - Full width at top */}
-      <div
-        className="w-full h-[280px] aspect-video bg-white overflow-hidden relative"
-        style={{
-          border: `${frameBorderThickness}px solid ${frameBorderColor}`,
-        }}
-      >
-        {data.image ? (
-          <img
-            src={getProxiedImageUrl(data.image)}
-            alt="Article image"
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
-            }}
-          />
-        ) : (
+      {/* Top Image Section - Full width, no padding */}
+      <div className="relative w-full h-[240px] overflow-hidden">
+        {/* Main Image */}
+        <div
+          className="w-full h-full"
+          style={{
+            border: `${frameBorderThickness}px solid ${frameBorderColor}`,
+          }}
+        >
+          {data.image ? (
+            <img
+              src={getProxiedImageUrl(data.image)}
+              alt="Article image"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
+              }}
+            />
+          ) : (
             <div className="w-full h-full bg-white flex flex-col items-center justify-center gap-2">
               <svg
                 className="w-12 h-12 text-gray-300"
@@ -728,37 +752,106 @@ export default function Modern2UrlCard({
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={1.5}
+                  strokeWidth={2}
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
               <span className="text-gray-400 text-sm font-inter">No Image</span>
             </div>
           )}
+        </div>
 
-        {/* Overlay: Logo and Date on top of image */}
-        <div className="absolute top-0 left-0 right-0 px-6 pt-4">
-          <div className="flex justify-between items-center">
-            {/* Top Left Slot */}
-            {renderElement(elementLayout.topLeft)}
-            
-            {/* Top Right Slot */}
-            {renderElement(elementLayout.topRight)}
-          </div>
+        {/* Gradient Overlay - Bottom half of image blends to background */}
+        <div 
+          className="absolute left-0 right-0 bottom-0 h-[140px] pointer-events-none z-[1]"
+          style={{
+            background: getImageBlendGradient()
+          }}
+        />
+
+        {/* Overlay Content - Week/Date and Favicon */}
+        <div className="absolute inset-0 flex justify-between items-start pt-6 pr-4 z-[2]">
+          {/* Top Left Slot */}
+          {renderElement(elementLayout.topLeft)}
+          
+          {/* Top Right Slot */}
+          {renderElement(elementLayout.topRight)}
         </div>
       </div>
 
-      {/* Center Circle positioned outside image container for full visibility */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 z-50" style={{ top: '240px', marginTop: '16px' }}>
-        {renderElement(elementLayout.center)}
-      </div>
+      {/* Logo Section with Complex Shape - Overlapping image and text sections */}
+      {visibilitySettings.showLogo && (
+        <div className="relative -mt-10 z-20 flex justify-center">
+          <div className="relative w-[240px] h-[54px]">
+            {/* Complex SVG Shape Background */}
+            <svg 
+              viewBox="0 0 449 100" 
+              className="absolute inset-0 w-full h-full"
+              preserveAspectRatio="none"
+              style={{
+                filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))',
+              }}
+            >
+              {/* Main parallelogram */}
+              <path 
+                d="M448 15H48.186L0 83H403.721L448 15Z" 
+                fill="#FFFFFF"
+              />
+              {/* Top accent */}
+              <path 
+                d="M35.2299 0L0 49H15.6578L43.0588 10.3158H234.866L244 0H35.2299Z" 
+                fill="#FFFFFF"
+              />
+              {/* Bottom accent */}
+              <path 
+                d="M413.914 100L449 50H433.406L406.118 89.4737H215.096L206 100H413.914Z" 
+                fill="#FFFFFF"
+              />
+            </svg>
 
-      {/* Content below image */}
-      <div className="px-6 pt-2 pb-3 relative z-10">
+            {/* Logo Image or Placeholder - Centered */}
+            <div className="absolute inset-0 flex items-center justify-center p-3">
+              {data.logo ? (
+                <img
+                  src={getProxiedImageUrl(data.logo)}
+                  alt="Logo"
+                  className="max-w-[120px] max-h-[40px] object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "/placeholder-logo.png";
+                  }}
+                />
+              ) : (
+                <svg
+                  className="w-5 h-5 text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bottom Content Section with Fade Effect */}
+      <div 
+        className="px-6 pt-6 pb-4 relative z-10"
+        style={{
+          background: `linear-gradient(to bottom, transparent 0%, ${background.type === 'gradient' ? background.gradientFrom || background.color : background.color} 20%, ${background.type === 'gradient' ? background.gradientTo || background.color : background.color} 100%)`
+        }}
+      >
+
         {/* Title */}
         {visibilitySettings.showTitle && (
           <h2
-            className="text-white font-noto-bengali text-center leading-tight mb-4 px-2 py-1 mt-6"
+            className="text-white font-noto-bengali text-center leading-tight mb-4 px-2 py-1"
             style={{
               fontFamily: fontStyles?.headline.fontFamily || "Noto Sans Bengali",
               fontSize: fontStyles?.headline.fontSize || "24px",
@@ -766,25 +859,55 @@ export default function Modern2UrlCard({
               color: fontStyles?.headline.color || "#FFFFFF",
               textAlign: fontStyles?.headline.textAlign || "center",
               letterSpacing: fontStyles?.headline.letterSpacing || "0px",
+              textShadow: (() => {
+                const textColor = fontStyles?.headline.color || "#FFFFFF";
+                const shadow = getTextShadow(
+                  fontStyles?.headline.textShadow?.preset || "none",
+                  fontStyles?.headline.textShadow?.angle || 135,
+                  textColor
+                );
+                const stroke = getTextStroke(
+                  fontStyles?.headline.textStroke?.width || 0,
+                  fontStyles?.headline.textStroke?.color || "#000000"
+                );
+                
+                // Combine both effects
+                if (shadow !== "none" && stroke !== "none") {
+                  return `${stroke}, ${shadow}`;
+                } else if (stroke !== "none") {
+                  return stroke;
+                } else {
+                  return shadow;
+                }
+              })(),
             } as React.CSSProperties}
           >
             {data.title}
           </h2>
         )}
 
-        {/* QR Code and CTA */}
-        <div className="flex items-center justify-between gap-4">
+        {/* Footer Row - QR Code and Site Info */}
+        <div className="flex justify-between items-end mt-0 gap-3">
           {/* Bottom Left Slot */}
           {renderElement(elementLayout.bottomLeft)}
 
-          {/* Bottom Right Slot */}
-          <div className="ml-auto">
+          {/* Site Info - Right */}
+          <div className="flex-1 flex flex-col items-end gap-2">
+            {/* Site Name with Globe Icon */}
+            <div className="flex items-center gap-1">
+              <Globe className="w-4 h-4 text-white opacity-80" />
+              <span className="text-white text-sm font-inter opacity-90">
+                {getSiteDomain()}
+              </span>
+            </div>
+
+            {/* Bottom Right Slot */}
             {renderElement(elementLayout.bottomRight)}
           </div>
         </div>
       </div>
 
-      {/* Ad Banner - Full width at bottom - EXACT COPY */}
+      {/* Ad Banner - Full width at bottom, OUTSIDE the padding */}
       {adBannerImage && (
         <div className="w-full relative z-10 overflow-hidden" style={{ height: "60px" }}>
           <img
@@ -793,7 +916,7 @@ export default function Modern2UrlCard({
             className="w-full h-full object-cover"
             style={{
               transform: `scale(${adBannerZoom / 100})`,
-              transformOrigin: 'center',
+              transformOrigin: "center",
             }}
           />
         </div>
@@ -826,7 +949,7 @@ export default function Modern2UrlCard({
         elementType={selectedElement.id.replace(/\d+$/, '')}
         onHide={handleHideElement}
         onClear={handleClearElement}
-        onUpload={(selectedElement.id === 'logo' || selectedElement.id === 'favicon') ? handleUploadElement : undefined}
+        onUpload={selectedElement.id === 'favicon' ? handleUploadElement : undefined}
         position={selectedElement.position}
         isVisible={true}
       />
@@ -876,6 +999,6 @@ export default function Modern2UrlCard({
         e.target.value = '';
       }}
     />
-  </DndContext>
+    </DndContext>
   );
 }

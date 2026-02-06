@@ -9,6 +9,7 @@ import ClassicCustomCard from "@/components/cards/custom-cards/ClassicCustomCard
 import ModernCustomCard from "@/components/cards/custom-cards/ModernCustomCard";
 import Modern2CustomCard from "@/components/cards/custom-cards/Modern2CustomCard";
 import VerticalCustomCard from "@/components/cards/custom-cards/VerticalCustomCard";
+import MinimalCustomCard from "@/components/cards/custom-cards/MinimalCustomCard";
 import dynamic from "next/dynamic";
 import DownloadControls from "@/components/DownloadControls";
 import CustomizationPanel from "@/components/CustomizationPanel";
@@ -21,6 +22,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function CustomPage() {
   const [logo, setLogo] = useState<string>("");
+  const [favicon, setFavicon] = useState<string>("");
   const [newsImage, setNewsImage] = useState<string>("");
   const [title, setTitle] = useState("");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -85,6 +87,15 @@ export default function CustomPage() {
     right: 'cta',
     rightTop: 'empty',
     rightBottom: 'empty',
+  });
+  
+  // Minimal theme layout (2-slot system: top positions only)
+  const [minimalElementLayout, setMinimalElementLayout] = useState<{
+    topLeft: 'logo' | 'dateWeek' | 'cta';
+    topRight: 'logo' | 'dateWeek' | 'cta';
+  }>({
+    topLeft: 'dateWeek',
+    topRight: 'logo',
   });
   
   const [ctaAlignment, setCtaAlignment] = useState<'left' | 'center' | 'right'>('center');
@@ -233,6 +244,16 @@ export default function CustomPage() {
     reader.readAsDataURL(file);
   };
 
+  // Favicon upload from drag menu
+  const handleFaviconUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setFavicon(result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Restore all settings to defaults
   const handleRestoreDefaults = () => {
     // Reset element layout
@@ -249,6 +270,12 @@ export default function CustomPage() {
       right: 'cta',
       rightTop: 'empty',
       rightBottom: 'empty',
+    });
+    
+    // Reset minimal element layout
+    setMinimalElementLayout({
+      topLeft: 'dateWeek',
+      topRight: 'logo',
     });
     
     setCtaAlignment('center');
@@ -391,6 +418,7 @@ export default function CustomPage() {
       ctaAlignment,
       onVisibilityChange: setVisibilitySettings,
       onLogoUpload: handleLogoUpload,
+      onFaviconUpload: handleFaviconUpload,
       onRestoreDefaults: handleRestoreDefaults,
     };
 
@@ -407,6 +435,12 @@ export default function CustomPage() {
             {...baseProps} 
             elementLayout={modern2ElementLayout}
             onLayoutChange={setModern2ElementLayout}
+          />
+        ) : theme === "minimal" ? (
+          <MinimalCustomCard 
+            {...baseProps} 
+            elementLayout={minimalElementLayout}
+            onLayoutChange={setMinimalElementLayout}
           />
         ) : theme === "modern" ? (
           <ModernCustomCard 
@@ -504,6 +538,7 @@ export default function CustomPage() {
         if (parsed.currentTitle) setCurrentTitle(parsed.currentTitle);
         if (parsed.elementLayout) setElementLayout(parsed.elementLayout);
         if (parsed.verticalElementLayout) setVerticalElementLayout(parsed.verticalElementLayout);
+        if (parsed.minimalElementLayout) setMinimalElementLayout(parsed.minimalElementLayout);
         if (parsed.ctaAlignment) setCtaAlignment(parsed.ctaAlignment);
       }
     } catch (error) {
@@ -532,6 +567,7 @@ export default function CustomPage() {
           currentTitle,
           elementLayout,
           verticalElementLayout,
+          minimalElementLayout,
           ctaAlignment,
           timestamp: Date.now(),
         };
@@ -586,6 +622,7 @@ export default function CustomPage() {
     currentTitle,
     elementLayout,
     verticalElementLayout,
+    minimalElementLayout,
     ctaAlignment,
   ]);
 
@@ -618,7 +655,7 @@ export default function CustomPage() {
     title: title || mockData.title,
     image: newsImage || mockData.image,
     logo: logo || mockData.logo,
-    favicon: "",
+    favicon: favicon,
     siteName: "Custom Card",
     url: "",
     weekName: new Date().toLocaleDateString("bn-BD", { weekday: "long" }),

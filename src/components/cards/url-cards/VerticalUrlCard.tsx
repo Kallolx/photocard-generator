@@ -806,6 +806,7 @@ export default function VerticalUrlCard({
               <div 
                 className="text-white font-noto-bengali mb-4"
                 style={{
+                  fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
                   fontSize: fontStyles?.week.fontSize || "12px",
                   fontWeight: fontStyles?.week.fontWeight || "500",
                   color: fontStyles?.week.color || "#FFFFFF",
