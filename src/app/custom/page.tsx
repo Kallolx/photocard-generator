@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import ClassicCustomCard from "@/components/cards/custom-cards/ClassicCustomCard";
 import ModernCustomCard from "@/components/cards/custom-cards/ModernCustomCard";
+import Modern2CustomCard from "@/components/cards/custom-cards/Modern2CustomCard";
 import VerticalCustomCard from "@/components/cards/custom-cards/VerticalCustomCard";
 import dynamic from "next/dynamic";
 import DownloadControls from "@/components/DownloadControls";
@@ -56,6 +57,21 @@ export default function CustomPage() {
     topRight: 'dateWeek',
     bottomLeft: 'socialMedia',
     bottomRight: 'cta',
+  });
+  
+  // Modern2 layout with center position for favicon
+  const [modern2ElementLayout, setModern2ElementLayout] = useState<{
+    topLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
+    topRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
+    bottomLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
+    bottomRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
+    center: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
+  }>({
+    topLeft: 'logo',
+    topRight: 'dateWeek',
+    bottomLeft: 'socialMedia',
+    bottomRight: 'website',
+    center: 'favicon',
   });
   
   // Vertical theme layout (4-slot system: left content + right positions)
@@ -386,6 +402,12 @@ export default function CustomPage() {
             elementLayout={verticalElementLayout}
             onLayoutChange={setVerticalElementLayout}
           />
+        ) : theme === "modern2" ? (
+          <Modern2CustomCard 
+            {...baseProps} 
+            elementLayout={modern2ElementLayout}
+            onLayoutChange={setModern2ElementLayout}
+          />
         ) : theme === "modern" ? (
           <ModernCustomCard 
             {...baseProps} 
@@ -654,7 +676,7 @@ export default function CustomPage() {
 
           {/* Left Sidebar */}
           <div
-            className="w-full bg-[#f5f0e8] p-4 md:p-6 md:overflow-y-auto"
+            className="w-full bg-[#f5f0e8] p-4 md:p-6 flex flex-col md:min-h-0"
             style={isDesktop ? { width: `${leftPanelWidth}%` } : undefined}
           >
             {/* Custom Input Section */}
@@ -902,7 +924,7 @@ export default function CustomPage() {
             </div>
 
             {/* Customization Panel */}
-            <div className="mt-6">
+            <div className="mt-6 flex-1 md:min-h-0 md:overflow-hidden">
               <CustomizationPanel
                 background={background}
                 onBackgroundChange={setBackground}
@@ -1099,7 +1121,7 @@ export default function CustomPage() {
                     
                     <div className="flex flex-col items-center pt-16">
                       <div className="flex-shrink-0">
-                        {renderCard(photocardData, "photocard-custom")}
+                        {renderCard(photocardData, "photocard-custom", true)}
                       </div>
 
                       {/* Download controls */}

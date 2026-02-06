@@ -146,6 +146,16 @@ export default function DownloadControls({
       
       container.appendChild(clone);
       
+      // Remove ad banner placeholder if present (it should only show during editing, not in downloads)
+      // Find divs that contain "Ad Banner Area" text - this is the placeholder
+      const allDivs = Array.from(clone.querySelectorAll('div'));
+      const adBannerPlaceholder = allDivs.find(div => 
+        div.textContent?.includes('Ad Banner Area (60px height)')
+      );
+      if (adBannerPlaceholder) {
+        adBannerPlaceholder.remove();
+      }
+      
       // Update images in clone
       const cloneImages = Array.from(clone.querySelectorAll("img"));
       cloneImages.forEach(img => {
@@ -197,10 +207,35 @@ export default function DownloadControls({
     if (!photocardElement) return;
 
     try {
-      const dataUrl = await toPng(photocardElement, {
+      // Clone the element and remove placeholder
+      const clone = photocardElement.cloneNode(true) as HTMLElement;
+      const container = document.createElement('div');
+      container.style.position = 'absolute';
+      container.style.top = '-9999px';
+      container.style.left = '-9999px';
+      container.style.width = photocardElement.offsetWidth + 'px';
+      document.body.appendChild(container);
+      container.appendChild(clone);
+      
+      // Remove ad banner placeholder
+      const allDivs = Array.from(clone.querySelectorAll('div'));
+      const adBannerPlaceholder = allDivs.find(div => 
+        div.textContent?.includes('Ad Banner Area (60px height)')
+      );
+      if (adBannerPlaceholder) {
+        adBannerPlaceholder.remove();
+      }
+      
+      // Wait a bit for layout
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      
+      const dataUrl = await toPng(clone, {
         quality: 0.95,
         pixelRatio: 2,
       });
+      
+      // Cleanup
+      document.body.removeChild(container);
 
       // Convert data URL to blob
       const response = await fetch(dataUrl);

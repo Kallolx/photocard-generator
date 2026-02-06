@@ -900,7 +900,7 @@ export default function ClassicCustomCard({
       )}
 
       {/* Ad Banner - Full width at bottom */}
-      {adBannerImage ? (
+      {adBannerImage && (
         <div className="w-full relative z-10 overflow-hidden" style={{ height: "60px" }}>
           <img
             src={adBannerImage}
@@ -912,7 +912,8 @@ export default function ClassicCustomCard({
             }}
           />
         </div>
-      ) : (
+      )}
+      {!adBannerImage && !isGenerating && (
         <div
           className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
           style={{ height: "60px" }}

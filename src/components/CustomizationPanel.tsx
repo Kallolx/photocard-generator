@@ -173,6 +173,12 @@ export default function CustomizationPanel({
       thumbnail: "/themes/cus-2.png",
     },
     {
+      id: "modern2",
+      name: "Modern 2",
+      locked: isFreeUser, // Lock Modern 2 theme for Free users
+      thumbnail: "/themes/cus-4.png",
+    },
+    {
       id: "vertical",
       name: "Vertical",
       locked: isFreeUser, // Lock Vertical theme for Free users
@@ -182,7 +188,10 @@ export default function CustomizationPanel({
 
   const handleThemeChange = (themeId: string, isLocked: boolean) => {
     if (isLocked) {
-      const featureName = themeId === "modern" ? "Modern Theme" : themeId === "vertical" ? "Vertical Theme" : "Premium Theme";
+      const featureName = themeId === "modern" ? "Modern Theme" 
+        : themeId === "modern2" ? "Modern 2 Theme"
+        : themeId === "vertical" ? "Vertical Theme" 
+        : "Premium Theme";
       setUpgradeFeature(featureName);
       setShowUpgradeModal(true);
       return;
@@ -230,9 +239,9 @@ export default function CustomizationPanel({
   ];
 
   return (
-    <div className="bg-[#f5f0e8] p-6 border-2 border-[#d4c4b0]">
+    <div className="bg-[#f5f0e8] p-6 border-2 border-[#d4c4b0] flex flex-col h-full md:min-h-0">
       {/* Tab Navigation - Modern Scrollable with fade indicators */}
-      <div className="relative mb-6 -mx-6">
+      <div className="relative mb-6 -mx-6 flex-shrink-0">
         {/* Left fade indicator */}
         <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#f5f0e8] to-transparent z-10 pointer-events-none" />
         
@@ -286,7 +295,7 @@ export default function CustomizationPanel({
       </div>
 
       {/* Tab Content */}
-      <div className="space-y-3">
+      <div className="flex-1 overflow-y-auto space-y-3 md:min-h-0 no-scrollbar">
         {/* Background Tab */}
         {activeTab === "Background" && (
           <>

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import UrlComponent from "@/components/UrlComponent";
 import ModernUrlCard from "@/components/cards/url-cards/ModernUrlCard";
+import Modern2UrlCard from "@/components/cards/url-cards/Modern2UrlCard";
 import VerticalUrlCard from "@/components/cards/url-cards/VerticalUrlCard";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import {
@@ -86,6 +87,21 @@ export default function Home() {
     rightBottom: 'qrCode',
   });
 
+  // Modern2 theme layout (5-slot system: includes center favicon)
+  const [modern2ElementLayout, setModern2ElementLayout] = useState<{
+    topLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
+    topRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
+    bottomLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
+    bottomRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
+    center: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
+  }>({
+    topLeft: 'logo',
+    topRight: 'dateWeek',
+    bottomLeft: 'qrCode',
+    bottomRight: 'cta',
+    center: 'favicon',
+  });
+
   // Font styles state
   const [fontStyles, setFontStyles] = useState<CardFontStyles>({
     week: {
@@ -126,6 +142,7 @@ export default function Home() {
 
   // Editing state
   const [currentLogo, setCurrentLogo] = useState<string>("");
+  const [currentFavicon, setCurrentFavicon] = useState<string>("");
   const [currentImage, setCurrentImage] = useState<string>("");
   const [currentTitle, setCurrentTitle] = useState<string>("");
   const [isLogoFavicon, setIsLogoFavicon] = useState(false);
@@ -135,7 +152,7 @@ export default function Home() {
     title: currentTitle || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
     image: currentImage || "",
     logo: currentLogo || "",
-    favicon: "https://www.google.com/favicon.ico",
+    favicon: currentFavicon || "",
     siteName: "Example News",
     url: "https://example.com",
     weekName: "শনিবার",
@@ -310,6 +327,15 @@ export default function Home() {
     reader.readAsDataURL(file);
   };
 
+  const handleFaviconUpload = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setCurrentFavicon(result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Restore all settings to defaults
   const handleRestoreDefaults = () => {
     // Reset element layout for regular themes
@@ -318,6 +344,15 @@ export default function Home() {
       topRight: 'dateWeek',
       bottomLeft: 'qrCode',
       bottomRight: 'cta',
+    });
+    
+    // Reset modern2 element layout
+    setModern2ElementLayout({
+      topLeft: 'logo',
+      topRight: 'dateWeek',
+      bottomLeft: 'qrCode',
+      bottomRight: 'cta',
+      center: 'favicon',
     });
     
     // Reset vertical element layout
@@ -420,6 +455,7 @@ export default function Home() {
       title: currentTitle || cardData.title,
       image: currentImage || cardData.image,
       logo: currentLogo || cardData.logo,
+      favicon: currentFavicon || cardData.favicon,
     };
 
     const commonProps = {
@@ -438,6 +474,7 @@ export default function Home() {
       isDragMode,
       onVisibilityChange: setVisibilitySettings,
       onLogoUpload: handleLogoUpload,
+      onFaviconUpload: handleFaviconUpload,
       onRestoreDefaults: handleRestoreDefaults,
     };
 
@@ -454,6 +491,12 @@ export default function Home() {
             {...commonProps}
             elementLayout={elementLayout}
             onLayoutChange={setElementLayout}
+          />
+        ) : theme === "modern2" ? (
+          <Modern2UrlCard
+            {...commonProps}
+            elementLayout={modern2ElementLayout}
+            onLayoutChange={setModern2ElementLayout}
           />
         ) : (
           <ClassicUrlCard
@@ -689,6 +732,7 @@ export default function Home() {
              root.render(
                <VerticalUrlCard 
                  data={item.data}
+                 isGenerating={true}
                  background={background}
                  id={`temp-card-${i}`}
                  fullSize={true}
@@ -707,6 +751,7 @@ export default function Home() {
              root.render(
                <ModernUrlCard 
                  data={item.data}
+                 isGenerating={true}
                  background={background}
                  id={`temp-card-${i}`}
                  fullSize={true}
@@ -725,6 +770,7 @@ export default function Home() {
              root.render(
                <ClassicUrlCard 
                  data={item.data}
+                 isGenerating={true}
                  background={background}
                  id={`temp-card-${i}`}
                  fullSize={true}
@@ -871,7 +917,7 @@ export default function Home() {
         <div className="flex flex-1 flex-col md:flex-row md:min-h-0 relative max-w-[1920px] mx-auto w-full">
           {/* Left Sidebar */}
           <div
-            className="w-full bg-[#f5f0e8] p-4 md:p-6 md:overflow-y-auto"
+            className="w-full bg-[#f5f0e8] p-4 md:p-6 flex flex-col md:min-h-0"
             style={isDesktop ? { width: `${leftPanelWidth}%` } : undefined}
           >
             <UrlComponent
@@ -894,7 +940,7 @@ export default function Home() {
             />
 
             {/* Customization Panel */}
-            <div className="mt-6">
+            <div className="mt-6 flex-1 md:min-h-0 md:overflow-hidden">
               <CustomizationPanel
                 background={background}
                 onBackgroundChange={setBackground}
