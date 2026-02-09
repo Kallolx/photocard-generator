@@ -221,6 +221,7 @@ export default function MinimalUrlCard({
     showLogo: true,
     showQrCode: true,
     showTitle: true,
+    showAdBanner:false, 
   },
   isLogoFavicon = false,
   isDragMode = false,
@@ -603,14 +604,14 @@ export default function MinimalUrlCard({
             isDragMode={isDragMode}
             onClick={(e) => handleElementClick('cta', e)}
           >
-            <div className="bg-white border border-gray-300 py-0.5 px-3 text-center max-w-[230px] rounded-sm">
-              <p className="font-noto-bengali text-md font-bold text-gray-900">
-                বিস্তারিত{" "}
-                <span style={{ color: getHighlightColor() }}>
-                  কমেন্টের লিংকে
-                </span>
-              </p>
-            </div>
+            <div className="bg-white border border-gray-300 py-0.5 px-3 text-center rounded-sm">
+                <p className="font-noto-bengali text-xs font-bold text-gray-900">
+                  বিস্তারিত{" "}
+                  <span style={{ color: getHighlightColor() }}>
+                    কমেন্টের লিংকে
+                  </span>
+                </p>
+              </div>
           </DraggableSwappable>
         );
       
@@ -898,7 +899,7 @@ export default function MinimalUrlCard({
             {/* Site Name with Globe Icon */}
             <div className="flex items-center gap-1">
               <Globe className="w-4 h-4 text-white opacity-80" />
-              <span className="text-white text-sm font-inter opacity-90">
+              <span className="text-white text-[10px] font-inter opacity-90">
                 {getSiteDomain()}
               </span>
             </div>
@@ -910,7 +911,7 @@ export default function MinimalUrlCard({
       </div>
 
       {/* Ad Banner - Full width at bottom, OUTSIDE the padding */}
-      {adBannerImage && (
+      {visibilitySettings?.showAdBanner && adBannerImage && (
         <div className="w-full relative z-10 overflow-hidden" style={{ height: "60px" }}>
           <img
             src={adBannerImage}
@@ -929,13 +930,13 @@ export default function MinimalUrlCard({
           />
         </div>
       )}
-      {!adBannerImage && !isGenerating && (
+      {visibilitySettings?.showAdBanner && !adBannerImage && !isGenerating && (
         <div
           className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
-          style={{ height: "60px" }}
+          style={{ height: "80px" }}
         >
           <span className="text-[#5d4e37] text-xs font-inter">
-            Ad Banner Area (60px height)
+            Ad Banner Area (80px height)
           </span>
         </div>
       )}

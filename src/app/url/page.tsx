@@ -12,7 +12,7 @@ import MinimalUrlCard from "@/components/cards/url-cards/MinimalUrlCard";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import {
   PhotocardData,
-  BackgroundOptions,  
+  BackgroundOptions,
   MultiplePhotocardData,
   UrlData,
   CardFontStyles,
@@ -65,56 +65,56 @@ export default function Home() {
   const [theme, setTheme] = useState<string>("classic");
   const [isDragMode, setIsDragMode] = useState(false);
   const [elementLayout, setElementLayout] = useState<{
-    topLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta';
-    topRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta';
-    bottomLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta';
-    bottomRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta';
+    topLeft: "logo" | "dateWeek" | "qrCode" | "cta";
+    topRight: "logo" | "dateWeek" | "qrCode" | "cta";
+    bottomLeft: "logo" | "dateWeek" | "qrCode" | "cta";
+    bottomRight: "logo" | "dateWeek" | "qrCode" | "cta";
   }>({
-    topLeft: 'logo',
-    topRight: 'dateWeek',
-    bottomLeft: 'qrCode',
-    bottomRight: 'cta',
+    topLeft: "logo",
+    topRight: "dateWeek",
+    bottomLeft: "qrCode",
+    bottomRight: "cta",
   });
 
   // Vertical theme layout (4-slot system: left content + right positions)
   const [verticalElementLayout, setVerticalElementLayout] = useState<{
-    left: 'logo' | 'cta' | 'qrCode' | 'empty';
-    right: 'logo' | 'cta' | 'qrCode' | 'empty';
-    rightTop: 'logo' | 'cta' | 'qrCode' | 'empty';
-    rightBottom: 'logo' | 'cta' | 'qrCode' | 'empty';
+    left: "logo" | "cta" | "qrCode" | "empty";
+    right: "logo" | "cta" | "qrCode" | "empty";
+    rightTop: "logo" | "cta" | "qrCode" | "empty";
+    rightBottom: "logo" | "cta" | "qrCode" | "empty";
   }>({
-    left: 'logo',
-    right: 'cta',
-    rightTop: 'empty',
-    rightBottom: 'qrCode',
+    left: "logo",
+    right: "cta",
+    rightTop: "empty",
+    rightBottom: "qrCode",
   });
 
   // Modern2 theme layout (5-slot system: includes center favicon)
   const [modern2ElementLayout, setModern2ElementLayout] = useState<{
-    topLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
-    topRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
-    bottomLeft: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
-    bottomRight: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
-    center: 'logo' | 'dateWeek' | 'qrCode' | 'cta' | 'favicon';
+    topLeft: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
+    topRight: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
+    bottomLeft: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
+    bottomRight: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
+    center: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
   }>({
-    topLeft: 'logo',
-    topRight: 'dateWeek',
-    bottomLeft: 'qrCode',
-    bottomRight: 'cta',
-    center: 'favicon',
+    topLeft: "logo",
+    topRight: "dateWeek",
+    bottomLeft: "qrCode",
+    bottomRight: "cta",
+    center: "favicon",
   });
 
   // Minimal theme layout (4-slot system: dateWeek, favicon, qrCode, cta)
   const [minimalElementLayout, setMinimalElementLayout] = useState<{
-    topLeft: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
-    topRight: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
-    bottomLeft: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
-    bottomRight: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
+    topLeft: "favicon" | "dateWeek" | "qrCode" | "cta";
+    topRight: "favicon" | "dateWeek" | "qrCode" | "cta";
+    bottomLeft: "favicon" | "dateWeek" | "qrCode" | "cta";
+    bottomRight: "favicon" | "dateWeek" | "qrCode" | "cta";
   }>({
-    topLeft: 'dateWeek',
-    topRight: 'favicon',
-    bottomLeft: 'qrCode',
-    bottomRight: 'cta',
+    topLeft: "dateWeek",
+    topRight: "favicon",
+    bottomLeft: "qrCode",
+    bottomRight: "cta",
   });
 
   // Font styles state
@@ -143,6 +143,14 @@ export default function Home() {
       textAlign: "center",
       letterSpacing: "0px",
     },
+    footer: {
+      fontFamily: "Noto Sans Bengali",
+      fontSize: "12px",
+      fontWeight: "500",
+      color: "#FFFFFF",
+      textAlign: "left",
+      letterSpacing: "0px",
+    },
   });
 
   // Visibility settings state
@@ -153,6 +161,7 @@ export default function Home() {
       showLogo: true,
       showQrCode: true,
       showTitle: true,
+      showAdBanner: true,
     });
 
   // Editing state
@@ -164,7 +173,8 @@ export default function Home() {
 
   // Mock data for preview
   const mockData: PhotocardData = {
-    title: currentTitle || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
+    title:
+      currentTitle || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
     image: currentImage || "",
     logo: currentLogo || "",
     favicon: currentFavicon || "",
@@ -191,7 +201,7 @@ export default function Home() {
   useEffect(() => {
     if (theme === "vertical") {
       // Set specific defaults for vertical theme
-      setFontStyles(prev => ({
+      setFontStyles((prev) => ({
         ...prev,
         week: {
           ...prev.week,
@@ -208,7 +218,7 @@ export default function Home() {
       }));
     } else {
       // Reset to default for other themes
-      setFontStyles(prev => ({
+      setFontStyles((prev) => ({
         ...prev,
         week: {
           ...prev.week,
@@ -292,7 +302,7 @@ export default function Home() {
       } catch (creditError: any) {
         // Silently fail - card is already generated, this is just for tracking
         console.warn("Could not record card generation:", creditError);
-        
+
         // Still try to refresh credits even if recording failed
         try {
           await refreshCredits();
@@ -355,37 +365,37 @@ export default function Home() {
   const handleRestoreDefaults = () => {
     // Reset element layout for regular themes
     setElementLayout({
-      topLeft: 'logo',
-      topRight: 'dateWeek',
-      bottomLeft: 'qrCode',
-      bottomRight: 'cta',
+      topLeft: "logo",
+      topRight: "dateWeek",
+      bottomLeft: "qrCode",
+      bottomRight: "cta",
     });
-    
+
     // Reset modern2 element layout
     setModern2ElementLayout({
-      topLeft: 'logo',
-      topRight: 'dateWeek',
-      bottomLeft: 'qrCode',
-      bottomRight: 'cta',
-      center: 'favicon',
+      topLeft: "logo",
+      topRight: "dateWeek",
+      bottomLeft: "qrCode",
+      bottomRight: "cta",
+      center: "favicon",
     });
-    
+
     // Reset vertical element layout
     setVerticalElementLayout({
-      left: 'logo',
-      right: 'cta',
-      rightTop: 'empty',
-      rightBottom: 'qrCode',
+      left: "logo",
+      right: "cta",
+      rightTop: "empty",
+      rightBottom: "qrCode",
     });
-    
+
     // Reset minimal element layout
     setMinimalElementLayout({
-      topLeft: 'dateWeek',
-      topRight: 'favicon',
-      bottomLeft: 'qrCode',
-      bottomRight: 'cta',
+      topLeft: "dateWeek",
+      topRight: "favicon",
+      bottomLeft: "qrCode",
+      bottomRight: "cta",
     });
-    
+
     // Reset visibility settings
     setVisibilitySettings({
       showWeek: true,
@@ -393,8 +403,9 @@ export default function Home() {
       showLogo: true,
       showQrCode: true,
       showTitle: true,
+      showAdBanner: true,
     });
-    
+
     // Reset font styles based on current theme
     if (theme === "vertical") {
       setFontStyles({
@@ -420,6 +431,14 @@ export default function Home() {
           fontWeight: "700",
           color: "#FFFFFF",
           textAlign: "center",
+          letterSpacing: "0px",
+        },
+        footer: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "left",
           letterSpacing: "0px",
         },
       });
@@ -449,18 +468,26 @@ export default function Home() {
           textAlign: "center",
           letterSpacing: "0px",
         },
+        footer: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
       });
     }
-    
+
     // Reset frame border
     setFrameBorderColor("#FFFFFF");
     setFrameBorderThickness(0);
-    
+
     // Reset ad banner
     setAdBannerImage(null);
     setAdBannerZoom(100);
     setAdBannerPosition({ x: 0, y: 0 });
-    
+
     // Reset background to default
     setBackground({
       type: "solid",
@@ -547,14 +574,17 @@ export default function Home() {
     setIsResizing(true);
   };
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizing) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isResizing) return;
 
-    const newWidth = (e.clientX / window.innerWidth) * 100;
-    if (newWidth > 20 && newWidth < 60) {
-      setLeftPanelWidth(newWidth);
-    }
-  }, [isResizing]);
+      const newWidth = (e.clientX / window.innerWidth) * 100;
+      if (newWidth > 20 && newWidth < 60) {
+        setLeftPanelWidth(newWidth);
+      }
+    },
+    [isResizing],
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);
@@ -584,9 +614,6 @@ export default function Home() {
   }, []);
 
   // No localStorage for URL cards as per requirement
-
-
-
 
   const handleUrlCleared = () => {
     setClearUrl(false);
@@ -719,7 +746,7 @@ export default function Home() {
       } catch (creditError) {
         // Silently fail - cards are already generated
         console.warn("Could not record batch generation:", creditError);
-        
+
         // Still try to refresh credits
         try {
           await refreshCredits();
@@ -739,7 +766,7 @@ export default function Home() {
     try {
       const zip = new JSZip();
       const folder = zip.folder("photocards");
-      
+
       // Create a hidden container for rendering
       const container = document.createElement("div");
       container.style.position = "fixed";
@@ -751,100 +778,100 @@ export default function Home() {
       // Process each card
       for (let i = 0; i < completedPhotocards.length; i++) {
         const item = completedPhotocards[i];
-        
+
         // 1. Render card into the hidden container
         const cardWrapper = document.createElement("div");
         cardWrapper.style.display = "inline-block";
         container.appendChild(cardWrapper);
-        
+
         const root = createRoot(cardWrapper);
-        
+
         // Wrap in a promise to wait for render
         await new Promise<void>((resolve) => {
-           // Render the appropriate component based on theme
-           if (theme === "vertical") {
-             root.render(
-               <VerticalUrlCard 
-                 data={item.data}
-                 isGenerating={true}
-                 background={background}
-                 id={`temp-card-${i}`}
-                 fullSize={true}
-                 frameBorderColor={frameBorderColor}
-                 frameBorderThickness={frameBorderThickness}
-                 adBannerImage={adBannerImage}
-                 adBannerZoom={adBannerZoom}
-                 fontStyles={fontStyles}
-                 visibilitySettings={visibilitySettings}
-                 isLogoFavicon={isLogoFavicon}
-                 isDragMode={false}
-                 elementLayout={verticalElementLayout}
-               />
-             );
-           } else if (theme === "modern") {
-             root.render(
-               <ModernUrlCard 
-                 data={item.data}
-                 isGenerating={true}
-                 background={background}
-                 id={`temp-card-${i}`}
-                 fullSize={true}
-                 frameBorderColor={frameBorderColor}
-                 frameBorderThickness={frameBorderThickness}
-                 adBannerImage={adBannerImage}
-                 adBannerZoom={adBannerZoom}
-                 fontStyles={fontStyles}
-                 visibilitySettings={visibilitySettings}
-                 isLogoFavicon={isLogoFavicon}
-                 isDragMode={false}
-                 elementLayout={elementLayout}
-               />
-             );
-           } else if (theme === "minimal") {
-             root.render(
-               <MinimalUrlCard 
-                 data={item.data}
-                 isGenerating={true}
-                 background={background}
-                 id={`temp-card-${i}`}
-                 fullSize={true}
-                 frameBorderColor={frameBorderColor}
-                 frameBorderThickness={frameBorderThickness}
-                 adBannerImage={adBannerImage}
-                 adBannerZoom={adBannerZoom}
-                 fontStyles={fontStyles}
-                 visibilitySettings={visibilitySettings}
-               />
-             );
-           } else {
-             root.render(
-               <ClassicUrlCard 
-                 data={item.data}
-                 isGenerating={true}
-                 background={background}
-                 id={`temp-card-${i}`}
-                 fullSize={true}
-                 frameBorderColor={frameBorderColor}
-                 frameBorderThickness={frameBorderThickness}
-                 adBannerImage={adBannerImage}
-                 adBannerZoom={adBannerZoom}
-                 fontStyles={fontStyles}
-                 visibilitySettings={visibilitySettings}
-                 isLogoFavicon={isLogoFavicon}
-                 isDragMode={false}
-                 elementLayout={elementLayout}
-               />
-             );
-           }
-           
-           // Give it a moment to mount
-           setTimeout(resolve, 100);
+          // Render the appropriate component based on theme
+          if (theme === "vertical") {
+            root.render(
+              <VerticalUrlCard
+                data={item.data}
+                isGenerating={true}
+                background={background}
+                id={`temp-card-${i}`}
+                fullSize={true}
+                frameBorderColor={frameBorderColor}
+                frameBorderThickness={frameBorderThickness}
+                adBannerImage={adBannerImage}
+                adBannerZoom={adBannerZoom}
+                fontStyles={fontStyles}
+                visibilitySettings={visibilitySettings}
+                isLogoFavicon={isLogoFavicon}
+                isDragMode={false}
+                elementLayout={verticalElementLayout}
+              />,
+            );
+          } else if (theme === "modern") {
+            root.render(
+              <ModernUrlCard
+                data={item.data}
+                isGenerating={true}
+                background={background}
+                id={`temp-card-${i}`}
+                fullSize={true}
+                frameBorderColor={frameBorderColor}
+                frameBorderThickness={frameBorderThickness}
+                adBannerImage={adBannerImage}
+                adBannerZoom={adBannerZoom}
+                fontStyles={fontStyles}
+                visibilitySettings={visibilitySettings}
+                isLogoFavicon={isLogoFavicon}
+                isDragMode={false}
+                elementLayout={elementLayout}
+              />,
+            );
+          } else if (theme === "minimal") {
+            root.render(
+              <MinimalUrlCard
+                data={item.data}
+                isGenerating={true}
+                background={background}
+                id={`temp-card-${i}`}
+                fullSize={true}
+                frameBorderColor={frameBorderColor}
+                frameBorderThickness={frameBorderThickness}
+                adBannerImage={adBannerImage}
+                adBannerZoom={adBannerZoom}
+                fontStyles={fontStyles}
+                visibilitySettings={visibilitySettings}
+              />,
+            );
+          } else {
+            root.render(
+              <ClassicUrlCard
+                data={item.data}
+                isGenerating={true}
+                background={background}
+                id={`temp-card-${i}`}
+                fullSize={true}
+                frameBorderColor={frameBorderColor}
+                frameBorderThickness={frameBorderThickness}
+                adBannerImage={adBannerImage}
+                adBannerZoom={adBannerZoom}
+                fontStyles={fontStyles}
+                visibilitySettings={visibilitySettings}
+                isLogoFavicon={isLogoFavicon}
+                isDragMode={false}
+                elementLayout={elementLayout}
+              />,
+            );
+          }
+
+          // Give it a moment to mount
+          setTimeout(resolve, 100);
         });
 
         const element = cardWrapper.firstElementChild as HTMLElement;
         if (!element) {
-           root.unmount();
-           continue;
+          root.unmount();
+          continue;
         }
 
         // 2. Pre-fetch images to blobs (Reuse the robust logic)
@@ -856,39 +883,43 @@ export default function Home() {
             const src = img.src;
             if (!src || src.startsWith("data:")) return;
             try {
-              const fetchUrl = src + (src.includes("?") ? "&" : "?") + "t=" + Date.now();
+              const fetchUrl =
+                src + (src.includes("?") ? "&" : "?") + "t=" + Date.now();
               const response = await fetch(fetchUrl, { cache: "no-store" });
               const blob = await response.blob();
               return new Promise<void>((resolveInner) => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
                   if (typeof reader.result === "string") {
-                     img.src = reader.result; // Swap directly in the off-screen DOM
+                    img.src = reader.result; // Swap directly in the off-screen DOM
                   }
                   resolveInner();
                 };
                 reader.readAsDataURL(blob);
               });
             } catch (err) {
-               // Log but continue
+              // Log but continue
               console.error("Failed to pre-fetch image for zip:", src, err);
             }
-          })
+          }),
         );
-        
+
         // Small delay for layout update after src swap
-        await new Promise(r => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 100));
 
         // 3. Generate PNG
         const dataUrl = await toPng(element, {
-           quality: 0.95,
-            pixelRatio: 2,
-            cacheBust: true,
-            skipAutoScale: true
+          quality: 0.95,
+          pixelRatio: 2,
+          cacheBust: true,
+          skipAutoScale: true,
         });
 
         // 4. Add to ZIP
-        const base64Data = dataUrl.replace(/^data:image\/(png|jpg);base64,/, "");
+        const base64Data = dataUrl.replace(
+          /^data:image\/(png|jpg);base64,/,
+          "",
+        );
         const fileName = `photocard-${i + 1}-${Date.now()}.png`;
         folder?.file(fileName, base64Data, { base64: true });
 
@@ -907,7 +938,6 @@ export default function Home() {
       link.download = `photocards-batch-${Date.now()}.zip`;
       link.click();
       URL.revokeObjectURL(link.href);
-
     } catch (err) {
       console.error("Error creating ZIP:", err);
       alert("Failed to generate ZIP file. Please try again.");
@@ -1008,7 +1038,9 @@ export default function Home() {
                 fontStyles={fontStyles}
                 onFontStylesChange={setFontStyles}
                 visibilitySettings={visibilitySettings}
-                onVisibilityChange={setVisibilitySettings}
+                onVisibilityChange={(newSettings) =>
+                  setVisibilitySettings(newSettings as VisibilitySettings)
+                }
               />
             </div>
           </div>

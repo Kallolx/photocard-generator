@@ -14,7 +14,12 @@ import dynamic from "next/dynamic";
 import DownloadControls from "@/components/DownloadControls";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import CreditDisplay from "@/components/CreditDisplay";
-import { PhotocardData, BackgroundOptions, CardFontStyles, VisibilitySettings } from "@/types";
+import {
+  PhotocardData,
+  BackgroundOptions,
+  CardFontStyles,
+  VisibilitySettings,
+} from "@/types";
 import { Upload, Edit, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -51,55 +56,65 @@ export default function CustomPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [isDragMode, setIsDragMode] = useState(false);
   const [elementLayout, setElementLayout] = useState<{
-    topLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'cta';
-    topRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'cta';
-    bottomLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'cta';
-    bottomRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'cta';
+    topLeft: "logo" | "dateWeek" | "socialMedia" | "website" | "cta";
+    topRight: "logo" | "dateWeek" | "socialMedia" | "website" | "cta";
+    bottomLeft: "logo" | "dateWeek" | "socialMedia" | "website" | "cta";
+    bottomRight: "logo" | "dateWeek" | "socialMedia" | "website" | "cta";
   }>({
-    topLeft: 'logo',
-    topRight: 'dateWeek',
-    bottomLeft: 'socialMedia',
-    bottomRight: 'cta',
+    topLeft: "logo",
+    topRight: "dateWeek",
+    bottomLeft: "socialMedia",
+    bottomRight: "website",
   });
-  
+
   // Modern2 layout with center position for favicon
   const [modern2ElementLayout, setModern2ElementLayout] = useState<{
-    topLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
-    topRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
-    bottomLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
-    bottomRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
-    center: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
+    topLeft: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
+    topRight: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
+    bottomLeft: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
+    bottomRight: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
+    center: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
   }>({
-    topLeft: 'logo',
-    topRight: 'dateWeek',
-    bottomLeft: 'socialMedia',
-    bottomRight: 'website',
-    center: 'favicon',
+    topLeft: "logo",
+    topRight: "dateWeek",
+    bottomLeft: "socialMedia",
+    bottomRight: "website",
+    center: "favicon",
   });
-  
+
   // Vertical theme layout (4-slot system: left content + right positions)
   const [verticalElementLayout, setVerticalElementLayout] = useState<{
-    left: 'logo' | 'cta' | 'empty';
-    right: 'logo' | 'cta' | 'empty';
-    rightTop: 'logo' | 'cta' | 'empty';
-    rightBottom: 'logo' | 'cta' | 'empty';
+    left: "logo" | "cta" | "empty";
+    right: "logo" | "cta" | "empty";
+    rightTop: "logo" | "cta" | "empty";
+    rightBottom: "logo" | "cta" | "empty";
+    bottomLeft?: "socialMedia" | "website";
+    bottomRight?: "socialMedia" | "website";
   }>({
-    left: 'logo',
-    right: 'cta',
-    rightTop: 'empty',
-    rightBottom: 'empty',
+    left: "logo",
+    right: "cta",
+    rightTop: "empty",
+    rightBottom: "empty",
+    bottomLeft: "socialMedia",
+    bottomRight: "website",
   });
-  
+
   // Minimal theme layout (2-slot system: top positions only)
   const [minimalElementLayout, setMinimalElementLayout] = useState<{
-    topLeft: 'logo' | 'dateWeek' | 'cta';
-    topRight: 'logo' | 'dateWeek' | 'cta';
+    topLeft: "logo" | "dateWeek" | "cta";
+    topRight: "logo" | "dateWeek" | "cta";
+    bottomLeft?: "socialMedia" | "website";
+    bottomRight?: "socialMedia" | "website";
   }>({
-    topLeft: 'dateWeek',
-    topRight: 'logo',
+    topLeft: "dateWeek",
+    topRight: "logo",
+    bottomLeft: "socialMedia",
+    bottomRight: "website",
   });
-  
-  const [ctaAlignment, setCtaAlignment] = useState<'left' | 'center' | 'right'>('center');
+
+  const [ctaAlignment, setCtaAlignment] = useState<"left" | "center" | "right">(
+    "center",
+  );
 
   // Editing state - same as URL page
   const [currentLogo, setCurrentLogo] = useState<string>("");
@@ -141,6 +156,14 @@ export default function CustomPage() {
         color: "#000000",
       },
     },
+    footer: {
+      fontFamily: "Noto Sans Bengali",
+      fontSize: "12px", // Default size
+      fontWeight: "500",
+      color: "#FFFFFF",
+      textAlign: "left",
+      letterSpacing: "0px",
+    },
   });
 
   // Visibility settings state - same as URL page
@@ -151,11 +174,13 @@ export default function CustomPage() {
       showLogo: true,
       showQrCode: false, // Not used in custom cards
       showTitle: true,
+      showAdBanner: true,
     });
 
   // Mock data for preview - same as URL page
   const mockData: PhotocardData = {
-    title: currentTitle || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
+    title:
+      currentTitle || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
     image: currentImage || "",
     logo: currentLogo || "",
     favicon: "https://www.google.com/favicon.ico",
@@ -176,7 +201,7 @@ export default function CustomPage() {
   useEffect(() => {
     if (theme === "vertical") {
       // Set specific defaults for vertical theme
-      setFontStyles(prev => ({
+      setFontStyles((prev) => ({
         ...prev,
         week: {
           ...prev.week,
@@ -190,10 +215,14 @@ export default function CustomPage() {
           ...prev.headline,
           fontSize: "25px",
         },
+        footer: {
+          ...prev.footer,
+          fontSize: "12px",
+        },
       }));
     } else {
       // Reset to default for other themes
-      setFontStyles(prev => ({
+      setFontStyles((prev) => ({
         ...prev,
         week: {
           ...prev.week,
@@ -206,6 +235,10 @@ export default function CustomPage() {
         headline: {
           ...prev.headline,
           fontSize: "24px",
+        },
+        footer: {
+          ...prev.footer,
+          fontSize: "12px",
         },
       }));
     }
@@ -259,28 +292,28 @@ export default function CustomPage() {
   const handleRestoreDefaults = () => {
     // Reset element layout
     setElementLayout({
-      topLeft: 'logo',
-      topRight: 'dateWeek',
-      bottomLeft: 'socialMedia',
-      bottomRight: 'cta',
+      topLeft: "logo",
+      topRight: "dateWeek",
+      bottomLeft: "socialMedia",
+      bottomRight: "cta",
     });
-    
+
     // Reset vertical element layout
     setVerticalElementLayout({
-      left: 'logo',
-      right: 'cta',
-      rightTop: 'empty',
-      rightBottom: 'empty',
+      left: "logo",
+      right: "cta",
+      rightTop: "empty",
+      rightBottom: "empty",
     });
-    
+
     // Reset minimal element layout
     setMinimalElementLayout({
-      topLeft: 'dateWeek',
-      topRight: 'logo',
+      topLeft: "dateWeek",
+      topRight: "logo",
     });
-    
-    setCtaAlignment('center');
-    
+
+    setCtaAlignment("center");
+
     // Reset visibility settings
     setVisibilitySettings({
       showWeek: true,
@@ -288,8 +321,9 @@ export default function CustomPage() {
       showLogo: true,
       showQrCode: false,
       showTitle: true,
+      showAdBanner: true,
     });
-    
+
     // Reset font styles based on current theme
     if (theme === "vertical") {
       setFontStyles({
@@ -324,6 +358,14 @@ export default function CustomPage() {
             width: 0,
             color: "#000000",
           },
+        },
+        footer: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "left",
+          letterSpacing: "0px",
         },
       });
     } else {
@@ -360,18 +402,26 @@ export default function CustomPage() {
             color: "#000000",
           },
         },
+        footer: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
       });
     }
-    
+
     // Reset frame border
     setFrameBorderColor("#FFFFFF");
     setFrameBorderThickness(0);
-    
+
     // Reset ad banner
     setAdBannerImage(null);
     setAdBannerZoom(100);
     setAdBannerPosition({ x: 0, y: 0 });
-    
+
     // Reset background to default
     setBackground({
       type: "solid",
@@ -428,32 +478,32 @@ export default function CustomPage() {
     return (
       <div key={cardData.title + cardData.url + Date.now()}>
         {theme === "vertical" ? (
-          <VerticalCustomCard 
-            {...baseProps} 
+          <VerticalCustomCard
+            {...baseProps}
             elementLayout={verticalElementLayout}
             onLayoutChange={setVerticalElementLayout}
           />
         ) : theme === "modern2" ? (
-          <Modern2CustomCard 
-            {...baseProps} 
+          <Modern2CustomCard
+            {...baseProps}
             elementLayout={modern2ElementLayout}
             onLayoutChange={setModern2ElementLayout}
           />
         ) : theme === "minimal" ? (
-          <MinimalCustomCard 
-            {...baseProps} 
+          <MinimalCustomCard
+            {...baseProps}
             elementLayout={minimalElementLayout}
             onLayoutChange={setMinimalElementLayout}
           />
         ) : theme === "modern" ? (
-          <ModernCustomCard 
-            {...baseProps} 
+          <ModernCustomCard
+            {...baseProps}
             elementLayout={elementLayout}
             onLayoutChange={setElementLayout}
           />
         ) : (
-          <ClassicCustomCard 
-            {...baseProps} 
+          <ClassicCustomCard
+            {...baseProps}
             elementLayout={elementLayout}
             onLayoutChange={setElementLayout}
           />
@@ -466,14 +516,17 @@ export default function CustomPage() {
     setIsResizing(true);
   };
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizing) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isResizing) return;
 
-    const newWidth = (e.clientX / window.innerWidth) * 100;
-    if (newWidth > 20 && newWidth < 60) {
-      setLeftPanelWidth(newWidth);
-    }
-  }, [isResizing]);
+      const newWidth = (e.clientX / window.innerWidth) * 100;
+      if (newWidth > 20 && newWidth < 60) {
+        setLeftPanelWidth(newWidth);
+      }
+    },
+    [isResizing],
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);
@@ -534,14 +587,17 @@ export default function CustomPage() {
         if (parsed.socialMedia) setSocialMedia(parsed.socialMedia);
         if (parsed.adBannerImage) setAdBannerImage(parsed.adBannerImage);
         if (parsed.theme) setTheme(parsed.theme);
-        if (parsed.visibilitySettings) setVisibilitySettings(parsed.visibilitySettings);
+        if (parsed.visibilitySettings)
+          setVisibilitySettings(parsed.visibilitySettings);
         if (parsed.fontStyles) setFontStyles(parsed.fontStyles);
         if (parsed.currentLogo) setCurrentLogo(parsed.currentLogo);
         if (parsed.currentImage) setCurrentImage(parsed.currentImage);
         if (parsed.currentTitle) setCurrentTitle(parsed.currentTitle);
         if (parsed.elementLayout) setElementLayout(parsed.elementLayout);
-        if (parsed.verticalElementLayout) setVerticalElementLayout(parsed.verticalElementLayout);
-        if (parsed.minimalElementLayout) setMinimalElementLayout(parsed.minimalElementLayout);
+        if (parsed.verticalElementLayout)
+          setVerticalElementLayout(parsed.verticalElementLayout);
+        if (parsed.minimalElementLayout)
+          setMinimalElementLayout(parsed.minimalElementLayout);
         if (parsed.ctaAlignment) setCtaAlignment(parsed.ctaAlignment);
       }
     } catch (error) {
@@ -651,8 +707,6 @@ export default function CustomPage() {
     }
   };
 
-
-
   // Create photocard data from custom inputs or use mock data
   const photocardData: PhotocardData = {
     title: title || mockData.title,
@@ -691,28 +745,30 @@ export default function CustomPage() {
         {/* Main Content Layout */}
         <div className="flex flex-1 flex-col md:flex-row md:min-h-0 relative">
           {/* Lock Overlay for Free/Basic Users */}
-          {(!features?.customCards && user?.plan !== 'Basic' && user?.plan !== 'Premium') && (
-            <div className="fixed inset-0 z-40 bg-[#2c2419]/80 backdrop-blur-sm flex items-center justify-center">
-              <div className="bg-[#faf8f5] p-8 border-4 border-[#8b6834] max-w-md mx-4 text-center">
-                <div className="w-16 h-16 bg-[#8b6834] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Lock className="w-8 h-8 text-[#faf8f5]" />
+          {!features?.customCards &&
+            user?.plan !== "Basic" &&
+            user?.plan !== "Premium" && (
+              <div className="fixed inset-0 z-40 bg-[#2c2419]/80 backdrop-blur-sm flex items-center justify-center">
+                <div className="bg-[#faf8f5] p-8 border-4 border-[#8b6834] max-w-md mx-4 text-center">
+                  <div className="w-16 h-16 bg-[#8b6834] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Lock className="w-8 h-8 text-[#faf8f5]" />
+                  </div>
+                  <h3 className="text-2xl font-lora font-bold text-[#2c2419] mb-3">
+                    Custom Cards Locked
+                  </h3>
+                  <p className="text-[#5d4e37] font-inter mb-6">
+                    Custom cards are available for Basic and Premium users.
+                    Upgrade your plan to unlock this feature.
+                  </p>
+                  <button
+                    onClick={() => setShowUpgradeModal(true)}
+                    className="px-8 py-3 bg-[#8b6834] text-[#faf8f5] font-inter font-medium hover:bg-[#6b4e25] transition-colors"
+                  >
+                    Upgrade Now
+                  </button>
                 </div>
-                <h3 className="text-2xl font-lora font-bold text-[#2c2419] mb-3">
-                  Custom Cards Locked
-                </h3>
-                <p className="text-[#5d4e37] font-inter mb-6">
-                  Custom cards are available for Basic and Premium users.
-                  Upgrade your plan to unlock this feature.
-                </p>
-                <button
-                  onClick={() => setShowUpgradeModal(true)}
-                  className="px-8 py-3 bg-[#8b6834] text-[#faf8f5] font-inter font-medium hover:bg-[#6b4e25] transition-colors"
-                >
-                  Upgrade Now
-                </button>
               </div>
-            </div>
-          )}
+            )}
 
           {/* Left Sidebar */}
           <div
@@ -935,27 +991,25 @@ export default function CustomPage() {
                             </button>
                           ))}
                         </div>
-                        {/* Username Input */}
-                        <input
-                          type="text"
-                          value={social.username}
-                          onChange={(e) => {
-                            const newSocial = [...socialMedia];
-                            newSocial[index].username = e.target.value;
-                            setSocialMedia(newSocial);
-                          }}
-                          placeholder={
-                            !social.platform
-                              ? "Select option first"
-                              : social.platform === "website"
-                                ? "Enter website URL"
+                        {social.platform && (
+                          <input
+                            type="text"
+                            value={social.username}
+                            onChange={(e) => {
+                              const newSocial = [...socialMedia];
+                              newSocial[index].username = e.target.value;
+                              setSocialMedia(newSocial);
+                            }}
+                            placeholder={
+                              social.platform === "website"
+                                ? "www.example.com"
                                 : social.platform === "text"
-                                  ? "Enter footer text"
-                                  : "Enter username"
-                          }
-                          disabled={!social.platform}
-                          className="w-full px-3 py-2 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter focus:outline-none focus:ring-2 focus:ring-[#8b6834] disabled:opacity-70 text-base"
-                        />
+                                  ? "Footer text..."
+                                  : `@username`
+                            }
+                            className="w-full px-2 py-1 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] text-sm focus:outline-none focus:ring-2 focus:ring-[#8b6834] font-noto-bengali"
+                          />
+                        )}
                       </div>
                     ))}
                   </div>
@@ -980,7 +1034,9 @@ export default function CustomPage() {
                 theme={theme}
                 onThemeChange={setTheme}
                 visibilitySettings={visibilitySettings}
-                onVisibilityChange={setVisibilitySettings}
+                onVisibilityChange={(newSettings) =>
+                  setVisibilitySettings(newSettings as VisibilitySettings)
+                }
                 fontStyles={fontStyles}
                 onFontStylesChange={setFontStyles}
               />
@@ -1160,7 +1216,7 @@ export default function CustomPage() {
                       showTitleTool={false}
                       showDragTool={true}
                     />
-                    
+
                     <div className="flex flex-col items-center pt-16">
                       <div className="flex-shrink-0">
                         {renderCard(photocardData, "photocard-custom", true)}

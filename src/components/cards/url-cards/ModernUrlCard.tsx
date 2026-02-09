@@ -12,7 +12,7 @@ import {
   DragOverlay,
   DragStartEvent,
 } from "@dnd-kit/core";
-import { EyeOff, RotateCcw, Upload } from "lucide-react";
+import { EyeOff, Globe, RotateCcw, Upload } from "lucide-react";
 
 // Floating menu for element actions
 function FloatingMenu({
@@ -271,6 +271,7 @@ export default function ModernUrlCard({
     showLogo: true,
     showQrCode: true,
     showTitle: true,
+    showAdBanner:false, 
   },
   isLogoFavicon = false,
   isDragMode = false,
@@ -468,6 +469,16 @@ export default function ModernUrlCard({
     if (background.type === "gradient" && background.gradientFrom)
       return background.gradientFrom;
     return background.color;
+  };
+
+    // Extract domain from URL for site name
+  const getSiteDomain = () => {
+    try {
+      const url = new URL(data.url);
+      return url.hostname.toLowerCase().replace("www.", "");
+    } catch {
+      return data.siteName?.toLowerCase() || "example.com";
+    }
   };
 
   const getPatternStyle = () => {
@@ -669,13 +680,23 @@ export default function ModernUrlCard({
             isDragMode={isDragMode}
             onClick={(e) => handleElementClick('cta', e)}
           >
-            <div className="bg-white border border-gray-300 py-.5 px-3 text-center max-w-[230px] rounded-sm">
-              <p className="font-noto-bengali text-md font-bold text-gray-900">
-                বিস্তারিত{" "}
-                <span style={{ color: getHighlightColor() }}>
-                  কমেন্টের লিংকে
-                </span>
-              </p>
+            <div className="flex flex-col items-end gap-1">
+              {(data.siteName || data.url) && (
+                <div className="flex items-center gap-1 text-white opacity-90">
+                  <Globe className="w-3 h-3" />
+                  <p className="font-dm-sans text-[10px] font-medium tracking-wide">
+                    {getSiteDomain()}
+                  </p>
+                </div>
+              )}
+              <div className="bg-white border border-gray-300 py-0.5 px-3 text-center rounded-sm">
+                <p className="font-noto-bengali text-xs font-bold text-gray-900">
+                  বিস্তারিত{" "}
+                  <span style={{ color: getHighlightColor() }}>
+                    কমেন্টের লিংকে
+                  </span>
+                </p>
+              </div>
             </div>
           </DraggableSwappable>
         );
@@ -805,7 +826,7 @@ export default function ModernUrlCard({
       </div>
 
       {/* Ad Banner - Full width at bottom */}
-      {adBannerImage && (
+      {visibilitySettings?.showAdBanner && adBannerImage && (
         <div className="w-full relative z-10 overflow-hidden" style={{ height: "60px" }}>
           <img
             src={adBannerImage}
@@ -824,13 +845,13 @@ export default function ModernUrlCard({
           />
         </div>
       )}
-      {!adBannerImage && !isGenerating && (
+      {visibilitySettings?.showAdBanner && !adBannerImage && !isGenerating && (
         <div
           className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
-          style={{ height: "60px" }}
+          style={{ height: "80px" }}
         >
           <span className="text-[#5d4e37] text-xs font-inter">
-            Ad Banner Area (60px height)
+            Ad Banner Area (80px height)
           </span>
         </div>
       )}

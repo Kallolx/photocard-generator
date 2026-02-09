@@ -1,8 +1,22 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { BackgroundOptions, CardFontStyles, VisibilitySettings } from "@/types";
-import { Plus, Lock, RefreshCw, X, Upload, Eye, EyeOff, RotateCcw } from "lucide-react";
+import {
+  BackgroundOptions,
+  CardFontStyles,
+  VisibilitySettings,
+  CommentCardVisibilitySettings,
+} from "@/types";
+import {
+  Plus,
+  Lock,
+  RefreshCw,
+  X,
+  Upload,
+  Eye,
+  EyeOff,
+  RotateCcw,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "./UpgradeModal";
 
@@ -22,24 +36,23 @@ interface CustomizationPanelProps {
   onThemeChange?: (theme: string) => void;
   fontStyles?: CardFontStyles;
   onFontStylesChange?: (fontStyles: CardFontStyles) => void;
-  visibilitySettings?: VisibilitySettings;
-  onVisibilityChange?: (visibilitySettings: VisibilitySettings) => void;
+  visibilitySettings?: VisibilitySettings | CommentCardVisibilitySettings;
+  onVisibilityChange?: (
+    visibilitySettings: VisibilitySettings | CommentCardVisibilitySettings,
+  ) => void;
+  cardType?: "url" | "custom" | "comment";
 }
 
 const SOLID_COLORS = [
   { color: "#E53E3E", name: "Soft Red" },
   { color: "#D53F8C", name: "Muted Pink" },
   { color: "#DD6B20", name: "Warm Orange" },
-  { color: "#975A16", name: "Earth Brown" },
-  { color: "#38A169", name: "Calm Green" },
 ];
 
 const GRADIENTS = [
   { from: "#C53030", to: "#FC8181", name: "Soft Red Glow" },
   { from: "#B83280", to: "#F687B3", name: "Rose Pink" },
   { from: "#C05621", to: "#F6AD55", name: "Warm Sunset" },
-  { from: "#2B6CB0", to: "#63B3ED", name: "Calm Blue Sky" },
-  { from: "#2F855A", to: "#68D391", name: "Fresh Green" },
 ];
 
 const FRAME_COLORS = [
@@ -77,6 +90,33 @@ const THEMES = [
   },
 ];
 
+const COMMENT_THEMES = [
+  {
+    id: "classic",
+    name: "Classic",
+    locked: false,
+    thumbnail: "/themes/comment-1.png",
+  },
+  {
+    id: "modern",
+    name: "Modern",
+    locked: false,
+    thumbnail: "/themes/comment-2.png",
+  },
+  {
+    id: "elegant",
+    name: "Elegant",
+    locked: false,
+    thumbnail: "/themes/comment-3.png",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    locked: true,
+    thumbnail: "/themes/comment-4.png",
+  },
+];
+
 type Tab =
   | "Background"
   | "Pattern"
@@ -84,7 +124,8 @@ type Tab =
   | "Fonts"
   | "Visibility"
   | "Frame"
-  | "Ad Banner";
+  | "Ad Banner"
+  | "Footer";
 
 const PATTERNS = [
   { id: "none", name: "None" },
@@ -115,6 +156,7 @@ export default function CustomizationPanel({
   onFontStylesChange,
   visibilitySettings,
   onVisibilityChange,
+  cardType = "url",
 }: CustomizationPanelProps) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("Background");
@@ -125,6 +167,9 @@ export default function CustomizationPanel({
   const [selectedFontType, setSelectedFontType] = useState<
     "weekDate" | "headline" | null
   >(null);
+  const [expandedFontSection, setExpandedFontSection] = useState<string | null>(
+    "weekDate",
+  );
 
   // Custom colors state
   const [customSolidColors, setCustomSolidColors] = useState<string[]>([]);
@@ -211,6 +256,18 @@ export default function CustomizationPanel({
     },
   ];
 
+  const COMMENT_THEMES_WITH_LOCK = [
+    {
+      id: "classic",
+      name: "Classic",
+      locked: false,
+      thumbnail: "/themes/comment-1.png",
+    },
+  ];
+
+  const activeThemes =
+    cardType === "comment" ? COMMENT_THEMES_WITH_LOCK : THEMES_WITH_LOCK;
+
   const handleThemeChange = (themeId: string, isLocked: boolean) => {
     if (isLocked) {
       const featureName =
@@ -267,6 +324,7 @@ export default function CustomizationPanel({
     "Visibility",
     "Frame",
     "Ad Banner",
+    "Footer",
   ];
 
   return (
@@ -1088,7 +1146,7 @@ export default function CustomizationPanel({
         {activeTab === "Theme" && (
           <div>
             <div className="grid grid-cols-2 gap-4">
-              {THEMES_WITH_LOCK.map((theme) => (
+              {activeThemes.map((theme) => (
                 <div key={theme.id} className="flex flex-col">
                   <button
                     onClick={() => handleThemeChange(theme.id, theme.locked)}
@@ -1132,304 +1190,28 @@ export default function CustomizationPanel({
           </div>
         )}
 
-        {/* Fonts Tab */}
+        {/* Fonts Tab - Accordion Design */}
         {activeTab === "Fonts" && fontStyles && onFontStylesChange && (
-          <div className="space-y-5">
-            {/* Week & Date Font Settings - Combined */}
-            <div>
-              {/* Header */}
-              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-8">
-                Week & Date
-              </h3>
+          <div className="space-y-2">
+            {/* Instructions */}
+            <p className="text-xs text-[#5d4e37] font-inter mb-3">
+              Click on a section to customize its font properties
+            </p>
 
-              {/* Content */}
-              <div className="space-y-4">
-                {/* Font Size */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-[#2c2419] font-inter">
-                      Font Size
-                    </label>
-                    <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
-                      {fontStyles.week.fontSize}
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="12"
-                    max="32"
-                    value={parseInt(fontStyles.week.fontSize)}
-                    onChange={(e) =>
-                      onFontStylesChange({
-                        ...fontStyles,
-                        week: {
-                          ...fontStyles.week,
-                          fontSize: `${e.target.value}px`,
-                        },
-                        date: {
-                          ...fontStyles.date,
-                          fontSize: `${e.target.value}px`,
-                        },
-                      })
-                    }
-                    className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                    style={{
-                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 100%)`,
-                    }}
-                  />
-                </div>
-
-                {/* Font Weight */}
-                <div>
-                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                    Font Weight
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {["400", "500", "600", "700"].map((weight) => (
-                      <button
-                        key={weight}
-                        onClick={() =>
-                          onFontStylesChange({
-                            ...fontStyles,
-                            week: { ...fontStyles.week, fontWeight: weight },
-                            date: { ...fontStyles.date, fontWeight: weight },
-                          })
-                        }
-                        className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
-                          fontStyles.week.fontWeight === weight
-                            ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
-                            : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
-                        }`}
-                      >
-                        {weight === "400"
-                          ? "Normal"
-                          : weight === "500"
-                            ? "Medium"
-                            : weight === "600"
-                              ? "Semi"
-                              : "Bold"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Color */}
-                <div>
-                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                    Text Color
-                  </label>
-                  <div className="flex gap-3">
-                    <input
-                      type="color"
-                      value={fontStyles.week.color}
-                      onChange={(e) =>
-                        onFontStylesChange({
-                          ...fontStyles,
-                          week: { ...fontStyles.week, color: e.target.value },
-                          date: { ...fontStyles.date, color: e.target.value },
-                        })
-                      }
-                      className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
-                    />
-                    <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
-                      <input
-                        type="text"
-                        value={fontStyles.week.color.toUpperCase()}
-                        onChange={(e) => {
-                          let value = e.target.value.toUpperCase();
-                          // Always start with #
-                          if (!value.startsWith("#")) {
-                            value = "#" + value.replace(/[^0-9A-F]/g, "");
-                          } else {
-                            // Remove # temporarily, filter invalid chars, then add # back
-                            value =
-                              "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
-                          }
-                          // Limit to 7 characters (#XXXXXX)
-                          value = value.slice(0, 7);
-
-                          if (value.length === 7) {
-                            onFontStylesChange({
-                              ...fontStyles,
-                              week: { ...fontStyles.week, color: value },
-                              date: { ...fontStyles.date, color: value },
-                            });
-                          }
-                        }}
-                        onBlur={(e) => {
-                          // On blur, ensure we have a valid hex or revert
-                          const value = e.target.value;
-                          if (
-                            value.length !== 7 ||
-                            !/^#[0-9A-F]{6}$/i.test(value)
-                          ) {
-                            // Revert to current valid color if invalid
-                            e.target.value =
-                              fontStyles.week.color.toUpperCase();
-                          }
-                        }}
-                        placeholder="#000000"
-                        className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
-                        maxLength={7}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Headline Font Settings */}
-            <div>
-              {/* Header */}
-              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3 pt-4 border-t-2 border-[#d4c4b0]">
-                Headline
-              </h3>
-
-              {/* Content */}
-              <div className="space-y-4">
-                {/* Font Size */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-[#2c2419] font-inter">
-                      Font Size
-                    </label>
-                    <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
-                      {fontStyles.headline.fontSize}
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min="16"
-                    max="48"
-                    value={parseInt(fontStyles.headline.fontSize)}
-                    onChange={(e) =>
-                      onFontStylesChange({
-                        ...fontStyles,
-                        headline: {
-                          ...fontStyles.headline,
-                          fontSize: `${e.target.value}px`,
-                        },
-                      })
-                    }
-                    className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                    style={{
-                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 100%)`,
-                    }}
-                  />
-                </div>
-
-                {/* Font Weight */}
-                <div>
-                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                    Font Weight
-                  </label>
-                  <div className="grid grid-cols-5 gap-2">
-                    {["400", "500", "600", "700", "800"].map((weight) => (
-                      <button
-                        key={weight}
-                        onClick={() =>
-                          onFontStylesChange({
-                            ...fontStyles,
-                            headline: {
-                              ...fontStyles.headline,
-                              fontWeight: weight,
-                            },
-                          })
-                        }
-                        className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
-                          fontStyles.headline.fontWeight === weight
-                            ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
-                            : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
-                        }`}
-                        style={{ fontWeight: weight }}
-                      >
-                        {weight === "400"
-                          ? "Light"
-                          : weight === "500"
-                            ? "Medium"
-                            : weight === "600"
-                              ? "Semi"
-                              : weight === "700"
-                                ? "Bold"
-                                : "XBold"}
-                      </button>
-                    ))}
-                    \n{" "}
-                  </div>
-                </div>
-
-                {/* Color */}
-                <div>
-                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                    Text Color
-                  </label>
-                  <div className="flex gap-3">
-                    <input
-                      type="color"
-                      value={fontStyles.headline.color}
-                      onChange={(e) =>
-                        onFontStylesChange({
-                          ...fontStyles,
-                          headline: {
-                            ...fontStyles.headline,
-                            color: e.target.value,
-                          },
-                        })
-                      }
-                      className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
-                    />
-                    <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
-                      <input
-                        type="text"
-                        value={fontStyles.headline.color.toUpperCase()}
-                        onChange={(e) => {
-                          let value = e.target.value.toUpperCase();
-                          // Always start with #
-                          if (!value.startsWith("#")) {
-                            value = "#" + value.replace(/[^0-9A-F]/g, "");
-                          } else {
-                            // Remove # temporarily, filter invalid chars, then add # back
-                            value =
-                              "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
-                          }
-                          // Limit to 7 characters (#XXXXXX)
-                          value = value.slice(0, 7);
-
-                          if (value.length === 7) {
-                            onFontStylesChange({
-                              ...fontStyles,
-                              headline: {
-                                ...fontStyles.headline,
-                                color: value,
-                              },
-                            });
-                          }
-                        }}
-                        onBlur={(e) => {
-                          // On blur, ensure we have a valid hex or revert
-                          const value = e.target.value;
-                          if (
-                            value.length !== 7 ||
-                            !/^#[0-9A-F]{6}$/i.test(value)
-                          ) {
-                            // Revert to current valid color if invalid
-                            e.target.value =
-                              fontStyles.headline.color.toUpperCase();
-                          }
-                        }}
-                        placeholder="#000000"
-                        className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
-                        maxLength={7}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Text Align */}
-                <div>
-                  <label className="text-sm font-medium text-[#2c2419] mb-2 flex items-center gap-1.5 font-inter">
+            {/* Week & Date Accordion */}
+            <div className="border-2 border-[#d4c4b0] bg-white overflow-hidden">
+              <button
+                onClick={() =>
+                  setExpandedFontSection(
+                    expandedFontSection === "weekDate" ? null : "weekDate",
+                  )
+                }
+                className="w-full p-3 flex items-center justify-between hover:bg-[#faf8f5] transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-[#8b6834] flex items-center justify-center">
                     <svg
-                      className="w-3.5 h-3.5 text-[#8b6834]"
+                      className="w-4 h-4 text-white"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -1438,75 +1220,429 @@ export default function CustomizationPanel({
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M4 6h16M4 12h8m-8 6h16"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    Text Alignment
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(["left", "center", "right"] as const).map((align) => (
-                      <button
-                        key={align}
-                        onClick={() =>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-sm font-semibold font-inter text-[#2c2419]">
+                      Week & Date
+                    </h3>
+                    {expandedFontSection !== "weekDate" && (
+                      <p className="text-xs text-[#5d4e37] font-inter flex items-center gap-2 mt-0.5">
+                        <span>{fontStyles.week.fontSize}</span>
+                        <span>•</span>
+                        <span>Weight {fontStyles.week.fontWeight}</span>
+                        <span
+                          className="w-3 h-3 border border-[#d4c4b0]"
+                          style={{ backgroundColor: fontStyles.week.color }}
+                        ></span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <svg
+                  className={`w-5 h-5 text-[#8b6834] transition-transform ${expandedFontSection === "weekDate" ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {expandedFontSection === "weekDate" && (
+                <div className="p-4 pt-0 space-y-4 border-t-2 border-[#f5f0e8]">
+                  {/* Font Size */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-medium text-[#2c2419] font-inter">
+                        Font Size
+                      </label>
+                      <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                        {fontStyles.week.fontSize}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="12"
+                      max="32"
+                      value={parseInt(fontStyles.week.fontSize)}
+                      onChange={(e) =>
+                        onFontStylesChange({
+                          ...fontStyles,
+                          week: {
+                            ...fontStyles.week,
+                            fontSize: `${e.target.value}px`,
+                          },
+                          date: {
+                            ...fontStyles.date,
+                            fontSize: `${e.target.value}px`,
+                          },
+                        })
+                      }
+                      className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 100%)`,
+                      }}
+                    />
+                  </div>
+
+                  {/* Font Weight */}
+                  <div>
+                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                      Font Weight
+                    </label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {["400", "500", "600", "700"].map((weight) => (
+                        <button
+                          key={weight}
+                          onClick={() =>
+                            onFontStylesChange({
+                              ...fontStyles,
+                              week: { ...fontStyles.week, fontWeight: weight },
+                              date: { ...fontStyles.date, fontWeight: weight },
+                            })
+                          }
+                          className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
+                            fontStyles.week.fontWeight === weight
+                              ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                              : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                          }`}
+                        >
+                          {weight === "400"
+                            ? "Normal"
+                            : weight === "500"
+                              ? "Medium"
+                              : weight === "600"
+                                ? "Semi"
+                                : "Bold"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Color */}
+                  <div>
+                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                      Text Color
+                    </label>
+                    <div className="flex gap-3">
+                      <input
+                        type="color"
+                        value={fontStyles.week.color}
+                        onChange={(e) =>
+                          onFontStylesChange({
+                            ...fontStyles,
+                            week: { ...fontStyles.week, color: e.target.value },
+                            date: { ...fontStyles.date, color: e.target.value },
+                          })
+                        }
+                        className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                      />
+                      <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                        <input
+                          type="text"
+                          value={fontStyles.week.color.toUpperCase()}
+                          onChange={(e) => {
+                            let value = e.target.value.toUpperCase();
+                            if (!value.startsWith("#")) {
+                              value = "#" + value.replace(/[^0-9A-F]/g, "");
+                            } else {
+                              value =
+                                "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
+                            }
+                            value = value.slice(0, 7);
+
+                            if (value.length === 7) {
+                              onFontStylesChange({
+                                ...fontStyles,
+                                week: { ...fontStyles.week, color: value },
+                                date: { ...fontStyles.date, color: value },
+                              });
+                            }
+                          }}
+                          placeholder="#000000"
+                          className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                          maxLength={7}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Headline Accordion */}
+            <div className="border-2 border-[#d4c4b0] bg-white overflow-hidden">
+              <button
+                onClick={() =>
+                  setExpandedFontSection(
+                    expandedFontSection === "headline" ? null : "headline",
+                  )
+                }
+                className="w-full p-3 flex items-center justify-between hover:bg-[#faf8f5] transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-[#8b6834] flex items-center justify-center">
+                    <svg
+                      className="w-4 h-4 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-sm font-semibold font-inter text-[#2c2419]">
+                      Headline
+                    </h3>
+                    {expandedFontSection !== "headline" && (
+                      <p className="text-xs text-[#5d4e37] font-inter flex items-center gap-2 mt-0.5">
+                        <span>{fontStyles.headline.fontSize}</span>
+                        <span>•</span>
+                        <span>Weight {fontStyles.headline.fontWeight}</span>
+                        <span
+                          className="w-3 h-3 border border-[#d4c4b0]"
+                          style={{ backgroundColor: fontStyles.headline.color }}
+                        ></span>
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <svg
+                  className={`w-5 h-5 text-[#8b6834] transition-transform ${expandedFontSection === "headline" ? "rotate-180" : ""}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {expandedFontSection === "headline" && (
+                <div className="p-4 pt-0 space-y-4 border-t-2 border-[#f5f0e8]">
+                  {/* Font Size */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-medium text-[#2c2419] font-inter">
+                        Font Size
+                      </label>
+                      <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                        {fontStyles.headline.fontSize}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="16"
+                      max="48"
+                      value={parseInt(fontStyles.headline.fontSize)}
+                      onChange={(e) =>
+                        onFontStylesChange({
+                          ...fontStyles,
+                          headline: {
+                            ...fontStyles.headline,
+                            fontSize: `${e.target.value}px`,
+                          },
+                        })
+                      }
+                      className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 100%)`,
+                      }}
+                    />
+                  </div>
+
+                  {/* Font Weight */}
+                  <div>
+                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                      Font Weight
+                    </label>
+                    <div className="grid grid-cols-5 gap-2">
+                      {["400", "500", "600", "700", "800"].map((weight) => (
+                        <button
+                          key={weight}
+                          onClick={() =>
+                            onFontStylesChange({
+                              ...fontStyles,
+                              headline: {
+                                ...fontStyles.headline,
+                                fontWeight: weight,
+                              },
+                            })
+                          }
+                          className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
+                            fontStyles.headline.fontWeight === weight
+                              ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                              : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                          }`}
+                          style={{ fontWeight: weight }}
+                        >
+                          {weight === "400"
+                            ? "Light"
+                            : weight === "500"
+                              ? "Medium"
+                              : weight === "600"
+                                ? "Semi"
+                                : weight === "700"
+                                  ? "Bold"
+                                  : "XBold"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Color */}
+                  <div>
+                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                      Text Color
+                    </label>
+                    <div className="flex gap-3">
+                      <input
+                        type="color"
+                        value={fontStyles.headline.color}
+                        onChange={(e) =>
                           onFontStylesChange({
                             ...fontStyles,
                             headline: {
                               ...fontStyles.headline,
-                              textAlign: align,
+                              color: e.target.value,
                             },
                           })
                         }
-                        className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 capitalize flex items-center justify-center gap-1 ${
-                          fontStyles.headline.textAlign === align
-                            ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
-                            : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
-                        }`}
-                      >
-                        <svg
-                          className="w-3 h-3"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          {align === "left" && (
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 6h16M4 12h10M4 18h14"
-                            />
-                          )}
-                          {align === "center" && (
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 6h16M7 12h10M5 18h14"
-                            />
-                          )}
-                          {align === "right" && (
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 6h16M10 12h10M6 18h14"
-                            />
-                          )}
-                        </svg>
-                        {align}
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                        className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                      />
+                      <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                        <input
+                          type="text"
+                          value={fontStyles.headline.color.toUpperCase()}
+                          onChange={(e) => {
+                            let value = e.target.value.toUpperCase();
+                            if (!value.startsWith("#")) {
+                              value = "#" + value.replace(/[^0-9A-F]/g, "");
+                            } else {
+                              value =
+                                "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
+                            }
+                            value = value.slice(0, 7);
 
-                {/* Text Shadow */}
-                <div>
-                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                    Text Shadow
-                  </label>
-                  <div className="grid grid-cols-5 gap-2 mb-3">
-                    {(["none", "soft", "hard", "glow", "outline"] as const).map(
-                      (preset) => (
+                            if (value.length === 7) {
+                              onFontStylesChange({
+                                ...fontStyles,
+                                headline: {
+                                  ...fontStyles.headline,
+                                  color: value,
+                                },
+                              });
+                            }
+                          }}
+                          placeholder="#000000"
+                          className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                          maxLength={7}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Text Align */}
+                  <div>
+                    <label className="text-sm font-medium text-[#2c2419] mb-2 flex items-center gap-1.5 font-inter">
+                      <svg
+                        className="w-3.5 h-3.5 text-[#8b6834]"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 6h16M4 12h8m-8 6h16"
+                        />
+                      </svg>
+                      Text Alignment
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["left", "center", "right"] as const).map((align) => (
+                        <button
+                          key={align}
+                          onClick={() =>
+                            onFontStylesChange({
+                              ...fontStyles,
+                              headline: {
+                                ...fontStyles.headline,
+                                textAlign: align,
+                              },
+                            })
+                          }
+                          className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 capitalize flex items-center justify-center gap-1 ${
+                            fontStyles.headline.textAlign === align
+                              ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                              : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                          }`}
+                        >
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            {align === "left" && (
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 6h16M4 12h10M4 18h14"
+                              />
+                            )}
+                            {align === "center" && (
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 6h16M7 12h10M5 18h14"
+                              />
+                            )}
+                            {align === "right" && (
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 6h16M10 12h10M6 18h14"
+                              />
+                            )}
+                          </svg>
+                          {align}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Text Shadow */}
+                  <div>
+                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                      Text Shadow
+                    </label>
+                    <div className="grid grid-cols-5 gap-2">
+                      {(
+                        ["none", "soft", "hard", "glow", "outline"] as const
+                      ).map((preset) => (
                         <button
                           key={preset}
                           onClick={() =>
@@ -1532,164 +1668,593 @@ export default function CustomizationPanel({
                         >
                           {preset}
                         </button>
-                      ),
-                    )}
-                  </div>
-
-                  {/* Shadow Angle - Only show if not "none" */}
-                  {fontStyles.headline.textShadow?.preset &&
-                    fontStyles.headline.textShadow.preset !== "none" && (
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <label className="text-xs font-medium text-[#2c2419] font-inter">
-                            Shadow Angle
-                          </label>
-                          <span className="text-xs font-bold text-[#8b6834] bg-[#e8dcc8] px-2 py-0.5 border border-[#d4c4b0]">
-                            {fontStyles.headline.textShadow?.angle || 135}°
-                          </span>
-                        </div>
-                        <input
-                          type="range"
-                          min="0"
-                          max="360"
-                          step="15"
-                          value={fontStyles.headline.textShadow?.angle || 135}
-                          onChange={(e) =>
-                            onFontStylesChange({
-                              ...fontStyles,
-                              headline: {
-                                ...fontStyles.headline,
-                                textShadow: {
-                                  preset:
-                                    fontStyles.headline.textShadow?.preset ||
-                                    "soft",
-                                  angle: parseInt(e.target.value),
-                                },
-                              },
-                            })
-                          }
-                          className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                          style={{
-                            background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((fontStyles.headline.textShadow?.angle || 135) / 360) * 100}%, #e8dcc8 ${((fontStyles.headline.textShadow?.angle || 135) / 360) * 100}%, #e8dcc8 100%)`,
-                          }}
-                        />
-                      </div>
-                    )}
-                </div>
-
-                {/* Text Stroke */}
-                <div>
-                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                    Text Stroke
-                  </label>
-
-                  {/* Stroke Width */}
-                  <div className="mb-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs font-medium text-[#2c2419] font-inter">
-                        Stroke Width
-                      </label>
-                      <span className="text-xs font-bold text-[#8b6834] bg-[#e8dcc8] px-2 py-0.5 border border-[#d4c4b0]">
-                        {fontStyles.headline.textStroke?.width || 0}px
-                      </span>
+                      ))}
                     </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="5"
-                      step="0.5"
-                      value={fontStyles.headline.textStroke?.width || 0}
-                      onChange={(e) =>
-                        onFontStylesChange({
-                          ...fontStyles,
-                          headline: {
-                            ...fontStyles.headline,
-                            textStroke: {
-                              width: parseFloat(e.target.value),
-                              color:
-                                fontStyles.headline.textStroke?.color ||
-                                "#000000",
-                            },
-                          },
-                        })
-                      }
-                      className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                      style={{
-                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((fontStyles.headline.textStroke?.width || 0) / 5) * 100}%, #e8dcc8 ${((fontStyles.headline.textStroke?.width || 0) / 5) * 100}%, #e8dcc8 100%)`,
-                      }}
-                    />
                   </div>
+                </div>
+              )}
+            </div>
 
-                  {/* Stroke Color - Only show if width > 0 */}
-                  {(fontStyles.headline.textStroke?.width || 0) > 0 && (
-                    <div>
-                      <label className="text-xs font-medium text-[#2c2419] mb-1 block font-inter">
-                        Stroke Color
-                      </label>
-                      <div className="flex gap-3">
-                        <input
-                          type="color"
-                          value={
-                            fontStyles.headline.textStroke?.color || "#000000"
-                          }
-                          onChange={(e) =>
-                            onFontStylesChange({
-                              ...fontStyles,
-                              headline: {
-                                ...fontStyles.headline,
-                                textStroke: {
-                                  width:
-                                    fontStyles.headline.textStroke?.width || 0,
-                                  color: e.target.value,
-                                },
-                              },
-                            })
-                          }
-                          className="h-10 w-16 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+            {/* Comment-Specific Sections */}
+            {cardType === "comment" && (
+              <>
+                {/* Comment Text Accordion */}
+                {fontStyles.commentText && (
+                  <div className="border-2 border-[#d4c4b0] bg-white overflow-hidden">
+                    <button
+                      onClick={() =>
+                        setExpandedFontSection(
+                          expandedFontSection === "commentText"
+                            ? null
+                            : "commentText",
+                        )
+                      }
+                      className="w-full p-3 flex items-center justify-between hover:bg-[#faf8f5] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-[#8b6834] flex items-center justify-center">
+                          <svg
+                            className="w-4 h-4 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                            />
+                          </svg>
+                        </div>
+                        <div className="text-left">
+                          <h3 className="text-sm font-semibold font-inter text-[#2c2419]">
+                            Comment Text
+                          </h3>
+                          {expandedFontSection !== "commentText" && (
+                            <p className="text-xs text-[#5d4e37] font-inter flex items-center gap-2 mt-0.5">
+                              <span>{fontStyles.commentText.fontSize}</span>
+                              <span>•</span>
+                              <span>
+                                Weight {fontStyles.commentText.fontWeight}
+                              </span>
+                              <span
+                                className="w-3 h-3 border border-[#d4c4b0]"
+                                style={{
+                                  backgroundColor: fontStyles.commentText.color,
+                                }}
+                              ></span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <svg
+                        className={`w-5 h-5 text-[#8b6834] transition-transform ${expandedFontSection === "commentText" ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
                         />
-                        <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-3 py-2 flex items-center">
-                          <input
-                            type="text"
-                            value={(
-                              fontStyles.headline.textStroke?.color || "#000000"
-                            ).toUpperCase()}
-                            onChange={(e) => {
-                              let value = e.target.value.toUpperCase();
-                              if (!value.startsWith("#")) {
-                                value = "#" + value.replace(/[^0-9A-F]/g, "");
-                              } else {
-                                value =
-                                  "#" +
-                                  value.slice(1).replace(/[^0-9A-F]/g, "");
-                              }
-                              value = value.slice(0, 7);
+                      </svg>
+                    </button>
 
-                              if (value.length === 7) {
-                                onFontStylesChange({
-                                  ...fontStyles,
-                                  headline: {
-                                    ...fontStyles.headline,
-                                    textStroke: {
-                                      width:
-                                        fontStyles.headline.textStroke?.width ||
-                                        0,
-                                      color: value,
-                                    },
-                                  },
-                                });
-                              }
+                    {expandedFontSection === "commentText" && (
+                      <div className="p-4 pt-0 space-y-4 border-t-2 border-[#f5f0e8]">
+                        {/* Font Size */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm font-medium text-[#2c2419] font-inter">
+                              Font Size
+                            </label>
+                            <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                              {fontStyles.commentText.fontSize}
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="20"
+                            max="48"
+                            value={parseInt(fontStyles.commentText.fontSize)}
+                            onChange={(e) =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                commentText: {
+                                  ...fontStyles.commentText!,
+                                  fontSize: `${e.target.value}px`,
+                                },
+                              })
+                            }
+                            className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                            style={{
+                              background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.commentText.fontSize) - 20) / 28) * 100}%, #e8dcc8 ${((parseInt(fontStyles.commentText.fontSize) - 20) / 28) * 100}%, #e8dcc8 100%)`,
                             }}
-                            placeholder="#000000"
-                            className="w-full text-sm font-mono text-[#2c2419] bg-transparent outline-none"
-                            maxLength={7}
                           />
                         </div>
+
+                        {/* Font Weight */}
+                        <div>
+                          <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                            Font Weight
+                          </label>
+                          <div className="grid grid-cols-4 gap-2">
+                            {["400", "500", "600", "700"].map((weight) => (
+                              <button
+                                key={weight}
+                                onClick={() =>
+                                  onFontStylesChange({
+                                    ...fontStyles,
+                                    commentText: {
+                                      ...fontStyles.commentText!,
+                                      fontWeight: weight,
+                                    },
+                                  })
+                                }
+                                className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
+                                  fontStyles.commentText!.fontWeight === weight
+                                    ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                                    : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                                }`}
+                              >
+                                {weight === "400"
+                                  ? "Normal"
+                                  : weight === "500"
+                                    ? "Medium"
+                                    : weight === "600"
+                                      ? "Semi"
+                                      : "Bold"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Color */}
+                        <div>
+                          <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                            Text Color
+                          </label>
+                          <div className="flex gap-3">
+                            <input
+                              type="color"
+                              value={fontStyles.commentText.color}
+                              onChange={(e) =>
+                                onFontStylesChange({
+                                  ...fontStyles,
+                                  commentText: {
+                                    ...fontStyles.commentText!,
+                                    color: e.target.value,
+                                  },
+                                })
+                              }
+                              className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                            />
+                            <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                              <input
+                                type="text"
+                                value={fontStyles.commentText.color.toUpperCase()}
+                                onChange={(e) => {
+                                  let value = e.target.value.toUpperCase();
+                                  if (!value.startsWith("#")) {
+                                    value =
+                                      "#" + value.replace(/[^0-9A-F]/g, "");
+                                  } else {
+                                    value =
+                                      "#" +
+                                      value.slice(1).replace(/[^0-9A-F]/g, "");
+                                  }
+                                  value = value.slice(0, 7);
+
+                                  if (value.length === 7) {
+                                    onFontStylesChange({
+                                      ...fontStyles,
+                                      commentText: {
+                                        ...fontStyles.commentText!,
+                                        color: value,
+                                      },
+                                    });
+                                  }
+                                }}
+                                placeholder="#000000"
+                                className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                                maxLength={7}
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Person Name Accordion */}
+                {fontStyles.personName && (
+                  <div className="border-2 border-[#d4c4b0] bg-white overflow-hidden">
+                    <button
+                      onClick={() =>
+                        setExpandedFontSection(
+                          expandedFontSection === "personName"
+                            ? null
+                            : "personName",
+                        )
+                      }
+                      className="w-full p-3 flex items-center justify-between hover:bg-[#faf8f5] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-[#8b6834] flex items-center justify-center">
+                          <svg
+                            className="w-4 h-4 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                        </div>
+                        <div className="text-left">
+                          <h3 className="text-sm font-semibold font-inter text-[#2c2419]">
+                            Person Name
+                          </h3>
+                          {expandedFontSection !== "personName" && (
+                            <p className="text-xs text-[#5d4e37] font-inter flex items-center gap-2 mt-0.5">
+                              <span>{fontStyles.personName.fontSize}</span>
+                              <span>•</span>
+                              <span>
+                                Weight {fontStyles.personName.fontWeight}
+                              </span>
+                              <span
+                                className="w-3 h-3 border border-[#d4c4b0]"
+                                style={{
+                                  backgroundColor: fontStyles.personName.color,
+                                }}
+                              ></span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <svg
+                        className={`w-5 h-5 text-[#8b6834] transition-transform ${expandedFontSection === "personName" ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+
+                    {expandedFontSection === "personName" && (
+                      <div className="p-4 pt-0 space-y-4 border-t-2 border-[#f5f0e8]">
+                        {/* Font Size */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm font-medium text-[#2c2419] font-inter">
+                              Font Size
+                            </label>
+                            <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                              {fontStyles.personName.fontSize}
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="14"
+                            max="32"
+                            value={parseInt(fontStyles.personName.fontSize)}
+                            onChange={(e) =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                personName: {
+                                  ...fontStyles.personName!,
+                                  fontSize: `${e.target.value}px`,
+                                },
+                              })
+                            }
+                            className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                            style={{
+                              background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.personName.fontSize) - 14) / 18) * 100}%, #e8dcc8 ${((parseInt(fontStyles.personName.fontSize) - 14) / 18) * 100}%, #e8dcc8 100%)`,
+                            }}
+                          />
+                        </div>
+
+                        {/* Font Weight */}
+                        <div>
+                          <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                            Font Weight
+                          </label>
+                          <div className="grid grid-cols-4 gap-2">
+                            {["400", "500", "600", "700"].map((weight) => (
+                              <button
+                                key={weight}
+                                onClick={() =>
+                                  onFontStylesChange({
+                                    ...fontStyles,
+                                    personName: {
+                                      ...fontStyles.personName!,
+                                      fontWeight: weight,
+                                    },
+                                  })
+                                }
+                                className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
+                                  fontStyles.personName!.fontWeight === weight
+                                    ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                                    : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                                }`}
+                              >
+                                {weight === "400"
+                                  ? "Normal"
+                                  : weight === "500"
+                                    ? "Medium"
+                                    : weight === "600"
+                                      ? "Semi"
+                                      : "Bold"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Color */}
+                        <div>
+                          <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                            Text Color
+                          </label>
+                          <div className="flex gap-3">
+                            <input
+                              type="color"
+                              value={fontStyles.personName.color}
+                              onChange={(e) =>
+                                onFontStylesChange({
+                                  ...fontStyles,
+                                  personName: {
+                                    ...fontStyles.personName!,
+                                    color: e.target.value,
+                                  },
+                                })
+                              }
+                              className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                            />
+                            <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                              <input
+                                type="text"
+                                value={fontStyles.personName.color.toUpperCase()}
+                                onChange={(e) => {
+                                  let value = e.target.value.toUpperCase();
+                                  if (!value.startsWith("#")) {
+                                    value =
+                                      "#" + value.replace(/[^0-9A-F]/g, "");
+                                  } else {
+                                    value =
+                                      "#" +
+                                      value.slice(1).replace(/[^0-9A-F]/g, "");
+                                  }
+                                  value = value.slice(0, 7);
+
+                                  if (value.length === 7) {
+                                    onFontStylesChange({
+                                      ...fontStyles,
+                                      personName: {
+                                        ...fontStyles.personName!,
+                                        color: value,
+                                      },
+                                    });
+                                  }
+                                }}
+                                placeholder="#000000"
+                                className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                                maxLength={7}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Person Role Accordion */}
+                {fontStyles.personRole && (
+                  <div className="border-2 border-[#d4c4b0] bg-white overflow-hidden">
+                    <button
+                      onClick={() =>
+                        setExpandedFontSection(
+                          expandedFontSection === "personRole"
+                            ? null
+                            : "personRole",
+                        )
+                      }
+                      className="w-full p-3 flex items-center justify-between hover:bg-[#faf8f5] transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-[#8b6834] flex items-center justify-center">
+                          <svg
+                            className="w-4 h-4 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div className="text-left">
+                          <h3 className="text-sm font-semibold font-inter text-[#2c2419]">
+                            Person Role
+                          </h3>
+                          {expandedFontSection !== "personRole" && (
+                            <p className="text-xs text-[#5d4e37] font-inter flex items-center gap-2 mt-0.5">
+                              <span>{fontStyles.personRole.fontSize}</span>
+                              <span>•</span>
+                              <span>
+                                Weight {fontStyles.personRole.fontWeight}
+                              </span>
+                              <span
+                                className="w-3 h-3 border border-[#d4c4b0]"
+                                style={{
+                                  backgroundColor: fontStyles.personRole.color,
+                                }}
+                              ></span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <svg
+                        className={`w-5 h-5 text-[#8b6834] transition-transform ${expandedFontSection === "personRole" ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </button>
+
+                    {expandedFontSection === "personRole" && (
+                      <div className="p-4 pt-0 space-y-4 border-t-2 border-[#f5f0e8]">
+                        {/* Font Size */}
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="text-sm font-medium text-[#2c2419] font-inter">
+                              Font Size
+                            </label>
+                            <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                              {fontStyles.personRole.fontSize}
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="12"
+                            max="24"
+                            value={parseInt(fontStyles.personRole.fontSize)}
+                            onChange={(e) =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                personRole: {
+                                  ...fontStyles.personRole!,
+                                  fontSize: `${e.target.value}px`,
+                                },
+                              })
+                            }
+                            className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                            style={{
+                              background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.personRole.fontSize) - 12) / 12) * 100}%, #e8dcc8 ${((parseInt(fontStyles.personRole.fontSize) - 12) / 12) * 100}%, #e8dcc8 100%)`,
+                            }}
+                          />
+                        </div>
+
+                        {/* Font Weight */}
+                        <div>
+                          <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                            Font Weight
+                          </label>
+                          <div className="grid grid-cols-4 gap-2">
+                            {["300", "400", "500", "600"].map((weight) => (
+                              <button
+                                key={weight}
+                                onClick={() =>
+                                  onFontStylesChange({
+                                    ...fontStyles,
+                                    personRole: {
+                                      ...fontStyles.personRole!,
+                                      fontWeight: weight,
+                                    },
+                                  })
+                                }
+                                className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
+                                  fontStyles.personRole!.fontWeight === weight
+                                    ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
+                                    : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
+                                }`}
+                              >
+                                {weight === "300"
+                                  ? "Light"
+                                  : weight === "400"
+                                    ? "Normal"
+                                    : weight === "500"
+                                      ? "Medium"
+                                      : "Semi"}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Color */}
+                        <div>
+                          <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                            Text Color
+                          </label>
+                          <div className="flex gap-3">
+                            <input
+                              type="color"
+                              value={fontStyles.personRole.color}
+                              onChange={(e) =>
+                                onFontStylesChange({
+                                  ...fontStyles,
+                                  personRole: {
+                                    ...fontStyles.personRole!,
+                                    color: e.target.value,
+                                  },
+                                })
+                              }
+                              className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                            />
+                            <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                              <input
+                                type="text"
+                                value={fontStyles.personRole.color.toUpperCase()}
+                                onChange={(e) => {
+                                  let value = e.target.value.toUpperCase();
+                                  if (!value.startsWith("#")) {
+                                    value =
+                                      "#" + value.replace(/[^0-9A-F]/g, "");
+                                  } else {
+                                    value =
+                                      "#" +
+                                      value.slice(1).replace(/[^0-9A-F]/g, "");
+                                  }
+                                  value = value.slice(0, 7);
+
+                                  if (value.length === 7) {
+                                    onFontStylesChange({
+                                      ...fontStyles,
+                                      personRole: {
+                                        ...fontStyles.personRole!,
+                                        color: value,
+                                      },
+                                    });
+                                  }
+                                }}
+                                placeholder="#000000"
+                                className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                                maxLength={7}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
 
             {/* Font Selection Modal (Placeholder) */}
             {showFontModal && (
@@ -1776,170 +2341,533 @@ export default function CustomizationPanel({
                 Toggle elements visibility on your card
               </p>
 
-              {/* Week Toggle */}
-              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {visibilitySettings.showWeek ? (
-                    <Eye className="w-5 h-5 text-[#8b6834]" />
-                  ) : (
-                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+              {cardType === "comment" ? (
+                // Comment Card Specific Visibility Options
+                <>
+                  {/* Logo Toggle */}
+                  {"showLogo" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showLogo ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Logo
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showLogo: !visibilitySettings.showLogo,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showLogo
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showLogo
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
                   )}
-                  <span className="text-sm font-medium font-inter text-[#2c2419]">
-                    Week
-                  </span>
-                </div>
-                <button
-                  onClick={() =>
-                    onVisibilityChange({
-                      ...visibilitySettings,
-                      showWeek: !visibilitySettings.showWeek,
-                    })
-                  }
-                  className={`relative w-14 h-7 transition-colors border-2 ${
-                    visibilitySettings.showWeek
-                      ? "bg-[#8b6834] border-[#8b6834]"
-                      : "bg-[#d4c4b0] border-[#d4c4b0]"
-                  }`}
-                >
-                  <div
-                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
-                      visibilitySettings.showWeek ? "right-0.5" : "left-0.5"
-                    }`}
-                  />
-                </button>
-              </div>
 
-              {/* Date Toggle */}
-              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {visibilitySettings.showDate ? (
-                    <Eye className="w-5 h-5 text-[#8b6834]" />
-                  ) : (
-                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                  {/* Date Toggle */}
+                  {"showDate" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showDate ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Date
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showDate: !visibilitySettings.showDate,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showDate
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showDate
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
                   )}
-                  <span className="text-sm font-medium font-inter text-[#2c2419]">
-                    Date
-                  </span>
-                </div>
-                <button
-                  onClick={() =>
-                    onVisibilityChange({
-                      ...visibilitySettings,
-                      showDate: !visibilitySettings.showDate,
-                    })
-                  }
-                  className={`relative w-14 h-7 transition-colors border-2 ${
-                    visibilitySettings.showDate
-                      ? "bg-[#8b6834] border-[#8b6834]"
-                      : "bg-[#d4c4b0] border-[#d4c4b0]"
-                  }`}
-                >
-                  <div
-                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
-                      visibilitySettings.showDate ? "right-0.5" : "left-0.5"
-                    }`}
-                  />
-                </button>
-              </div>
 
-              {/* Logo Toggle */}
-              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {visibilitySettings.showLogo ? (
-                    <Eye className="w-5 h-5 text-[#8b6834]" />
-                  ) : (
-                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                  {/* Comment Text Toggle */}
+                  {"showCommentText" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showCommentText ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Comment Text
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showCommentText:
+                              !visibilitySettings.showCommentText,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showCommentText
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showCommentText
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
                   )}
-                  <span className="text-sm font-medium font-inter text-[#2c2419]">
-                    Logo
-                  </span>
-                </div>
-                <button
-                  onClick={() =>
-                    onVisibilityChange({
-                      ...visibilitySettings,
-                      showLogo: !visibilitySettings.showLogo,
-                    })
-                  }
-                  className={`relative w-14 h-7 transition-colors border-2 ${
-                    visibilitySettings.showLogo
-                      ? "bg-[#8b6834] border-[#8b6834]"
-                      : "bg-[#d4c4b0] border-[#d4c4b0]"
-                  }`}
-                >
-                  <div
-                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
-                      visibilitySettings.showLogo ? "right-0.5" : "left-0.5"
-                    }`}
-                  />
-                </button>
-              </div>
 
-              {/* QR Code Toggle */}
-              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {visibilitySettings.showQrCode ? (
-                    <Eye className="w-5 h-5 text-[#8b6834]" />
-                  ) : (
-                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                  {/* Person Name Toggle */}
+                  {"showPersonName" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showPersonName ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Person Name
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showPersonName: !visibilitySettings.showPersonName,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showPersonName
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showPersonName
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
                   )}
-                  <span className="text-sm font-medium font-inter text-[#2c2419]">
-                    QR Code
-                  </span>
-                </div>
-                <button
-                  onClick={() =>
-                    onVisibilityChange({
-                      ...visibilitySettings,
-                      showQrCode: !visibilitySettings.showQrCode,
-                    })
-                  }
-                  className={`relative w-14 h-7 transition-colors border-2 ${
-                    visibilitySettings.showQrCode
-                      ? "bg-[#8b6834] border-[#8b6834]"
-                      : "bg-[#d4c4b0] border-[#d4c4b0]"
-                  }`}
-                >
-                  <div
-                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
-                      visibilitySettings.showQrCode ? "right-0.5" : "left-0.5"
-                    }`}
-                  />
-                </button>
-              </div>
 
-              {/* Title Toggle */}
-              <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {visibilitySettings.showTitle ? (
-                    <Eye className="w-5 h-5 text-[#8b6834]" />
-                  ) : (
-                    <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                  {/* Person Role Toggle */}
+                  {"showPersonRole" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showPersonRole ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Person Role
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showPersonRole: !visibilitySettings.showPersonRole,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showPersonRole
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showPersonRole
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
                   )}
-                  <span className="text-sm font-medium font-inter text-[#2c2419]">
-                    Title
-                  </span>
-                </div>
-                <button
-                  onClick={() =>
-                    onVisibilityChange({
-                      ...visibilitySettings,
-                      showTitle: !visibilitySettings.showTitle,
-                    })
-                  }
-                  className={`relative w-14 h-7 transition-colors border-2 ${
-                    visibilitySettings.showTitle
-                      ? "bg-[#8b6834] border-[#8b6834]"
-                      : "bg-[#d4c4b0] border-[#d4c4b0]"
-                  }`}
-                >
-                  <div
-                    className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
-                      visibilitySettings.showTitle ? "right-0.5" : "left-0.5"
-                    }`}
-                  />
-                </button>
-              </div>
+
+                  {/* Image Toggle */}
+                  {"showImage" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showImage ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Image
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showImage: !visibilitySettings.showImage,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showImage
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showImage
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Social Media Toggle */}
+                  {"showSocialMedia" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showSocialMedia ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Footer
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showSocialMedia:
+                              !visibilitySettings.showSocialMedia,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showSocialMedia
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showSocialMedia
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Ad Banner Toggle */}
+                  {"showAdBanner" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showAdBanner ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Ad Banner
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showAdBanner: !visibilitySettings.showAdBanner,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showAdBanner
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showAdBanner
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                // URL/Custom Card Visibility Options
+                <>
+                  {/* Week Toggle */}
+                  {"showWeek" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showWeek ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Week
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showWeek: !visibilitySettings.showWeek,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showWeek
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showWeek
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Date Toggle */}
+                  {"showDate" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showDate ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Date
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showDate: !visibilitySettings.showDate,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showDate
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showDate
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Logo Toggle */}
+                  {"showLogo" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showLogo ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Logo
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showLogo: !visibilitySettings.showLogo,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showLogo
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showLogo
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* QR Code Toggle */}
+                  {"showQrCode" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showQrCode ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          QR Code
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showQrCode: !visibilitySettings.showQrCode,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showQrCode
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showQrCode
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Title Toggle */}
+                  {"showTitle" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showTitle ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Title
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showTitle: !visibilitySettings.showTitle,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showTitle
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showTitle
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Ad Banner Toggle */}
+                  {"showAdBanner" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showAdBanner ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Ad Banner
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showAdBanner: !visibilitySettings.showAdBanner,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showAdBanner
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showAdBanner
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )}
 
@@ -2010,6 +2938,102 @@ export default function CustomizationPanel({
           </div>
         )}
 
+        {/* Footer Tab */}
+        {activeTab === "Footer" && (
+          <div className="space-y-6">
+            {/* Font Size */}
+            {fontStyles?.footer && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-[#2c2419] font-inter">
+                    Font Size
+                  </label>
+                  <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                    {fontStyles.footer.fontSize}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="10"
+                  max="24"
+                  value={parseInt(fontStyles.footer.fontSize)}
+                  onChange={(e) =>
+                    onFontStylesChange?.({
+                      ...fontStyles,
+                      footer: {
+                        ...fontStyles.footer,
+                        fontSize: `${e.target.value}px`,
+                      },
+                    })
+                  }
+                  className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                  style={{
+                    background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${
+                      ((parseInt(fontStyles.footer.fontSize) - 10) / 14) * 100
+                    }%, #e8dcc8 ${
+                      ((parseInt(fontStyles.footer.fontSize) - 10) / 14) * 100
+                    }%, #e8dcc8 100%)`,
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Font Color */}
+            {fontStyles?.footer && (
+              <div>
+                <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                  Text Color
+                </label>
+                <div className="flex gap-3">
+                  <input
+                    type="color"
+                    value={fontStyles.footer.color}
+                    onChange={(e) =>
+                      onFontStylesChange?.({
+                        ...fontStyles,
+                        footer: {
+                          ...fontStyles.footer,
+                          color: e.target.value,
+                        },
+                      })
+                    }
+                    className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                  />
+                  <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                    <input
+                      type="text"
+                      value={fontStyles.footer.color.toUpperCase()}
+                      onChange={(e) => {
+                        let value = e.target.value.toUpperCase();
+                        if (!value.startsWith("#")) {
+                          value = "#" + value.replace(/[^0-9A-F]/g, "");
+                        } else {
+                          value =
+                            "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
+                        }
+                        value = value.slice(0, 7);
+
+                        if (value.length === 7) {
+                          onFontStylesChange?.({
+                            ...fontStyles,
+                            footer: {
+                              ...fontStyles.footer,
+                              color: value,
+                            },
+                          });
+                        }
+                      }}
+                      placeholder="#000000"
+                      className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                      maxLength={7}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Ad Banner Tab */}
         {activeTab === "Ad Banner" && (
           <div className="space-y-4">
@@ -2058,11 +3082,15 @@ export default function CustomizationPanel({
                       <RotateCcw className="w-3 h-3" />
                     </button>
                   </div>
-                  
+
                   {/* Interactive Preview Container */}
-                  <div 
+                  <div
                     className="bg-gray-200 border border-gray-400 overflow-hidden cursor-move relative"
-                    style={{ height: "60px" }}
+                    style={{
+                      width: "100%",
+                      aspectRatio: "500 / 80",
+                      height: "auto",
+                    }}
                     onMouseDown={(e) => {
                       e.preventDefault();
                       const startX = e.clientX;
@@ -2075,19 +3103,28 @@ export default function CustomizationPanel({
                         const deltaY = moveEvent.clientY - startY;
                         if (onAdBannerPositionChange) {
                           onAdBannerPositionChange({
-                            x: Math.max(-200, Math.min(200, startPosX + deltaX)),
-                            y: Math.max(-200, Math.min(200, startPosY + deltaY))
+                            x: Math.max(
+                              -200,
+                              Math.min(200, startPosX + deltaX),
+                            ),
+                            y: Math.max(
+                              -200,
+                              Math.min(200, startPosY + deltaY),
+                            ),
                           });
                         }
                       };
 
                       const handleMouseUp = () => {
-                        document.removeEventListener('mousemove', handleMouseMove);
-                        document.removeEventListener('mouseup', handleMouseUp);
+                        document.removeEventListener(
+                          "mousemove",
+                          handleMouseMove,
+                        );
+                        document.removeEventListener("mouseup", handleMouseUp);
                       };
 
-                      document.addEventListener('mousemove', handleMouseMove);
-                      document.addEventListener('mouseup', handleMouseUp);
+                      document.addEventListener("mousemove", handleMouseMove);
+                      document.addEventListener("mouseup", handleMouseUp);
                     }}
                   >
                     <img
@@ -2096,13 +3133,13 @@ export default function CustomizationPanel({
                       className="absolute top-1/2 left-1/2 pointer-events-none select-none"
                       style={{
                         transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${(adBannerZoom || 100) / 100})`,
-                        transformOrigin: 'center center',
-                        maxWidth: 'none',
-                        maxHeight: 'none',
-                        width: 'auto',
-                        height: 'auto',
-                        minWidth: '100%',
-                        minHeight: '100%'
+                        transformOrigin: "center center",
+                        maxWidth: "none",
+                        maxHeight: "none",
+                        width: "auto",
+                        height: "auto",
+                        minWidth: "100%",
+                        minHeight: "100%",
                       }}
                       draggable={false}
                     />

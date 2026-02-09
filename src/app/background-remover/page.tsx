@@ -11,7 +11,10 @@ export default function BackgroundRemoverPage() {
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
+  const [processingStatus, setProcessingStatus] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastProgressRef = useRef(0);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -20,6 +23,8 @@ export default function BackgroundRemoverPage() {
       reader.onload = (e) => {
         setOriginalImage(e.target?.result as string);
         setProcessedImage(null);
+        setProcessingProgress(0);
+        setProcessingStatus("");
       };
       reader.readAsDataURL(file);
     }
@@ -36,37 +41,112 @@ export default function BackgroundRemoverPage() {
             reader.onload = (e) => {
               setOriginalImage(e.target?.result as string);
               setProcessedImage(null);
+              setProcessingProgress(0);
+              setProcessingStatus("");
             };
             reader.readAsDataURL(blob);
             return;
           }
         }
       }
+      // No image found in clipboard
+      alert("No image found in clipboard. Please copy an image first.");
     } catch (err) {
       console.error("Failed to read clipboard:", err);
+      alert("Failed to access clipboard. Please upload an image instead.");
     }
   };
 
-  const handleRemoveBackground = () => {
+  const handleRemoveBackground = async () => {
+    if (!originalImage) return;
+
     setIsProcessing(true);
     setProcessingProgress(0);
-    
-    // Simulate background removal with progress (backend logic will be added later)
-    const interval = setInterval(() => {
-      setProcessingProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
+    lastProgressRef.current = 0;
+    setProcessingStatus("Initializing...");
+
+    // Fallback progress simulation for smooth UI updates
+    let simulatedProgress = 0;
+    progressIntervalRef.current = setInterval(() => {
+      simulatedProgress += 1;
+      // Cap simulated progress at 85% to show final progress from actual processing
+      if (simulatedProgress <= 85) {
+        if (simulatedProgress > lastProgressRef.current) {
+          lastProgressRef.current = simulatedProgress;
+          setProcessingProgress(simulatedProgress);
+          
+          if (simulatedProgress < 20) {
+            setProcessingStatus("Initializing...");
+          } else if (simulatedProgress < 50) {
+            setProcessingStatus("Loading resources...");
+          } else if (simulatedProgress < 70) {
+            setProcessingStatus("Processing image...");
+          } else {
+            setProcessingStatus("Removing background...");
+          }
         }
-        return prev + 10;
+      }
+    }, 150);
+
+    try {
+      // Dynamically import the background removal library
+      const { removeBackground: removeBg } = await import("@imgly/background-removal");
+      
+      // Convert data URL to blob
+      const response = await fetch(originalImage);
+      const blob = await response.blob();
+
+      // Remove background with progress tracking
+      const removedBgBlob = await removeBg(blob, {
+        model: "isnet",
+        output: {
+          format: "image/png",
+          quality: 0.9,
+        },
+        progress: (key: string, current: number, total: number) => {
+          const progress = Math.round((current / total) * 100);
+          // Only update if real progress is higher than simulated
+          if (progress > lastProgressRef.current) {
+            lastProgressRef.current = progress;
+            setProcessingProgress(progress);
+            setProcessingStatus(`Processing: ${progress}%`);
+          }
+        },
       });
-    }, 200);
-    
-    setTimeout(() => {
-      setProcessedImage(originalImage); // Placeholder
+
+      // Clear the interval
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+
+      setProcessingStatus("Finalizing...");
+      setProcessingProgress(95);
+      
+      // Convert blob back to data URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setProcessedImage(result);
+        setIsProcessing(false);
+        setProcessingProgress(100);
+        setProcessingStatus("");
+      };
+      reader.readAsDataURL(removedBgBlob);
+    } catch (error) {
+      // Clear the interval on error
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      
+      console.error("Background removal failed:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      alert(`Failed to remove background: ${errorMessage}\n\nPlease try again with a different image.`);
       setIsProcessing(false);
-      setProcessingProgress(100);
-    }, 2000);
+      setProcessingProgress(0);
+      setProcessingStatus("");
+    }
   };
 
   // Add keyboard shortcut for paste (Ctrl+V)
@@ -79,7 +159,13 @@ export default function BackgroundRemoverPage() {
     };
 
     window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+      // Cleanup interval on unmount
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
   }, []);
 
   const handleDownload = () => {
@@ -92,8 +178,20 @@ export default function BackgroundRemoverPage() {
   };
 
   const handleClear = () => {
+    // Clear progress interval if running
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+    
     setOriginalImage(null);
     setProcessedImage(null);
+    setProcessingProgress(0);
+    setProcessingStatus("");
+    lastProgressRef.current = 0;
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -170,6 +268,16 @@ export default function BackgroundRemoverPage() {
             <div className="space-y-8">
               {/* Action Bar */}
               <div className="flex flex-wrap items-center justify-center gap-4">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-6 py-3 bg-white text-[#2c2419] font-bold rounded-2xl hover:shadow-xl transition-all duration-300 shadow-lg border border-[#d4c4b0]/30"
+                >
+                  <span className="flex items-center gap-2">
+                    <Upload className="w-4 h-4" />
+                    Upload New
+                  </span>
+                </button>
+
                 <button
                   onClick={handleRemoveBackground}
                   disabled={isProcessing}
@@ -255,7 +363,7 @@ export default function BackgroundRemoverPage() {
                           <div className="w-full max-w-xs">
                             <div className="flex items-center justify-between mb-2">
                               <p className="text-sm text-[#5d4e37] font-medium">
-                                Processing...
+                                {processingStatus || "Processing..."}
                               </p>
                               <span className="text-sm font-bold text-[#8b6834]">
                                 {processingProgress}%
@@ -269,7 +377,9 @@ export default function BackgroundRemoverPage() {
                             </div>
                           </div>
                           <p className="text-xs text-[#5d4e37]/70">
-                            AI is analyzing and removing background
+                            {processingStatus.includes("Initializing") || processingStatus.includes("Loading") 
+                              ? "This may take 10-20 seconds on first use" 
+                              : "Processing and removing background"}
                           </p>
                         </div>
                       ) : processedImage ? (
@@ -292,11 +402,12 @@ export default function BackgroundRemoverPage() {
               </div>
 
               {/* Info Badge */}
-              {processedImage && (
+              {processedImage && !isProcessing && (
                 <div className="max-w-2xl mx-auto text-center">
-                  <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm rounded-full shadow-lg">
-                    <span className="text-sm text-[#5d4e37]">
-                      <span className="font-bold text-[#2c2419]">Preview Mode:</span> Full AI processing coming soon
+                  <div className="inline-flex items-center gap-2 px-6 py-3 bg-green-50 border border-green-200 backdrop-blur-sm rounded-full shadow-lg">
+                    <span className="text-green-600 text-2xl">✓</span>
+                    <span className="text-sm text-green-800">
+                      <span className="font-bold">Background removed successfully!</span> Download your image above
                     </span>
                   </div>
                 </div>

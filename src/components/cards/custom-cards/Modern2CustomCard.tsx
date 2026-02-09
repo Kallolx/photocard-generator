@@ -1,11 +1,16 @@
 "use client";
 
-import { PhotocardData, BackgroundOptions, CardFontStyles, VisibilitySettings } from "@/types";
+import {
+  PhotocardData,
+  BackgroundOptions,
+  CardFontStyles,
+  VisibilitySettings,
+} from "@/types";
 import { useEffect, useState, useRef } from "react";
-import { 
-  DndContext, 
-  useDraggable, 
-  useDroppable, 
+import {
+  DndContext,
+  useDraggable,
+  useDroppable,
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
@@ -16,7 +21,7 @@ const getBengaliDate = () => {
   const now = new Date();
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
-    month: "long", 
+    month: "long",
     day: "numeric",
   };
   return now.toLocaleDateString("bn-BD", options);
@@ -25,7 +30,7 @@ const getBengaliDate = () => {
 const getBengaliWeekday = () => {
   const days = [
     "রবিবার",
-    "সোমবার", 
+    "সোমবার",
     "মঙ্গলবার",
     "বুধবার",
     "বৃহস্পতিবার",
@@ -92,20 +97,26 @@ function FloatingMenu({
 }
 
 // Draggable element that can be swapped with click handler
-function DraggableSwappable({ 
-  id, 
-  disabled, 
+function DraggableSwappable({
+  id,
+  disabled,
   children,
   isDragMode,
   onClick,
-}: { 
-  id: string; 
-  disabled: boolean; 
+}: {
+  id: string;
+  disabled: boolean;
   children: React.ReactNode;
   isDragMode: boolean;
   onClick?: (e: any) => void;
 }) {
-  const { attributes, listeners, setNodeRef: setDragRef, transform, isDragging } = useDraggable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setDragRef,
+    transform,
+    isDragging,
+  } = useDraggable({
     id,
     disabled,
   });
@@ -123,8 +134,8 @@ function DraggableSwappable({
 
   const style = {
     opacity: isDragging ? 0.3 : 1,
-    transform: isOver && !isDragging ? 'scale(1.05)' : 'scale(1)',
-    transition: 'all 0.2s ease',
+    transform: isOver && !isDragging ? "scale(1.05)" : "scale(1)",
+    transition: "all 0.2s ease",
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -136,19 +147,23 @@ function DraggableSwappable({
   };
 
   return (
-    <div 
-      ref={setRefs} 
+    <div
+      ref={setRefs}
       style={style}
-      className={`relative ${isDragMode && !disabled ? 'ring-2 ring-blue-500 ring-opacity-50 rounded p-1' : ''} ${isOver && !isDragging ? 'ring-4 ring-green-500 ring-opacity-70' : ''}`}
+      className={`relative ${isDragMode && !disabled ? "ring-2 ring-blue-500 ring-opacity-50 rounded p-1" : ""} ${isOver && !isDragging ? "ring-4 ring-green-500 ring-opacity-70" : ""}`}
     >
-      <div {...listeners} {...attributes} style={{ cursor: disabled ? 'default' : 'move' }}>
+      <div
+        {...listeners}
+        {...attributes}
+        style={{ cursor: disabled ? "default" : "move" }}
+      >
         {children}
       </div>
       {isDragMode && !disabled && (
         <button
           onClick={handleClick}
           className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors z-10"
-          style={{ fontSize: '12px' }}
+          style={{ fontSize: "12px" }}
         >
           ⋮
         </button>
@@ -156,6 +171,8 @@ function DraggableSwappable({
     </div>
   );
 }
+
+import { getFontClassName } from "@/utils/fontUtils";
 
 interface Modern2CustomCardProps {
   data: PhotocardData;
@@ -175,18 +192,36 @@ interface Modern2CustomCardProps {
   visibilitySettings?: VisibilitySettings;
   isLogoFavicon?: boolean;
   isDragMode?: boolean;
+  footerOverlay?: { enabled: boolean; opacity: number };
   elementLayout?: {
-    topLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
-    topRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
-    bottomLeft: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
-    bottomRight: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
-    center: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon';
+    topLeft: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
+    topRight: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
+    bottomLeft: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
+    bottomRight: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
+    center: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon";
   };
   onLayoutChange?: (layout: any) => void;
   onVisibilityChange?: (settings: VisibilitySettings) => void;
   onLogoUpload?: (file: File) => void;
   onFaviconUpload?: (file: File) => void;
   onRestoreDefaults?: () => void;
+}
+
+// Helper function to darken a color
+function darkenColor(color: string, percent: number = 20): string {
+  // Handle hex colors
+  if (color.startsWith("#")) {
+    const num = parseInt(color.replace("#", ""), 16);
+    const r = Math.max(0, Math.floor((num >> 16) * (1 - percent / 100)));
+    const g = Math.max(
+      0,
+      Math.floor(((num >> 8) & 0x00ff) * (1 - percent / 100)),
+    );
+    const b = Math.max(0, Math.floor((num & 0x0000ff) * (1 - percent / 100)));
+    return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
+  }
+  // For non-hex colors, use CSS filter approach
+  return color;
 }
 
 export default function Modern2CustomCard({
@@ -210,15 +245,17 @@ export default function Modern2CustomCard({
     showLogo: true,
     showQrCode: false,
     showTitle: true,
+    showAdBanner: false,
   },
   isLogoFavicon = false,
   isDragMode = false,
+  footerOverlay,
   elementLayout = {
-    topLeft: 'logo',
-    topRight: 'dateWeek',
-    bottomLeft: 'socialMedia',
-    bottomRight: 'website',
-    center: 'favicon',
+    topLeft: "logo",
+    topRight: "dateWeek",
+    bottomLeft: "socialMedia",
+    bottomRight: "website",
+    center: "favicon",
   },
   onLayoutChange,
   onVisibilityChange,
@@ -227,13 +264,16 @@ export default function Modern2CustomCard({
   onRestoreDefaults,
 }: Modern2CustomCardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [selectedElement, setSelectedElement] = useState<{ id: string; position: { x: number; y: number } } | null>(null);
+  const [selectedElement, setSelectedElement] = useState<{
+    id: string;
+    position: { x: number; y: number };
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
 
   // Filter valid social media entries
   const validSocialMedia = socialMedia.filter(
-    (social) => social.platform && social.username
+    (social) => social.platform && social.username,
   );
 
   // Click outside handler to close floating menu
@@ -245,8 +285,8 @@ export default function Modern2CustomCard({
     };
 
     if (selectedElement) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [selectedElement]);
 
@@ -267,19 +307,19 @@ export default function Modern2CustomCard({
   const handleHideElement = () => {
     if (!selectedElement || !onVisibilityChange) return;
     const elementId = selectedElement.id;
-    
+
     const newSettings = { ...visibilitySettings };
-    
-    if (elementId === 'logo') {
+
+    if (elementId === "logo") {
       newSettings.showLogo = !newSettings.showLogo;
-    } else if (elementId === 'dateWeek') {
+    } else if (elementId === "dateWeek") {
       newSettings.showWeek = !newSettings.showWeek;
       newSettings.showDate = !newSettings.showDate;
-    } else if (elementId === 'favicon') {
+    } else if (elementId === "favicon") {
       setSelectedElement(null);
       return;
     }
-    
+
     onVisibilityChange(newSettings);
     setSelectedElement(null);
   };
@@ -287,15 +327,15 @@ export default function Modern2CustomCard({
   // Reset element to default position
   const handleClearElement = () => {
     if (!selectedElement || !onLayoutChange) return;
-    
+
     const defaultLayout = {
-      topLeft: 'logo' as const,
-      topRight: 'dateWeek' as const,
-      bottomLeft: 'socialMedia' as const,
-      bottomRight: 'website' as const,
-      center: 'favicon' as const,
+      topLeft: "logo" as const,
+      topRight: "dateWeek" as const,
+      bottomLeft: "socialMedia" as const,
+      bottomRight: "website" as const,
+      center: "favicon" as const,
     };
-    
+
     onLayoutChange(defaultLayout);
     setSelectedElement(null);
   };
@@ -304,10 +344,10 @@ export default function Modern2CustomCard({
   const handleUploadElement = () => {
     if (!selectedElement) return;
     const elementId = selectedElement.id;
-    
-    if (elementId === 'logo' && onLogoUpload) {
+
+    if (elementId === "logo" && onLogoUpload) {
       fileInputRef.current?.click();
-    } else if (elementId === 'favicon' && onFaviconUpload) {
+    } else if (elementId === "favicon" && onFaviconUpload) {
       faviconInputRef.current?.click();
     }
     setSelectedElement(null);
@@ -322,28 +362,28 @@ export default function Modern2CustomCard({
   // Handle drag end - swap positions
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     setActiveId(null);
-    
+
     if (!over || active.id === over.id) return;
-    
+
     const activeId = active.id as string;
     const overId = over.id as string;
-    
+
     const newLayout = { ...elementLayout };
-    
+
     let activeSlot: keyof typeof elementLayout | null = null;
     let overSlot: keyof typeof elementLayout | null = null;
-    
+
     Object.entries(elementLayout).forEach(([slot, element]) => {
       if (element === activeId) activeSlot = slot as keyof typeof elementLayout;
       if (element === overId) overSlot = slot as keyof typeof elementLayout;
     });
-    
+
     if (activeSlot && overSlot) {
       newLayout[activeSlot] = elementLayout[overSlot];
       newLayout[overSlot] = elementLayout[activeSlot];
-      
+
       if (onLayoutChange) {
         onLayoutChange(newLayout);
       }
@@ -439,16 +479,38 @@ export default function Modern2CustomCard({
     return background.color;
   };
 
-  const renderElement = (elementType: 'logo' | 'dateWeek' | 'socialMedia' | 'website' | 'favicon') => {
+  const getFooterBackgroundStyle = () => {
+    if (!background) return { backgroundColor: "#6b4e25" }; // darker brown
+
+    if (
+      background.type === "gradient" &&
+      background.gradientFrom &&
+      background.gradientTo
+    ) {
+      // For gradients, darken both colors
+      const darkerFrom = darkenColor(background.gradientFrom, 25);
+      const darkerTo = darkenColor(background.gradientTo, 25);
+      return {
+        backgroundImage: `linear-gradient(135deg, ${darkerFrom}, ${darkerTo})`,
+      };
+    }
+
+    // For solid colors, darken by 25%
+    return { backgroundColor: darkenColor(background.color, 25) };
+  };
+
+  const renderElement = (
+    elementType: "logo" | "dateWeek" | "socialMedia" | "website" | "favicon",
+  ) => {
     switch (elementType) {
-      case 'logo':
+      case "logo":
         if (!visibilitySettings.showLogo) return null;
         return (
-          <DraggableSwappable 
-            id="logo" 
-            disabled={!isDragMode} 
+          <DraggableSwappable
+            id="logo"
+            disabled={!isDragMode}
             isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('logo', e)}
+            onClick={(e) => handleElementClick("logo", e)}
           >
             <div className="flex items-center">
               <div
@@ -485,15 +547,16 @@ export default function Modern2CustomCard({
             </div>
           </DraggableSwappable>
         );
-      
-      case 'dateWeek':
-        if (!visibilitySettings.showWeek && !visibilitySettings.showDate) return null;
+
+      case "dateWeek":
+        if (!visibilitySettings.showWeek && !visibilitySettings.showDate)
+          return null;
         return (
-          <DraggableSwappable 
-            id="dateWeek" 
-            disabled={!isDragMode} 
+          <DraggableSwappable
+            id="dateWeek"
+            disabled={!isDragMode}
             isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('dateWeek', e)}
+            onClick={(e) => handleElementClick("dateWeek", e)}
           >
             <div
               className="text-white font-noto-bengali tracking-wide px-3 py-1 rounded shadow-lg"
@@ -505,86 +568,131 @@ export default function Modern2CustomCard({
               }}
             >
               {visibilitySettings.showWeek && getBengaliWeekday()}
-              {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
+              {visibilitySettings.showWeek &&
+                visibilitySettings.showDate &&
+                " | "}
               {visibilitySettings.showDate && getBengaliDate()}
             </div>
           </DraggableSwappable>
         );
-      
-      case 'socialMedia':
+
+      case "socialMedia":
         if (validSocialMedia.length === 0) return null;
         return (
-          <DraggableSwappable 
-            id="socialMedia" 
-            disabled={!isDragMode} 
-            isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('socialMedia', e)}
-          >
-            <div className="flex flex-wrap items-center gap-2">
-              {validSocialMedia.map((social, index) => (
-                <div key={index} className="flex items-center gap-1.5">
-                  {social.platform === "facebook" && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                    </svg>
-                  )}
-                  {social.platform === "instagram" && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                    </svg>
-                  )}
-                  {social.platform === "youtube" && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-                    </svg>
-                  )}
-                  {social.platform === "twitter" && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                    </svg>
-                  )}
-                  {social.platform === "linkedin" && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                    </svg>
-                  )}
-                  {social.platform === "tiktok" && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
-                    </svg>
-                  )}
-                  <span className="text-white text-xs font-medium">{social.username}</span>
-                </div>
-              ))}
-            </div>
-          </DraggableSwappable>
+          <div className="flex flex-wrap items-center gap-4">
+            {validSocialMedia.map((social, index) => (
+              <div key={index} className="flex items-center gap-1.5">
+                {social.platform === "facebook" && (
+                  <svg
+                    className="w-3 h-3"
+                    style={{ color: fontStyles?.footer?.color || "#FFFFFF" }}
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                )}
+                {social.platform === "instagram" && (
+                  <svg
+                    className="w-3 h-3"
+                    style={{ color: fontStyles?.footer?.color || "#FFFFFF" }}
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                  </svg>
+                )}
+                {social.platform === "youtube" && (
+                  <svg
+                    className="w-3 h-3"
+                    style={{ color: fontStyles?.footer?.color || "#FFFFFF" }}
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                  </svg>
+                )}
+                {social.platform === "twitter" && (
+                  <svg
+                    className="w-3 h-3"
+                    style={{ color: fontStyles?.footer?.color || "#FFFFFF" }}
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                  </svg>
+                )}
+                {social.platform === "linkedin" && (
+                  <svg
+                    className="w-3 h-3"
+                    style={{ color: fontStyles?.footer?.color || "#FFFFFF" }}
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                  </svg>
+                )}
+                {social.platform === "tiktok" && (
+                  <svg
+                    className="w-3 h-3"
+                    style={{ color: fontStyles?.footer?.color || "#FFFFFF" }}
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+                  </svg>
+                )}
+                <span
+                  className={`text-xs font-medium ${getFontClassName(social.username)}`}
+                  style={{
+                    color: fontStyles?.footer?.color || "#FFFFFF",
+                    fontSize: fontStyles?.footer?.fontSize || "12px",
+                  }}
+                >
+                  {social.username}
+                </span>
+              </div>
+            ))}
+          </div>
         );
-      
-      case 'website':
+
+      case "website":
         if (!website) return null;
         return (
-          <DraggableSwappable 
-            id="website" 
-            disabled={!isDragMode} 
-            isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('website', e)}
-          >
-            <div className="flex items-center gap-1.5">
-              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-              </svg>
-              <span className="text-white text-xs font-medium">{website}</span>
-            </div>
-          </DraggableSwappable>
+          <div className="flex items-center gap-1.5">
+            <svg
+              className="w-3 h-3"
+              style={{ color: fontStyles?.footer?.color || "#FFFFFF" }}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+              />
+            </svg>
+            <span
+              className={`text-xs font-medium ${getFontClassName(website)}`}
+              style={{
+                color: fontStyles?.footer?.color || "#FFFFFF",
+                fontSize: fontStyles?.footer?.fontSize || "12px",
+              }}
+            >
+              {website}
+            </span>
+          </div>
         );
-      
-      case 'favicon':
+
+      case "favicon":
         return (
-          <DraggableSwappable 
-            id="favicon" 
-            disabled={!isDragMode} 
+          <DraggableSwappable
+            id="favicon"
+            disabled={!isDragMode}
             isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('favicon', e)}
+            onClick={(e) => handleElementClick("favicon", e)}
           >
             <div className="w-12 h-12 bg-gray-100 border-4 border-white rounded-full shadow-xl flex items-center justify-center overflow-hidden">
               {data.favicon || data.logo ? (
@@ -593,7 +701,8 @@ export default function Modern2CustomCard({
                   alt="Favicon"
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/placeholder-icon.png";
+                    (e.target as HTMLImageElement).src =
+                      "/placeholder-icon.png";
                   }}
                 />
               ) : (
@@ -614,7 +723,7 @@ export default function Modern2CustomCard({
             </div>
           </DraggableSwappable>
         );
-      
+
       default:
         return null;
     }
@@ -624,7 +733,7 @@ export default function Modern2CustomCard({
     if (!activeId) return null;
 
     switch (activeId) {
-      case 'logo':
+      case "logo":
         return (
           <div className="flex items-center">
             <div className="bg-white border border-gray-200 p-2 min-w-[60px] min-h-[30px] shadow-lg flex items-center justify-center rounded-lg">
@@ -638,39 +747,58 @@ export default function Modern2CustomCard({
             </div>
           </div>
         );
-      case 'dateWeek':
+      case "dateWeek":
         return (
-          <div className="text-white font-noto-bengali tracking-wide px-3 py-1 rounded shadow-lg" style={{
-            ...getBackgroundStyle(),
-            fontSize: fontStyles?.week.fontSize || "14px",
-            fontWeight: fontStyles?.week.fontWeight || "500",
-            color: fontStyles?.week.color || "#FFFFFF",
-          }}>
+          <div
+            className="text-white font-noto-bengali tracking-wide px-3 py-1 rounded shadow-lg"
+            style={{
+              ...getBackgroundStyle(),
+              fontSize: fontStyles?.week.fontSize || "14px",
+              fontWeight: fontStyles?.week.fontWeight || "500",
+              color: fontStyles?.week.color || "#FFFFFF",
+            }}
+          >
             {visibilitySettings.showWeek && getBengaliWeekday()}
-            {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
+            {visibilitySettings.showWeek &&
+              visibilitySettings.showDate &&
+              " | "}
             {visibilitySettings.showDate && getBengaliDate()}
           </div>
         );
-      case 'socialMedia':
+      case "socialMedia":
         return (
           <div className="bg-white/20 rounded p-2 text-white text-xs">
             Social Media
           </div>
         );
-      case 'website':
+      case "website":
         return (
           <div className="bg-white/20 rounded p-2 text-white text-xs">
             {website}
           </div>
         );
-      case 'favicon':
+      case "favicon":
         return (
           <div className="w-12 h-12 bg-gray-100 border-4 border-white rounded-full shadow-xl flex items-center justify-center overflow-hidden">
             {data.favicon || data.logo ? (
-              <img src={data.favicon || data.logo} alt="Favicon" className="w-full h-full object-cover" />
+              <img
+                src={data.favicon || data.logo}
+                alt="Favicon"
+                className="w-full h-full object-cover"
+              />
             ) : (
-              <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <svg
+                className="w-6 h-6 text-gray-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
             )}
           </div>
@@ -737,7 +865,7 @@ export default function Modern2CustomCard({
             <div className="flex justify-between items-center">
               {/* Top Left Slot */}
               {renderElement(elementLayout.topLeft)}
-              
+
               {/* Top Right Slot */}
               {renderElement(elementLayout.topRight)}
             </div>
@@ -745,7 +873,10 @@ export default function Modern2CustomCard({
         </div>
 
         {/* Center Circle positioned outside image container for full visibility */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 z-50" style={{ top: '240px', marginTop: '16px' }}>
+        <div
+          className="absolute left-1/2 transform -translate-x-1/2 z-50"
+          style={{ top: "240px", marginTop: "16px" }}
+        >
           {renderElement(elementLayout.center)}
         </div>
 
@@ -754,83 +885,115 @@ export default function Modern2CustomCard({
           {/* Title */}
           {visibilitySettings.showTitle && (
             <h2
-              className="text-white font-noto-bengali text-center leading-tight mb-4 px-2 py-1 mt-6"
-              style={{
-                fontFamily: fontStyles?.headline.fontFamily || "Noto Sans Bengali",
-                fontSize: fontStyles?.headline.fontSize || "24px",
-                fontWeight: fontStyles?.headline.fontWeight || "700",
-                color: fontStyles?.headline.color || "#FFFFFF",
-                textAlign: fontStyles?.headline.textAlign || "center",
-                letterSpacing: fontStyles?.headline.letterSpacing || "0px",
-              } as React.CSSProperties}
+              className="text-white font-noto-bengali text-center leading-tight mb-2 px-2 py-1 mt-6"
+              style={
+                {
+                  fontFamily:
+                    fontStyles?.headline.fontFamily || "Noto Sans Bengali",
+                  fontSize: fontStyles?.headline.fontSize || "24px",
+                  fontWeight: fontStyles?.headline.fontWeight || "700",
+                  color: fontStyles?.headline.color || "#FFFFFF",
+                  textAlign: fontStyles?.headline.textAlign || "center",
+                  letterSpacing: fontStyles?.headline.letterSpacing || "0px",
+                } as React.CSSProperties
+              }
             >
               {data.title}
             </h2>
           )}
 
-          {/* CTA and Social Media */}
-          <div className="flex flex-col items-center gap-3">
-            {/* CTA Text centered */}
+          {/* CTA Text centered */}
+          <div className="flex justify-center items-end">
             <div className="bg-white border border-gray-300 py-1 px-3 text-center max-w-[230px] rounded-sm">
-              <p className="font-noto-bengali text-md font-bold text-gray-900">
-                বিস্তারিত {" "}
+              <p className="font-noto-bengali text-xs font-bold text-gray-900">
+                বিস্তারিত{" "}
                 <span style={{ color: getHighlightColor() }}>
                   কমেন্টের লিংকে
                 </span>
               </p>
             </div>
+          </div>
+        </div>
 
-            {/* Social Media and Website */}
-            <div className="flex items-center justify-center gap-4 flex-wrap">
+        {/* Social Media Footer - swappable positions */}
+        {(validSocialMedia.length > 0 || website || footerText) && (
+          <div
+            className="px-6 py-3 relative"
+            style={getFooterBackgroundStyle()}
+          >
+            {/* Dark Overlay */}
+            {footerOverlay && footerOverlay.enabled && (
+              <div
+                className="absolute inset-0 z-0 bg-black transition-opacity duration-200"
+                style={{ opacity: footerOverlay.opacity / 100 }}
+              />
+            )}
+            <div className="flex items-center justify-center gap-4 flex-wrap relative z-10">
+              {/* Bottom Left Slot */}
               {renderElement(elementLayout.bottomLeft)}
+
+              {/* Bottom Right Slot */}
               {renderElement(elementLayout.bottomRight)}
+
+              {/* Footer Text */}
               {footerText && (
                 <div className="flex items-center">
-                  <span className="text-white text-xs font-medium">
+                  <span
+                    className={`font-medium ${getFontClassName(footerText)}`}
+                    style={{
+                      color: fontStyles?.footer?.color || "#FFFFFF",
+                      fontSize: fontStyles?.footer?.fontSize || "12px",
+                    }}
+                  >
                     {footerText}
                   </span>
                 </div>
               )}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Ad Banner - Full width at bottom */}
-        {adBannerImage && (
-          <div className="w-full relative z-10 overflow-hidden" style={{ height: "60px" }}>
+        {visibilitySettings?.showAdBanner && adBannerImage && (
+          <div
+            className="w-full relative z-10 overflow-hidden"
+            style={{ height: "60px" }}
+          >
             <img
               src={adBannerImage}
               alt="Advertisement"
               className="absolute top-1/2 left-1/2 pointer-events-none"
               style={{
                 transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${adBannerZoom / 100})`,
-                transformOrigin: 'center center',
-                maxWidth: 'none',
-                maxHeight: 'none',
-                width: 'auto',
-                height: 'auto',
-                minWidth: '100%',
-                minHeight: '100%'
+                transformOrigin: "center center",
+                maxWidth: "none",
+                maxHeight: "none",
+                width: "auto",
+                height: "auto",
+                minWidth: "100%",
+                minHeight: "100%",
               }}
             />
           </div>
         )}
-        {!adBannerImage && !isGenerating && (
-          <div
-            className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
-            style={{ height: "60px" }}
-          >
-            <span className="text-[#5d4e37] text-xs font-inter">
-              Ad Banner Area (60px height)
-            </span>
-          </div>
-        )}
+        {visibilitySettings?.showAdBanner &&
+          !adBannerImage &&
+          !isGenerating && (
+            <div
+              className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
+              style={{ height: "80px" }}
+            >
+              <span className="text-[#5d4e37] text-xs font-inter">
+                Ad Banner Area (80px height)
+              </span>
+            </div>
+          )}
       </div>
-      
+
       {/* Drag Overlay - shows the element being dragged */}
       <DragOverlay dropAnimation={null}>
         {activeId ? (
-          <div style={{ cursor: 'grabbing', opacity: 0.9 }}>
+          <div style={{ cursor: "grabbing", opacity: 0.9 }}>
             {renderDragOverlay()}
           </div>
         ) : null}
@@ -840,10 +1003,14 @@ export default function Modern2CustomCard({
       {selectedElement && isDragMode && (
         <FloatingMenu
           elementId={selectedElement.id}
-          elementType={selectedElement.id.replace(/\d+$/, '')}
+          elementType={selectedElement.id.replace(/\d+$/, "")}
           onHide={handleHideElement}
           onClear={handleClearElement}
-          onUpload={(selectedElement.id === 'logo' || selectedElement.id === 'favicon') ? handleUploadElement : undefined}
+          onUpload={
+            selectedElement.id === "logo" || selectedElement.id === "favicon"
+              ? handleUploadElement
+              : undefined
+          }
           position={selectedElement.position}
           isVisible={true}
         />
@@ -873,7 +1040,7 @@ export default function Modern2CustomCard({
           if (file && onLogoUpload) {
             onLogoUpload(file);
           }
-          e.target.value = '';
+          e.target.value = "";
         }}
       />
 
@@ -888,7 +1055,7 @@ export default function Modern2CustomCard({
           if (file && onFaviconUpload) {
             onFaviconUpload(file);
           }
-          e.target.value = '';
+          e.target.value = "";
         }}
       />
     </DndContext>

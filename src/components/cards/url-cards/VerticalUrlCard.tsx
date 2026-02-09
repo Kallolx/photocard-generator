@@ -264,6 +264,7 @@ export default function VerticalUrlCard({
     showLogo: true,
     showQrCode: true,
     showTitle: true,
+    showAdBanner:false, 
   },
   isLogoFavicon = false,
   isDragMode = false,
@@ -646,7 +647,7 @@ export default function VerticalUrlCard({
         ) : null;
       case 'cta':
         return (
-          <div className="bg-white py-1 px-3 text-center rounded-sm max-w-[200px] shadow-lg">
+          <div className="bg-white py-0.5 px-3 text-center rounded-sm max-w-[200px] shadow-lg">
             <p className="font-noto-bengali text-xs font-bold" style={{ color: getHighlightColor() }}>
               বিস্তারিত কমেন্টে
             </p>
@@ -759,9 +760,12 @@ export default function VerticalUrlCard({
             isDragMode={isDragMode}
             onClick={(e) => handleElementClick('cta', e)}
           >
-            <div className="bg-white py-2 px-4 text-center rounded-sm w-fit">
-              <p className="font-noto-bengali text-sm font-bold" style={{ color: getHighlightColor() }}>
-                বিস্তারিত কমেন্টে
+            <div className="bg-white py-1 px-3 text-center rounded-sm w-fit">
+              <p className="font-noto-bengali text-xs font-bold text-gray-900">
+                বিস্তারিত{" "}
+                <span style={{ color: getHighlightColor() }}>
+                  কমেন্টে
+                </span>
               </p>
             </div>
           </DraggableSwappable>
@@ -1002,7 +1006,7 @@ export default function VerticalUrlCard({
       </div>
 
       {/* Ad Banner - Full width at bottom */}
-      {adBannerImage && (
+      {visibilitySettings?.showAdBanner && adBannerImage && (
         <div className="w-full relative z-10 overflow-hidden" style={{ height: "60px" }}>
           <img
             src={adBannerImage}
@@ -1021,13 +1025,13 @@ export default function VerticalUrlCard({
           />
         </div>
       )}
-      {!adBannerImage && !isGenerating && (
+      {visibilitySettings?.showAdBanner && !adBannerImage && !isGenerating && (
         <div
           className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
-          style={{ height: "60px" }}
+          style={{ height: "80px" }}
         >
           <span className="text-[#5d4e37] text-xs font-inter">
-            Ad Banner Area (60px height)
+            Ad Banner Area (80px height)
           </span>
         </div>
       )}

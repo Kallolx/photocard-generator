@@ -10,6 +10,10 @@ export interface UrlData {
 export interface PhotocardData extends UrlData {
   weekName: string;
   date: string;
+  // Comment card specific fields
+  commentText?: string;
+  personName?: string;
+  personRole?: string;
 }
 
 export interface BackgroundOptions {
@@ -39,7 +43,7 @@ export interface FontStyles {
   letterSpacing: string;
   textShadow?: {
     preset: "none" | "soft" | "hard" | "glow" | "outline";
-    angle?: number; 
+    angle?: number;
   };
   textStroke?: {
     width: number; // 0-5px
@@ -51,6 +55,16 @@ export interface CardFontStyles {
   week: FontStyles;
   date: FontStyles;
   headline: FontStyles;
+  footer: FontStyles;
+  // Comment card specific fonts
+  commentText?: FontStyles;
+  personName?: FontStyles;
+  personRole?: FontStyles;
+}
+
+export interface FooterOverlaySettings {
+  enabled: boolean;
+  opacity: number;
 }
 
 export interface VisibilitySettings {
@@ -59,4 +73,16 @@ export interface VisibilitySettings {
   showLogo: boolean;
   showQrCode: boolean;
   showTitle: boolean;
+  showAdBanner: boolean;
+}
+
+export interface CommentCardVisibilitySettings {
+  showLogo: boolean;
+  showDate: boolean;
+  showCommentText: boolean;
+  showPersonName: boolean;
+  showPersonRole: boolean;
+  showImage: boolean;
+  showSocialMedia: boolean;
+  showAdBanner: boolean;
 }

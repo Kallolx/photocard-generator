@@ -4,10 +4,11 @@ import {
   PhotocardData,
   BackgroundOptions,
   CardFontStyles,
-  VisibilitySettings,
+  CommentCardVisibilitySettings,
 } from "@/types";
 import { useEffect, useState, useRef } from "react";
 import { getProxiedImageUrl } from "@/utils/imageProxy";
+import PersonOverlay from "@/components/PersonOverlay";
 import {
   DndContext,
   useDraggable,
@@ -150,7 +151,7 @@ function DraggableSwappable({
   );
 }
 
-interface ClassicCustomCardProps {
+interface ClassicCommentCardProps {
   data: PhotocardData;
   isGenerating?: boolean;
   background?: BackgroundOptions;
@@ -162,27 +163,38 @@ interface ClassicCustomCardProps {
   adBannerImage?: string | null;
   adBannerZoom?: number;
   adBannerPosition?: { x: number; y: number };
+  imageZoom?: number;
+  imagePosition?: { x: number; y: number };
   website?: string;
   footerText?: string;
   fontStyles?: CardFontStyles;
-  visibilitySettings?: VisibilitySettings;
+  visibilitySettings?: CommentCardVisibilitySettings;
   isDragMode?: boolean;
   elementLayout?: {
-    topLeft: "logo" | "dateWeek" | "socialMedia" | "website" | "cta";
-    topRight: "logo" | "dateWeek" | "socialMedia" | "website" | "cta";
-    bottomLeft: "logo" | "dateWeek" | "socialMedia" | "website" | "cta";
-    bottomRight: "logo" | "dateWeek" | "socialMedia" | "website" | "cta";
+    topLeft: "logo" | "dateWeek" | "socialMedia" | "website";
+    topRight: "logo" | "dateWeek" | "socialMedia" | "website";
+    bottomLeft: "logo" | "dateWeek" | "socialMedia" | "website";
+    bottomRight: "logo" | "dateWeek" | "socialMedia" | "website";
   };
-  ctaAlignment?: "left" | "center" | "right";
   onLayoutChange?: (layout: any) => void;
   onVisibilityChange?: (settings: any) => void;
   onLogoUpload?: (file: File) => void;
   onRestoreDefaults?: () => void;
+  onImagePositionChange?: (position: { x: number; y: number }) => void;
+  onImageZoomChange?: (zoom: number) => void;
+  isPersonOverlayEnabled?: boolean;
+  personImage?: string | null;
+  personPosition?: { x: number; y: number };
+  personScale?: number;
+  onPersonOverlayChange?: (
+    imageData: string | null,
+    position: { x: number; y: number },
+    scale: number,
+  ) => void;
 }
 
 // Helper function to darken a color
 function darkenColor(color: string, percent: number = 20): string {
-  // Handle hex colors
   if (color.startsWith("#")) {
     const num = parseInt(color.replace("#", ""), 16);
     const r = Math.max(0, Math.floor((num >> 16) * (1 - percent / 100)));
@@ -193,13 +205,11 @@ function darkenColor(color: string, percent: number = 20): string {
     const b = Math.max(0, Math.floor((num & 0x0000ff) * (1 - percent / 100)));
     return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
   }
-  // For non-hex colors, use CSS filter approach
   return color;
 }
 
 // Helper function to check if a color is light or dark
 function isLightColor(color: string): boolean {
-  // Convert hex to RGB
   let r = 0,
     g = 0,
     b = 0;
@@ -218,12 +228,11 @@ function isLightColor(color: string): boolean {
     }
   }
 
-  // Calculate relative luminance
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   return luminance > 0.5;
 }
 
-// Helper function to generate text shadow based on preset
+// Helper function to generate text shadow
 function getTextShadow(
   preset: string,
   angle: number = 135,
@@ -231,19 +240,16 @@ function getTextShadow(
 ): string {
   if (preset === "none" || !preset) return "none";
 
-  // Convert angle to radians for calculating x and y offsets
   const angleRad = (angle * Math.PI) / 180;
-  const distance = 2; // Base distance for shadows
+  const distance = 2;
 
   const offsetX = Math.cos(angleRad) * distance;
   const offsetY = Math.sin(angleRad) * distance;
 
-  // Determine if text is light or dark to choose appropriate shadow/glow color
   const isLight = isLightColor(textColor);
 
   switch (preset) {
     case "soft":
-      // Dark shadow for light text, light glow for dark text
       return isLight
         ? `${offsetX}px ${offsetY}px 4px rgba(0, 0, 0, 0.4)`
         : `${offsetX}px ${offsetY}px 4px rgba(255, 255, 255, 0.4)`;
@@ -252,7 +258,6 @@ function getTextShadow(
         ? `${offsetX * 1.5}px ${offsetY * 1.5}px 0px rgba(0, 0, 0, 0.8)`
         : `${offsetX * 1.5}px ${offsetY * 1.5}px 0px rgba(255, 255, 255, 0.8)`;
     case "glow":
-      // Glow effect - opposite color halo
       return isLight
         ? `0px 0px 8px rgba(0, 0, 0, 0.6), 0px 0px 16px rgba(0, 0, 0, 0.4)`
         : `0px 0px 8px rgba(255, 255, 255, 0.8), 0px 0px 16px rgba(255, 255, 255, 0.5)`;
@@ -279,9 +284,8 @@ function getTextShadow(
 function getTextStroke(width: number, color: string): string {
   if (!width || width === 0) return "none";
 
-  // Create multiple shadows in a circle to form uniform stroke
   const shadows: string[] = [];
-  const steps = 8; // Number of shadows to create circular stroke
+  const steps = 8;
 
   for (let i = 0; i < steps; i++) {
     const angle = (i * 2 * Math.PI) / steps;
@@ -295,7 +299,7 @@ function getTextStroke(width: number, color: string): string {
   return shadows.join(", ");
 }
 
-export default function ClassicCustomCard({
+export default function ClassicCommentCard({
   data,
   isGenerating,
   background,
@@ -307,15 +311,19 @@ export default function ClassicCustomCard({
   adBannerImage = null,
   adBannerZoom = 100,
   adBannerPosition = { x: 0, y: 0 },
+  imageZoom = 100,
+  imagePosition = { x: 0, y: 0 },
   website = "",
   footerText = "",
   fontStyles,
   visibilitySettings = {
-    showWeek: true,
-    showDate: true,
     showLogo: true,
-    showQrCode: false,
-    showTitle: true,
+    showDate: true,
+    showCommentText: true,
+    showPersonName: true,
+    showPersonRole: true,
+    showImage: true,
+    showSocialMedia: true,
     showAdBanner: false,
   },
   isDragMode = false,
@@ -329,7 +337,14 @@ export default function ClassicCustomCard({
   onVisibilityChange,
   onLogoUpload,
   onRestoreDefaults,
-}: ClassicCustomCardProps) {
+  onImagePositionChange,
+  onImageZoomChange,
+  isPersonOverlayEnabled = false,
+  personImage = null,
+  personPosition = { x: 50, y: 50 },
+  personScale = 1,
+  onPersonOverlayChange,
+}: ClassicCommentCardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedElement, setSelectedElement] = useState<{
     id: string;
@@ -337,19 +352,28 @@ export default function ClassicCustomCard({
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Image positioning states
+  const [imageSelected, setImageSelected] = useState(false);
+  const [imageDragging, setImageDragging] = useState(false);
+  const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
+  const imageScale = imageZoom / 100;
+
   // Click outside handler to close floating menu
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (selectedElement) {
         setSelectedElement(null);
       }
+      if (imageSelected) {
+        setImageSelected(false);
+      }
     };
 
-    if (selectedElement) {
+    if (selectedElement || imageSelected) {
       document.addEventListener("click", handleClickOutside);
       return () => document.removeEventListener("click", handleClickOutside);
     }
-  }, [selectedElement]);
+  }, [selectedElement, imageSelected]);
 
   // Handle element click to show floating menu
   const handleElementClick = (elementId: string, event: any) => {
@@ -369,13 +393,11 @@ export default function ClassicCustomCard({
     if (!selectedElement || !onVisibilityChange) return;
     const elementId = selectedElement.id;
 
-    // Determine which visibility setting to toggle
     const newSettings = { ...visibilitySettings };
 
     if (elementId === "logo") {
       newSettings.showLogo = !newSettings.showLogo;
     } else if (elementId === "dateWeek") {
-      newSettings.showWeek = !newSettings.showWeek;
       newSettings.showDate = !newSettings.showDate;
     }
 
@@ -387,7 +409,6 @@ export default function ClassicCustomCard({
   const handleClearElement = () => {
     if (!selectedElement || !onLayoutChange) return;
 
-    // Reset to default layout
     const defaultLayout = {
       topLeft: "logo" as const,
       topRight: "dateWeek" as const,
@@ -404,17 +425,108 @@ export default function ClassicCustomCard({
     if (!selectedElement) return;
     const elementId = selectedElement.id;
 
-    // Only allow upload for logo
     if (elementId === "logo" && onLogoUpload) {
       fileInputRef.current?.click();
     }
     setSelectedElement(null);
   };
 
+  // Handle image selection
+  const handleImageClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setImageSelected(!imageSelected);
+    setSelectedElement(null);
+  };
+
+  // Handle image drag start
+  const handleImageDragStart = (e: React.MouseEvent) => {
+    if (!imageSelected) return;
+    e.preventDefault();
+    setImageDragging(true);
+    setDragStartPos({
+      x: e.clientX - imagePosition.x,
+      y: e.clientY - imagePosition.y,
+    });
+  };
+
+  // Handle image drag
+  const handleImageDrag = (e: React.MouseEvent) => {
+    if (!imageDragging) return;
+    e.preventDefault();
+    const newX = e.clientX - dragStartPos.x;
+    const newY = e.clientY - dragStartPos.y;
+
+    const maxX = 200;
+    const maxY = 200;
+    const minX = -200;
+    const minY = -200;
+
+    if (onImagePositionChange) {
+      onImagePositionChange({
+        x: Math.max(minX, Math.min(maxX, newX)),
+        y: Math.max(minY, Math.min(maxY, newY)),
+      });
+    }
+  };
+
+  // Handle image drag end
+  const handleImageDragEnd = () => {
+    setImageDragging(false);
+  };
+
+  // Handle image wheel for scaling
+  const handleImageWheel = (e: React.WheelEvent) => {
+    if (!imageSelected) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -5 : 5;
+    if (onImageZoomChange) {
+      onImageZoomChange(Math.max(50, Math.min(300, imageZoom + delta)));
+    }
+  };
+
+  // Reset image position and scale
+  const resetImagePosition = () => {
+    if (onImagePositionChange) onImagePositionChange({ x: 0, y: 0 });
+    if (onImageZoomChange) onImageZoomChange(100);
+  };
+
+  // Global mouse event handlers for image dragging
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (imageDragging && onImagePositionChange) {
+        const newX = e.clientX - dragStartPos.x;
+        const newY = e.clientY - dragStartPos.y;
+        const maxX = 200;
+        const maxY = 200;
+        const minX = -200;
+        const minY = -200;
+        onImagePositionChange({
+          x: Math.max(minX, Math.min(maxX, newX)),
+          y: Math.max(minY, Math.min(maxY, newY)),
+        });
+      }
+    };
+
+    const handleGlobalMouseUp = () => {
+      if (imageDragging) {
+        setImageDragging(false);
+      }
+    };
+
+    if (imageDragging) {
+      document.addEventListener("mousemove", handleGlobalMouseMove);
+      document.addEventListener("mouseup", handleGlobalMouseUp);
+      return () => {
+        document.removeEventListener("mousemove", handleGlobalMouseMove);
+        document.removeEventListener("mouseup", handleGlobalMouseUp);
+      };
+    }
+  }, [imageDragging, dragStartPos, imagePosition, onImagePositionChange]);
+
   // Handle drag start
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
-    setSelectedElement(null); // Close menu when dragging
+    setSelectedElement(null);
   };
 
   // Handle drag end - swap positions
@@ -428,10 +540,8 @@ export default function ClassicCustomCard({
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    // Create new layout by swapping
     const newLayout = { ...elementLayout };
 
-    // Find where activeId and overId are in the layout
     let activeSlot: keyof typeof elementLayout | null = null;
     let overSlot: keyof typeof elementLayout | null = null;
 
@@ -440,7 +550,6 @@ export default function ClassicCustomCard({
       if (element === overId) overSlot = slot as keyof typeof elementLayout;
     });
 
-    // Swap them
     if (activeSlot && overSlot) {
       newLayout[activeSlot] = elementLayout[overSlot];
       newLayout[overSlot] = elementLayout[activeSlot];
@@ -491,11 +600,7 @@ export default function ClassicCustomCard({
               fontWeight: fontStyles?.week.fontWeight || "500",
             }}
           >
-            {visibilitySettings.showWeek && getBengaliWeekday()}
-            {visibilitySettings.showWeek &&
-              visibilitySettings.showDate &&
-              " | "}
-            {visibilitySettings.showDate && getBengaliDate()}
+            {getBengaliWeekday()} | {getBengaliDate()}
           </div>
         );
       case "socialMedia":
@@ -543,7 +648,7 @@ export default function ClassicCustomCard({
 
   // Render element based on type
   const renderElement = (
-    elementType: "logo" | "dateWeek" | "socialMedia" | "website" | "cta",
+    elementType: "logo" | "dateWeek" | "socialMedia" | "website",
   ) => {
     switch (elementType) {
       case "logo":
@@ -584,8 +689,7 @@ export default function ClassicCustomCard({
         );
 
       case "dateWeek":
-        if (!visibilitySettings.showWeek && !visibilitySettings.showDate)
-          return null;
+        if (!visibilitySettings.showDate) return null;
         return (
           <DraggableSwappable
             id="dateWeek"
@@ -601,11 +705,7 @@ export default function ClassicCustomCard({
                 color: fontStyles?.week.color || "#FFFFFF",
               }}
             >
-              {visibilitySettings.showWeek && getBengaliWeekday()}
-              {visibilitySettings.showWeek &&
-                visibilitySettings.showDate &&
-                " | "}
-              {visibilitySettings.showDate && getBengaliDate()}
+              {getBengaliWeekday()} | {getBengaliDate()}
             </div>
           </DraggableSwappable>
         );
@@ -687,7 +787,7 @@ export default function ClassicCustomCard({
                   </svg>
                 )}
                 <span
-                  className="font-medium max-w-[100px] truncate font-noto-bengali"
+                  className="font-medium font-noto-bengali max-w-[100px] truncate"
                   style={{
                     color: fontStyles?.footer?.color || "#FFFFFF",
                     fontSize: fontStyles?.footer?.fontSize || "12px",
@@ -706,7 +806,7 @@ export default function ClassicCustomCard({
           <div className="flex items-center gap-1.5 relative z-10">
             <svg
               className="w-3.5 h-3.5"
-              style={{ color: fontStyles?.footer?.color || "#FFFFFF" }}
+              style={{ color: fontStyles?.footer.color || "#FFFFFF" }}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -719,10 +819,10 @@ export default function ClassicCustomCard({
               />
             </svg>
             <span
-              className="font-medium max-w-[150px] truncate font-noto-bengali"
+              className="font-medium font-noto-bengali max-w-[150px] truncate"
               style={{
-                color: fontStyles?.footer?.color || "#FFFFFF",
-                fontSize: fontStyles?.footer?.fontSize || "12px",
+                color: fontStyles?.footer.color || "#FFFFFF",
+                fontSize: fontStyles?.footer.fontSize || "12px",
               }}
             >
               {website}
@@ -759,7 +859,7 @@ export default function ClassicCustomCard({
   };
 
   const getBackgroundStyle = () => {
-    if (!background) return { backgroundColor: "#8b6834" }; // default brown
+    if (!background) return { backgroundColor: "#8b6834" };
 
     if (
       background.type === "gradient" &&
@@ -772,37 +872,6 @@ export default function ClassicCustomCard({
     }
 
     return { backgroundColor: background.color };
-  };
-
-  const getFooterBackgroundStyle = () => {
-    if (!background) return { backgroundColor: "#6b4e25" }; // darker brown
-
-    if (
-      background.type === "gradient" &&
-      background.gradientFrom &&
-      background.gradientTo
-    ) {
-      // For gradients, darken both colors
-      const darkerFrom = darkenColor(background.gradientFrom, 25);
-      const darkerTo = darkenColor(background.gradientTo, 25);
-      return {
-        backgroundImage: `linear-gradient(135deg, ${darkerFrom}, ${darkerTo})`,
-      };
-    }
-
-    // For solid colors, darken by 25%
-    return { backgroundColor: darkenColor(background.color, 25) };
-  };
-
-  // Get the background color for the colored text
-  const getHighlightColor = () => {
-    if (!background) return "#8b6834"; // default brown
-
-    if (background.type === "gradient" && background.gradientFrom) {
-      return background.gradientFrom;
-    }
-
-    return background.color;
   };
 
   const getPatternStyle = () => {
@@ -871,58 +940,234 @@ export default function ClassicCustomCard({
     }
   };
 
-  // Filter out empty social media entries
+  const getFooterBackgroundStyle = () => {
+    if (!background) return { backgroundColor: "#6b4e25" }; // darker brown
+
+    if (
+      background.type === "gradient" &&
+      background.gradientFrom &&
+      background.gradientTo
+    ) {
+      // For gradients, darken both colors
+      const darkerFrom = darkenColor(background.gradientFrom, 25);
+      const darkerTo = darkenColor(background.gradientTo, 25);
+      return {
+        backgroundImage: `linear-gradient(135deg, ${darkerFrom}, ${darkerTo})`,
+      };
+    }
+
+    // For solid colors, darken by 25%
+    return { backgroundColor: darkenColor(background.color, 25) };
+  };
+
   const validSocialMedia = socialMedia.filter(
     (social) => social.platform && social.username,
   );
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div
-        id={id}
-        className={
-          fullSize
-            ? "w-[448px] max-w-[448px] mx-auto overflow-hidden shadow-xl relative"
-            : "w-full max-w-md mx-auto  overflow-hidden shadow-xl relative"
-        }
-        style={getBackgroundStyle()}
-      >
+      <div className="relative inline-block">
+        <div
+          id={id}
+          className={
+            fullSize
+              ? "w-[448px] max-w-[448px] mx-auto overflow-hidden relative"
+              : "w-full max-w-md mx-auto overflow-hidden relative"
+          }
+          style={getBackgroundStyle()}
+        >
         {/* Pattern Overlay */}
         <div
           className="absolute inset-0 pointer-events-none z-0"
           style={getPatternStyle()}
         />
 
-        <div className="px-6 pt-6 pb-2 relative z-10">
-          {/* Header with logo and date - swappable positions */}
-          <div className="flex justify-between items-center mb-4">
-            {/* Top Left Slot */}
-            {renderElement(elementLayout.topLeft)}
+        <div className="relative z-10 flex flex-col h-full">
+          {/* Top Section: Header + Comment Content */}
+          <div className="px-6 pt-6 pb-2">
+            {/* Header with logo and date - swappable positions */}
+            <div className="flex justify-between items-center mb-4">
+              {/* Top Left Slot */}
+              {renderElement(elementLayout.topLeft)}
 
-            {/* Top Right Slot */}
-            {renderElement(elementLayout.topRight)}
+              {/* Top Right Slot */}
+              {renderElement(elementLayout.topRight)}
+            </div>
+
+            {/* Comment Content */}
+            <div className="space-y-3 mb-4">
+              {/* Comment Text */}
+              {data.commentText && (
+                <p
+                  className="font-noto-bengali leading-snug"
+                  style={{
+                    fontSize: fontStyles?.commentText?.fontSize || "20px",
+                    fontWeight: fontStyles?.commentText?.fontWeight || "600",
+                    color: fontStyles?.commentText?.color || "#ffffff",
+                    textAlign: fontStyles?.commentText?.textAlign || "left",
+                    letterSpacing:
+                      fontStyles?.commentText?.letterSpacing || "normal",
+                    textShadow: fontStyles?.commentText?.textShadow
+                      ? getTextShadow(
+                          fontStyles.commentText.textShadow.preset,
+                          fontStyles.commentText.textShadow.angle,
+                          fontStyles.commentText.color,
+                        )
+                      : "none",
+                  }}
+                >
+                  &ldquo;{data.commentText}&rdquo;
+                </p>
+              )}
+
+              {/* Person Info */}
+              <div className="space-y-0.5">
+                {data.personName && (
+                  <p
+                    className="font-noto-bengali"
+                    style={{
+                      fontSize: fontStyles?.personName?.fontSize || "16px",
+                      fontWeight: fontStyles?.personName?.fontWeight || "700",
+                      color: fontStyles?.personName?.color || "#ffffff",
+                      textAlign: fontStyles?.personName?.textAlign || "left",
+                      letterSpacing:
+                        fontStyles?.personName?.letterSpacing || "normal",
+                      textShadow: fontStyles?.personName?.textShadow
+                        ? getTextShadow(
+                            fontStyles.personName.textShadow.preset,
+                            fontStyles.personName.textShadow.angle,
+                            fontStyles.personName.color,
+                          )
+                        : "none",
+                    }}
+                  >
+                    — {data.personName}
+                  </p>
+                )}
+                {data.personRole && (
+                  <p
+                    className="font-noto-bengali"
+                    style={{
+                      fontSize: fontStyles?.personRole?.fontSize || "13px",
+                      fontWeight: fontStyles?.personRole?.fontWeight || "400",
+                      color: fontStyles?.personRole?.color || "#ffffff",
+                      opacity: 0.9,
+                      textAlign: fontStyles?.personRole?.textAlign || "left",
+                      letterSpacing:
+                        fontStyles?.personRole?.letterSpacing || "normal",
+                      textShadow: fontStyles?.personRole?.textShadow
+                        ? getTextShadow(
+                            fontStyles.personRole.textShadow.preset,
+                            fontStyles.personRole.textShadow.angle,
+                            fontStyles.personRole.color,
+                          )
+                        : "none",
+                    }}
+                  >
+                    {data.personRole}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Main image */}
-          <div
-            className="bg-white rounded-tl-[70px] rounded-tr-lg rounded-bl-lg rounded-br-[70px] overflow-hidden mb-4 aspect-video"
-            style={{
-              border: `${frameBorderThickness}px solid ${frameBorderColor}`,
-            }}
-          >
+          {/* Bottom Section: Image with Footer Overlay - Fixed Height */}
+          <div className="relative" style={{ height: "180px" }}>
+            {/* Reset button for image positioning */}
+            {imageSelected && (
+              <button
+                onClick={resetImagePosition}
+                className="absolute top-2 right-2 z-50 bg-white/90 hover:bg-white p-2 rounded-full transition-all"
+                title="Reset image position and zoom"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+            )}
+
             {data.image ? (
-              <img
-                src={data.image}
-                alt="Article image"
-                className="w-full h-full object-cover "
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
-                }}
-              />
+              <div
+                className="w-full h-full relative overflow-hidden"
+                onWheel={handleImageWheel}
+                onClick={handleImageClick}
+              >
+                {/* Full image overlay for positioning - only visible when selected */}
+                {(imageDragging || imageSelected) && (
+                  <>
+                    {/* Crop boundary overlay */}
+                    <div className="absolute inset-0 border-2 border-dashed border-blue-400 z-40 pointer-events-none">
+                      <div className="absolute -top-1 -left-1 bg-blue-500 text-white text-xs px-2 py-1 rounded-tl rounded-br">
+                        Final Crop Area
+                      </div>
+                    </div>
+
+                    <div
+                      className="absolute inset-0 z-30 overflow-visible"
+                      style={{ pointerEvents: imageDragging ? "none" : "auto" }}
+                    >
+                      <img
+                        src={getProxiedImageUrl(data.image)}
+                        alt="Full image for positioning"
+                        className="absolute top-1/2 left-1/2 cursor-move border-2 border-blue-300"
+                        style={{
+                          transform: `translate(-50%, -50%) translate(${imagePosition.x}px, ${imagePosition.y}px) scale(${imageScale})`,
+                          transformOrigin: "center center",
+                          maxWidth: "none",
+                          maxHeight: "none",
+                          width: "auto",
+                          height: "auto",
+                          minWidth: "100%",
+                          minHeight: "100%",
+                          boxShadow: "none",
+                        }}
+                        onMouseDown={handleImageDragStart}
+                        onMouseMove={handleImageDrag}
+                        onMouseUp={handleImageDragEnd}
+                        draggable={false}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {/* Normal positioned image - uses same positioning as overlay but cropped to container */}
+                <div className="w-full h-full relative overflow-hidden">
+                  <img
+                    src={getProxiedImageUrl(data.image)}
+                    alt="Comment card"
+                    className={`absolute top-1/2 left-1/2 transition-all duration-200 ${
+                      imageSelected ? "opacity-0" : "cursor-pointer"
+                    }`}
+                    style={{
+                      transform: `translate(-50%, -50%) translate(${imagePosition.x}px, ${imagePosition.y}px) scale(${imageScale})`,
+                      transformOrigin: "center center",
+                      maxWidth: "none",
+                      maxHeight: "none",
+                      width: "auto",
+                      height: "auto",
+                      minWidth: "100%",
+                      minHeight: "100%",
+                      border: frameBorderThickness
+                        ? `${frameBorderThickness}px solid ${frameBorderColor}`
+                        : undefined,
+                      boxShadow: "none",
+                    }}
+                    onMouseDown={
+                      !imageSelected ? undefined : handleImageDragStart
+                    }
+                    draggable={false}
+                  />
+                </div>
+              </div>
             ) : (
-              <div className="w-full h-full bg-white flex flex-col items-center justify-center gap-2">
+              <div
+                className="w-full h-full bg-white flex flex-col items-center justify-center gap-2"
+                style={{
+                  border: frameBorderThickness
+                    ? `${frameBorderThickness}px solid ${frameBorderColor}`
+                    : undefined,
+                }}
+              >
                 <svg
-                  className="w-12 h-12 text-gray-300"
+                  className="w-10 h-10 text-gray-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -939,59 +1184,6 @@ export default function ClassicCustomCard({
                 </span>
               </div>
             )}
-          </div>
-
-          {/* Title */}
-          {visibilitySettings.showTitle && (
-            <h2
-              className="text-white text-2xl text-center font-bold mb-2 leading-tight font-noto-bengali px-2 py-1"
-              style={
-                {
-                  fontFamily:
-                    fontStyles?.headline.fontFamily || "Noto Sans Bengali",
-                  fontSize: fontStyles?.headline.fontSize || "24px",
-                  fontWeight: fontStyles?.headline.fontWeight || "700",
-                  color: fontStyles?.headline.color || "#FFFFFF",
-                  textAlign: fontStyles?.headline.textAlign || "center",
-                  letterSpacing: fontStyles?.headline.letterSpacing || "0px",
-                  textShadow: (() => {
-                    const textColor = fontStyles?.headline.color || "#FFFFFF";
-                    const shadow = getTextShadow(
-                      fontStyles?.headline.textShadow?.preset || "none",
-                      fontStyles?.headline.textShadow?.angle || 135,
-                      textColor,
-                    );
-                    const stroke = getTextStroke(
-                      fontStyles?.headline.textStroke?.width || 0,
-                      fontStyles?.headline.textStroke?.color || "#000000",
-                    );
-
-                    // Combine both effects
-                    if (shadow !== "none" && stroke !== "none") {
-                      return `${stroke}, ${shadow}`;
-                    } else if (stroke !== "none") {
-                      return stroke;
-                    } else {
-                      return shadow;
-                    }
-                  })(),
-                } as React.CSSProperties
-              }
-            >
-              {data.title}
-            </h2>
-          )}
-
-          {/* Call to Action Text */}
-          <div className="flex justify-center pb-2">
-            <div className="bg-white border border-gray-300 py-1 px-3 text-center max-w-[230px] rounded-sm">
-              <p className="font-noto-bengali text-xs font-bold text-gray-900">
-                বিস্তারিত{" "}
-                <span style={{ color: getHighlightColor() }}>
-                  কমেন্টের লিংকে
-                </span>
-              </p>
-            </div>
           </div>
         </div>
 
@@ -1026,42 +1218,53 @@ export default function ClassicCustomCard({
           </div>
         )}
 
-        {/* Ad Banner - Full width at bottom */}
-        {visibilitySettings?.showAdBanner && adBannerImage && (
-          <div
-            className="w-full relative z-10 overflow-hidden"
-            style={{ height: "80px" }}
-          >
-            <img
-              src={adBannerImage}
-              alt="Advertisement"
-              className="absolute top-1/2 left-1/2 pointer-events-none"
-              style={{
-                transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${adBannerZoom / 100})`,
-                transformOrigin: "center center",
-                maxWidth: "none",
-                maxHeight: "none",
-                width: "auto",
-                height: "auto",
-                minWidth: "100%",
-                minHeight: "100%",
-              }}
-            />
-          </div>
-        )}
-        {visibilitySettings?.showAdBanner &&
-          !adBannerImage &&
-          !isGenerating && (
-            <div
-              className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
-              style={{ height: "80px" }}
-            >
-              <span className="text-[#5d4e37] text-xs font-inter">
-                Ad Banner Area (80px height)
-              </span>
-            </div>
-          )}
+        {/* Person Overlay Image - Inside card for download */}
+        <PersonOverlay
+          cardWidth={448}
+          cardHeight={fullSize ? 600 : 500}
+          isEnabled={isPersonOverlayEnabled}
+          initialImage={personImage}
+          initialPosition={personPosition}
+          initialScale={personScale}
+          onImageChange={onPersonOverlayChange}
+        />
       </div>
+
+      {/* Ad Banner - Full width below the card */}
+      {visibilitySettings?.showAdBanner && adBannerImage && (
+        <div
+          className="w-full relative overflow-hidden"
+          style={{ height: "60px" }}
+        >
+          <img
+            src={adBannerImage}
+            alt="Advertisement"
+            className="absolute top-1/2 left-1/2 pointer-events-none"
+            style={{
+              transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${adBannerZoom / 100})`,
+              transformOrigin: "center center",
+              maxWidth: "none",
+              maxHeight: "none",
+              width: "auto",
+              height: "auto",
+              minWidth: "100%",
+              minHeight: "100%",
+            }}
+          />
+        </div>
+      )}
+      {visibilitySettings?.showAdBanner && !adBannerImage && !isGenerating && (
+        <div
+          className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center"
+          style={{ height: "80px" }}
+        >
+          <span className="text-[#5d4e37] text-xs font-inter">
+            Ad Banner Area (80px height)
+          </span>
+        </div>
+      )}
+
+    </div>
 
       {/* Drag Overlay - shows the element being dragged */}
       <DragOverlay dropAnimation={null}>
@@ -1111,10 +1314,23 @@ export default function ClassicCustomCard({
           if (file && onLogoUpload) {
             onLogoUpload(file);
           }
-          // Reset input value so the same file can be selected again
           e.target.value = "";
         }}
       />
+
+      {/* Loading Overlay */}
+      {isGenerating && (
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white px-6 py-4 rounded-lg shadow-xl">
+            <div className="flex items-center gap-3">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#8b6834]"></div>
+              <span className="text-[#2c2419] font-inter font-medium">
+                Generating...
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </DndContext>
   );
 }
