@@ -6,6 +6,7 @@ import {
   CardFontStyles,
   VisibilitySettings,
   CommentCardVisibilitySettings,
+  PollCardVisibilitySettings,
 } from "@/types";
 import {
   Plus,
@@ -36,11 +37,11 @@ interface CustomizationPanelProps {
   onThemeChange?: (theme: string) => void;
   fontStyles?: CardFontStyles;
   onFontStylesChange?: (fontStyles: CardFontStyles) => void;
-  visibilitySettings?: VisibilitySettings | CommentCardVisibilitySettings;
+  visibilitySettings?: VisibilitySettings | CommentCardVisibilitySettings | PollCardVisibilitySettings;
   onVisibilityChange?: (
-    visibilitySettings: VisibilitySettings | CommentCardVisibilitySettings,
+    visibilitySettings: VisibilitySettings | CommentCardVisibilitySettings | PollCardVisibilitySettings,
   ) => void;
-  cardType?: "url" | "custom" | "comment";
+  cardType?: "url" | "custom" | "comment" | "poll";
 }
 
 const SOLID_COLORS = [
@@ -265,8 +266,19 @@ export default function CustomizationPanel({
     },
   ];
 
+  const POLL_THEMES_WITH_LOCK = [
+    {
+      id: "classic",
+      name: "Classic",
+      locked: false,
+      thumbnail: "/themes/poll-1.png",
+    },
+  ];
+
   const activeThemes =
-    cardType === "comment" ? COMMENT_THEMES_WITH_LOCK : THEMES_WITH_LOCK;
+    cardType === "comment" ? COMMENT_THEMES_WITH_LOCK : 
+    cardType === "poll" ? POLL_THEMES_WITH_LOCK : 
+    THEMES_WITH_LOCK;
 
   const handleThemeChange = (themeId: string, isLocked: boolean) => {
     if (isLocked) {
@@ -2634,6 +2646,118 @@ export default function CustomizationPanel({
                         <div
                           className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
                             visibilitySettings.showAdBanner
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Poll Title Toggle */}
+                  {"showPollTitle" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showPollTitle ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Poll Title
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showPollTitle: !visibilitySettings.showPollTitle,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showPollTitle
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showPollTitle
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Poll Options Toggle */}
+                  {"showPollOptions" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {visibilitySettings.showPollOptions ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Poll Options
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showPollOptions:
+                              !visibilitySettings.showPollOptions,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          visibilitySettings.showPollOptions
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            visibilitySettings.showPollOptions
+                              ? "right-0.5"
+                              : "left-0.5"
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Poll Icons Toggle */}
+                  {"showPollIcons" in visibilitySettings && (
+                    <div className="bg-[#e8dcc8] border-2 border-[#d4c4b0] p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {(visibilitySettings as any).showPollIcons ? (
+                          <Eye className="w-5 h-5 text-[#8b6834]" />
+                        ) : (
+                          <EyeOff className="w-5 h-5 text-[#5d4e37]" />
+                        )}
+                        <span className="text-sm font-medium font-inter text-[#2c2419]">
+                          Poll Icons
+                        </span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          onVisibilityChange({
+                            ...visibilitySettings,
+                            showPollIcons: !(visibilitySettings as any).showPollIcons,
+                          })
+                        }
+                        className={`relative w-14 h-7 transition-colors border-2 ${
+                          (visibilitySettings as any).showPollIcons
+                            ? "bg-[#8b6834] border-[#8b6834]"
+                            : "bg-[#d4c4b0] border-[#d4c4b0]"
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 bottom-0.5 w-6 bg-white transition-all ${
+                            (visibilitySettings as any).showPollIcons
                               ? "right-0.5"
                               : "left-0.5"
                           }`}

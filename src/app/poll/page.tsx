@@ -4,28 +4,28 @@ import { DotBackground } from "@/components/DotBackground";
 import EditingToolbar from "@/components/EditingToolbar";
 import { useState, useEffect, useCallback } from "react";
 import Navbar from "@/components/Navbar";
-import ClassicCommentCard from "@/components/cards/comment-cards/ClassicCommentCard";
+import ClassicPollCard from "@/components/cards/poll-cards/ClassicPollCard";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import {
   PhotocardData,
   BackgroundOptions,
   CardFontStyles,
-  CommentCardVisibilitySettings,
-  VisibilitySettings,
   PollCardVisibilitySettings,
+  VisibilitySettings,
+  CommentCardVisibilitySettings,
 } from "@/types";
-import { Upload, Edit } from "lucide-react";
+import { Upload, Edit, RotateCcw, ThumbsUp, ThumbsDown, MessageSquare, HelpCircle, Link2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "@/components/UpgradeModal";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import DownloadControls from "@/components/DownloadControls";
 
-export default function CommentPage() {
+export default function PollPage() {
   const [logo, setLogo] = useState<string>("");
   const [newsImage, setNewsImage] = useState<string>("");
-  const [commentText, setCommentText] = useState("");
-  const [personName, setPersonName] = useState("");
-  const [personRole, setPersonRole] = useState("");
+  const [title, setTitle] = useState("");
+  const [pollTitle, setPollTitle] = useState("");
+  const [pollCount, setPollCount] = useState<2 | 3>(2);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const { user, features } = useAuth();
   const [background, setBackground] = useState<BackgroundOptions>({
@@ -55,11 +55,6 @@ export default function CommentPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [isDragMode, setIsDragMode] = useState(false);
 
-  // Person overlay state
-  const [isPersonOverlayEnabled, setIsPersonOverlayEnabled] = useState(false);
-  const [personImage, setPersonImage] = useState<string | null>(null);
-  const [personPosition, setPersonPosition] = useState({ x: 50, y: 50 });
-  const [personScale, setPersonScale] = useState(1);
   const [elementLayout, setElementLayout] = useState<{
     topLeft: "logo" | "dateWeek" | "socialMedia" | "website";
     topRight: "logo" | "dateWeek" | "socialMedia" | "website";
@@ -79,6 +74,7 @@ export default function CommentPage() {
   // Editing state
   const [currentLogo, setCurrentLogo] = useState<string>("");
   const [currentImage, setCurrentImage] = useState<string>("");
+  const [currentTitle, setCurrentTitle] = useState<string>("");
   const [isLogoFavicon, setIsLogoFavicon] = useState(false);
 
   // Font styles state
@@ -115,29 +111,13 @@ export default function CommentPage() {
         color: "#000000",
       },
     },
-    // Comment-specific fonts
-    commentText: {
+    // Poll-specific fonts
+    pollTitle: {
       fontFamily: "Noto Sans Bengali",
       fontSize: "28px",
-      fontWeight: "600",
-      color: "#FFFFFF",
-      textAlign: "left",
-      letterSpacing: "0px",
-      textShadow: {
-        preset: "soft",
-        angle: 135,
-      },
-      textStroke: {
-        width: 0,
-        color: "#000000",
-      },
-    },
-    personName: {
-      fontFamily: "Noto Sans Bengali",
-      fontSize: "20px",
       fontWeight: "700",
       color: "#FFFFFF",
-      textAlign: "left",
+      textAlign: "center",
       letterSpacing: "0px",
       textShadow: {
         preset: "soft",
@@ -148,12 +128,12 @@ export default function CommentPage() {
         color: "#000000",
       },
     },
-    personRole: {
+    pollOptions: {
       fontFamily: "Noto Sans Bengali",
-      fontSize: "16px",
-      fontWeight: "400",
-      color: "#FFFFFF",
-      textAlign: "left",
+      fontSize: "20px",
+      fontWeight: "600",
+      color: "#000000",
+      textAlign: "center",
       letterSpacing: "0px",
       textShadow: {
         preset: "none",
@@ -176,38 +156,74 @@ export default function CommentPage() {
 
   // Visibility settings state
   const [visibilitySettings, setVisibilitySettings] =
-    useState<CommentCardVisibilitySettings>({
+    useState<PollCardVisibilitySettings>({
       showLogo: true,
+      showWeek: true,
       showDate: true,
-      showCommentText: true,
-      showPersonName: true,
-      showPersonRole: true,
+      showPollTitle: true,
+      showPollOptions: true,
+      showPollIcons: true,
       showImage: true,
       showSocialMedia: true,
       showAdBanner: true,
     });
 
+  // Default poll options
+  const [pollOptions, setPollOptions] = useState([
+    { text: "হ্যাঁ", icon: "ThumbsUp" },
+    { text: "না", icon: "ThumbsDown" },
+    { text: "মন্তব্য নেই", icon: "MessageSquare" },
+  ]);
+
+  // Poll icon size state (12-28px, default 16px)
+  const [pollIconSize, setPollIconSize] = useState(16);
+
+  // URL functionality state
+  const [url, setUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [urlError, setUrlError] = useState("");
+  const [urlSuccess, setUrlSuccess] = useState(false);
+
+  // Helper function to render Lucide icons
+  const renderPollIcon = (iconName: string, className: string = "w-4 h-4") => {
+    const iconComponents = {
+      ThumbsUp: ThumbsUp,
+      ThumbsDown: ThumbsDown,
+      MessageSquare: MessageSquare,
+      HelpCircle: HelpCircle,
+    };
+    
+    const IconComponent = iconComponents[iconName as keyof typeof iconComponents];
+    
+    if (IconComponent) {
+      return <IconComponent className={`${className} text-[#2c2419]`} />;
+    }
+    
+    return null;
+  };
+
   // Mock data for preview
   const mockData: PhotocardData = {
-    title: "Mock Title",
+    title:
+      title || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে",
     image: currentImage || "",
     logo: currentLogo || "",
     favicon: "https://www.google.com/favicon.ico",
-    siteName: "Comment Card",
+    siteName: "Poll Card",
     url: "https://example.com",
     weekName: "শনিবার",
     date: "২৪ জানুয়ারি ২০২৬",
-    commentText:
-      commentText || "এটি একটি মন্তব্য যা ব্যাখ্যা করে কিছু গুরুত্বপূর্ণ বিষয়",
-    personName: personName || "নাম",
-    personRole: personRole || "পদবি",
+    pollTitle:
+      pollTitle || "আপনার মতামত কি?",
+    pollOptions: pollOptions.slice(0, pollCount),
   };
 
   // Update current data when main data changes
   useEffect(() => {
+    setCurrentTitle(title || mockData.title);
     setCurrentImage(newsImage || mockData.image);
     setCurrentLogo(logo || mockData.logo);
-  }, [newsImage, logo]);
+  }, [title, newsImage, logo]);
 
   const handleFrameChange = (color: string, thickness: number) => {
     setFrameBorderColor(color);
@@ -215,10 +231,10 @@ export default function CommentPage() {
   };
 
   const handleVisibilityChange = (
-    settings: CommentCardVisibilitySettings | VisibilitySettings | PollCardVisibilitySettings,
+    settings: PollCardVisibilitySettings | VisibilitySettings | CommentCardVisibilitySettings,
   ) => {
-    if ("showCommentText" in settings) {
-      setVisibilitySettings(settings as CommentCardVisibilitySettings);
+    if ("showPollTitle" in settings) {
+      setVisibilitySettings(settings as PollCardVisibilitySettings);
     }
   };
 
@@ -232,6 +248,63 @@ export default function CommentPage() {
   const handleImageChange = (imageUrl: string) => {
     setCurrentImage(imageUrl);
     setNewsImage(imageUrl);
+  };
+
+  const handleTitleChange = (titleText: string) => {
+    setCurrentTitle(titleText);
+    setTitle(titleText);
+  };
+
+  // URL submission handler
+  const handleUrlSubmit = async () => {
+    if (!url.trim()) return;
+    
+    setIsLoading(true);
+    setUrlError("");
+    setUrlSuccess(false);
+
+    try {
+      const response = await fetch("/api/extract-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: url.trim() }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to extract URL data");
+      }
+
+      const data = await response.json();
+
+      // Populate poll card with extracted data
+      if (data.title) {
+        setTitle(data.title);
+        setCurrentTitle(data.title);
+      }
+      if (data.image) {
+        setNewsImage(data.image);
+        setCurrentImage(data.image);
+      }
+      if (data.logo) {
+        setLogo(data.logo);
+        setCurrentLogo(data.logo);
+      }
+
+      // Show success feedback
+      setUrlSuccess(true);
+      
+      // Clear URL input and success message after delay
+      setUrl("");
+      setTimeout(() => setUrlSuccess(false), 3000);
+    } catch (error) {
+      console.error("Error extracting URL data:", error);
+      setUrlError(error instanceof Error ? error.message : "Failed to extract URL data");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Logo upload
@@ -274,16 +347,6 @@ export default function CommentPage() {
   };
 
   // Person overlay handler
-  const handlePersonOverlayChange = (
-    imageData: string | null,
-    position: { x: number; y: number },
-    scale: number,
-  ) => {
-    setPersonImage(imageData);
-    setPersonPosition(position);
-    setPersonScale(scale);
-  };
-
   // Restore all settings to defaults
   const handleRestoreDefaults = () => {
     setElementLayout({
@@ -295,10 +358,11 @@ export default function CommentPage() {
 
     setVisibilitySettings({
       showLogo: true,
+      showWeek: true,
       showDate: true,
-      showCommentText: true,
-      showPersonName: true,
-      showPersonRole: true,
+      showPollTitle: true,
+      showPollOptions: true,
+      showPollIcons: true,
       showImage: true,
       showSocialMedia: true,
       showAdBanner: true,
@@ -337,28 +401,12 @@ export default function CommentPage() {
           color: "#000000",
         },
       },
-      commentText: {
+      pollTitle: {
         fontFamily: "Noto Sans Bengali",
         fontSize: "28px",
-        fontWeight: "600",
-        color: "#FFFFFF",
-        textAlign: "left",
-        letterSpacing: "0px",
-        textShadow: {
-          preset: "soft",
-          angle: 135,
-        },
-        textStroke: {
-          width: 0,
-          color: "#000000",
-        },
-      },
-      personName: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "20px",
         fontWeight: "700",
         color: "#FFFFFF",
-        textAlign: "left",
+        textAlign: "center",
         letterSpacing: "0px",
         textShadow: {
           preset: "soft",
@@ -369,12 +417,12 @@ export default function CommentPage() {
           color: "#000000",
         },
       },
-      personRole: {
+      pollOptions: {
         fontFamily: "Noto Sans Bengali",
-        fontSize: "16px",
-        fontWeight: "400",
-        color: "#FFFFFF",
-        textAlign: "left",
+        fontSize: "20px",
+        fontWeight: "600",
+        color: "#000000",
+        textAlign: "center",
         letterSpacing: "0px",
         textShadow: {
           preset: "none",
@@ -404,7 +452,7 @@ export default function CommentPage() {
     setImagePosition({ x: 0, y: 0 });
     setBackground({
       type: "solid",
-      color: "#2563eb",
+      color: "#dc2626",
     });
   };
 
@@ -426,7 +474,7 @@ export default function CommentPage() {
     );
 
     return (
-      <ClassicCommentCard
+      <ClassicPollCard
         id={cardId}
         data={cardData}
         background={background}
@@ -444,6 +492,7 @@ export default function CommentPage() {
         fontStyles={fontStyles}
         visibilitySettings={visibilitySettings}
         isDragMode={isDragMode}
+        pollIconSize={pollIconSize}
         elementLayout={elementLayout}
         onLayoutChange={setElementLayout}
         onVisibilityChange={setVisibilitySettings}
@@ -451,11 +500,6 @@ export default function CommentPage() {
         onRestoreDefaults={handleRestoreDefaults}
         onImagePositionChange={setImagePosition}
         onImageZoomChange={setImageZoom}
-        isPersonOverlayEnabled={isPersonOverlayEnabled}
-        personImage={personImage}
-        personPosition={personPosition}
-        personScale={personScale}
-        onPersonOverlayChange={handlePersonOverlayChange}
       />
     );
   };
@@ -543,10 +587,10 @@ export default function CommentPage() {
                   </div>
                 </div>
                 <h3 className="text-2xl font-lora font-bold text-[#2c2419] mb-3">
-                  Comment Cards Locked
+                  Poll Cards Locked
                 </h3>
                 <p className="text-[#5d4e37] font-inter mb-6">
-                  Comment cards are available for Basic and Premium users.
+                  Poll cards are available for Basic and Premium users.
                   Upgrade your plan to unlock this feature.
                 </p>
                 <button
@@ -564,57 +608,50 @@ export default function CommentPage() {
             className="w-full bg-[#f5f0e8] p-4 md:p-6 flex flex-col md:min-h-0 md:overflow-y-auto"
             style={isDesktop ? { width: `${leftPanelWidth}%` } : undefined}
           >
-            {/* Comment Card Input Section */}
+            {/* Poll Card Input Section */}
             <div className="space-y-3">
-              {/* Compact Uploads - Side by Side */}
+              {/* URL Input Section */}
               <div className="bg-[#e8dcc8] p-2 border-2 border-[#d4c4b0]">
-                <h3 className="text-sm font-lora font-bold text-[#2c2419] mb-2">
-                  Uploads
-                </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {/* Logo Upload */}
-                  <label className="flex flex-col items-center justify-center min-h-[56px] border-2 border-dashed border-[#d4c4b0] bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors cursor-pointer p-2">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleLogoUploadInput}
-                    />
-                    <div className="flex items-center gap-2">
-                      {logo ? (
-                        <Edit className="w-4 h-4 text-[#8b6834]" />
-                      ) : (
-                        <Upload className="w-4 h-4 text-[#5d4e37]" />
-                      )}
-                      <span
-                        className={`font-inter font-medium ${logo ? "text-sm text-[#2c2419]" : "text-sm text-[#5d4e37]"}`}
-                      >
-                        {logo ? "Change Logo" : "Upload Logo"}
-                      </span>
-                    </div>
-                  </label>
-
-                  {/* Image Upload */}
-                  <label className="flex flex-col items-center justify-center min-h-[56px] border-2 border-dashed border-[#d4c4b0] bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors cursor-pointer p-2">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageUploadInput}
-                    />
-                    <div className="flex items-center gap-2">
-                      {newsImage ? (
-                        <Edit className="w-4 h-4 text-[#8b6834]" />
-                      ) : (
-                        <Upload className="w-4 h-4 text-[#5d4e37]" />
-                      )}
-                      <span
-                        className={`font-inter font-medium ${newsImage ? "text-sm text-[#2c2419]" : "text-sm text-[#5d4e37]"}`}
-                      >
-                        {newsImage ? "Change Image" : "Upload Image"}
-                      </span>
-                    </div>
-                  </label>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="p-1 bg-[#8b6834] rounded">
+                    <Link2 className="w-3 h-3 text-white" />
+                  </div>
+                  <h3 className="text-sm font-lora font-bold text-[#2c2419]">
+                    Extract from URL
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  <input
+                    type="url"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleUrlSubmit()}
+                    placeholder="Paste article URL to auto-fill content"
+                    className="w-full px-3 py-2 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter text-sm focus:outline-none focus:ring-2 focus:ring-[#8b6834]"
+                    disabled={isLoading}
+                  />
+                  <div className="flex items-center justify-between">
+                    {urlError && (
+                      <p className="text-red-600 text-xs font-inter flex-1 mr-2">
+                        {urlError}
+                      </p>
+                    )}
+                    {urlSuccess && !urlError && (
+                      <div className="flex items-center gap-1 text-green-600 text-xs font-inter flex-1 mr-2">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Content extracted successfully!
+                      </div>
+                    )}
+                    <button
+                      onClick={handleUrlSubmit}
+                      disabled={!url.trim() || isLoading}
+                      className="px-4 py-2 bg-[#8b6834] text-[#faf8f5] text-sm font-medium font-inter hover:bg-[#6b4e25] disabled:bg-[#a08d74] disabled:cursor-not-allowed transition-colors ml-auto"
+                    >
+                      {isLoading ? 'Loading...' : 'Extract'}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -643,39 +680,201 @@ export default function CommentPage() {
                 </button>
                 {contentExpanded && (
                   <div className="space-y-3">
-                    {/* Comment Text */}
+                    {/* Uploads Section */}
                     <div>
                       <label className="text-xs font-inter font-medium text-[#5d4e37] mb-1 block">
-                        Comment Text
+                        Uploads
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {/* Logo Upload */}
+                        <label className="flex flex-col items-center justify-center min-h-[56px] border-2 border-dashed border-[#d4c4b0] bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors cursor-pointer p-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleLogoUploadInput}
+                          />
+                          <div className="flex items-center gap-2">
+                            {logo ? (
+                              <Edit className="w-4 h-4 text-[#8b6834]" />
+                            ) : (
+                              <Upload className="w-4 h-4 text-[#5d4e37]" />
+                            )}
+                            <span
+                              className={`font-inter font-medium ${logo ? "text-xs text-[#2c2419]" : "text-xs text-[#5d4e37]"}`}
+                            >
+                              {logo ? "Change Logo" : "Upload Logo"}
+                            </span>
+                          </div>
+                        </label>
+
+                        {/* Image Upload */}
+                        <label className="flex flex-col items-center justify-center min-h-[56px] border-2 border-dashed border-[#d4c4b0] bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors cursor-pointer p-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleImageUploadInput}
+                          />
+                          <div className="flex items-center gap-2">
+                            {newsImage ? (
+                              <Edit className="w-4 h-4 text-[#8b6834]" />
+                            ) : (
+                              <Upload className="w-4 h-4 text-[#5d4e37]" />
+                            )}
+                            <span
+                              className={`font-inter font-medium ${newsImage ? "text-xs text-[#2c2419]" : "text-xs text-[#5d4e37]"}`}
+                            >
+                              {newsImage ? "Change Image" : "Upload Image"}
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+                    {/* Headline/Title */}
+                    <div>
+                      <label className="text-xs font-inter font-medium text-[#5d4e37] mb-1 block">
+                        Headline
                       </label>
                       <textarea
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        placeholder="মন্তব্য টেক্সট এখানে লিখুন..."
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="শিরোনাম এখানে লিখুন..."
                         className="w-full px-2 py-1.5 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] focus:outline-none focus:ring-2 focus:ring-[#8b6834] min-h-[60px] resize-none font-noto-bengali text-md"
                       />
                     </div>
-                    {/* Person Details - Side by Side */}
+                    {/* Poll Count Toggle */}
                     <div>
                       <label className="text-xs font-inter font-medium text-[#5d4e37] mb-1 block">
-                        Person Details
+                        Poll Options
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <input
-                          type="text"
-                          value={personName}
-                          onChange={(e) => setPersonName(e.target.value)}
-                          placeholder="নাম..."
-                          className="w-full px-2 py-1.5 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] focus:outline-none focus:ring-2 focus:ring-[#8b6834] font-noto-bengali text-sm"
-                        />
-                        <input
-                          type="text"
-                          value={personRole}
-                          onChange={(e) => setPersonRole(e.target.value)}
-                          placeholder="পদবি..."
-                          className="w-full px-2 py-1.5 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] focus:outline-none focus:ring-2 focus:ring-[#8b6834] font-noto-bengali text-sm"
-                        />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setPollCount(2)}
+                          className={`flex-1 py-2 px-4 font-inter font-medium transition-colors ${
+                            pollCount === 2
+                              ? "bg-[#8b6834] text-[#faf8f5]"
+                              : "bg-[#faf8f5] text-[#5d4e37] hover:bg-[#f5f0e8]"
+                          }`}
+                        >
+                          2 Options
+                        </button>
+                        <button
+                          onClick={() => setPollCount(3)}
+                          className={`flex-1 py-2 px-4 font-inter font-medium transition-colors ${
+                            pollCount === 3
+                              ? "bg-[#8b6834] text-[#faf8f5]"
+                              : "bg-[#faf8f5] text-[#5d4e37] hover:bg-[#f5f0e8]"
+                          }`}
+                        >
+                          3 Options
+                        </button>
                       </div>
+                    </div>
+                    
+                    {/* Poll Options Customization */}
+                    <div>
+                      <label className="text-xs font-inter font-medium text-[#5d4e37] mb-1 block">
+                        Customize Poll Options
+                      </label>
+                      <div className="space-y-2">
+                        {pollOptions.slice(0, pollCount).map((option, index) => (
+                          <div key={index} className="flex items-center gap-2 bg-[#faf8f5] border border-[#d4c4b0] p-2 rounded">
+                            <div className="flex items-center gap-2 flex-1">
+                              <div className="flex items-center justify-center w-6 h-6">
+                                {option.icon.startsWith('data:') ? (
+                                  <img 
+                                    src={option.icon} 
+                                    alt="Poll icon" 
+                                    className="w-4 h-4 object-contain"
+                                  />
+                                ) : (
+                                  renderPollIcon(option.icon, "w-4 h-4")
+                                )}
+                              </div>
+                              <input
+                                type="text"
+                                value={option.text}
+                                onChange={(e) => {
+                                  const newOptions = [...pollOptions];
+                                  newOptions[index].text = e.target.value;
+                                  setPollOptions(newOptions);
+                                }}
+                                className="flex-1 px-2 py-1 text-sm bg-transparent border-none outline-none font-noto-bengali text-[#2c2419]"
+                                placeholder="Option text"
+                              />
+                            </div>
+                            <button
+                              onClick={() => {
+                                const input = document.createElement('input');
+                                input.type = 'file';
+                                input.accept = 'image/*';
+                                input.onchange = (e) => {
+                                  const file = (e.target as HTMLInputElement).files?.[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => {
+                                      const newOptions = [...pollOptions];
+                                      newOptions[index].icon = e.target?.result as string;
+                                      setPollOptions(newOptions);
+                                    };
+                                    reader.readAsDataURL(file);
+                                  }
+                                };
+                                input.click();
+                              }}
+                              className="flex items-center justify-center bg-[#8b6834] text-[#faf8f5] px-2 py-1 rounded hover:bg-[#6d5228] transition-colors"
+                            >
+                              <Upload className="w-3 h-3" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                const newOptions = [...pollOptions];
+                                const defaultOptions = [
+                                  { text: "হ্যাঁ", icon: "ThumbsUp" },
+                                  { text: "না", icon: "ThumbsDown" },
+                                  { text: "মন্তব্য নেই", icon: "MessageSquare" },
+                                ];
+                                newOptions[index] = defaultOptions[index] || { text: "অপশন", icon: "HelpCircle" };
+                                setPollOptions(newOptions);
+                              }}
+                              className="flex items-center justify-center bg-[#d4c4b0] text-[#2c2419] px-2 py-1 rounded hover:bg-[#c4b49f] transition-colors"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Poll Icon Size Control */}
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-inter font-medium text-[#5d4e37]">
+                          Icon Size
+                        </label>
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs font-medium text-[#2c2419]">{pollIconSize}px</span>
+                          <button
+                            onClick={() => setPollIconSize(16)}
+                            title="Reset to default"
+                            className="text-xs text-[#8b6834] hover:text-[#5d4e37] transition-colors"
+                          >
+                            ↻
+                          </button>
+                        </div>
+                      </div>
+                      <input
+                        type="range"
+                        min="12"
+                        max="28"
+                        value={pollIconSize}
+                        onChange={(e) => setPollIconSize(parseInt(e.target.value))}
+                        className="w-full h-2 bg-[#d4c4b0] rounded-lg appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((pollIconSize - 12) / (28 - 12)) * 100}%, #d4c4b0 ${((pollIconSize - 12) / (28 - 12)) * 100}%, #d4c4b0 100%)`,
+                        }}
+                      />
                     </div>
                   </div>
                 )}
@@ -873,7 +1072,7 @@ export default function CommentPage() {
                 onFontStylesChange={setFontStyles}
                 visibilitySettings={visibilitySettings}
                 onVisibilityChange={handleVisibilityChange}
-                cardType="comment"
+                cardType="poll"
               />
             </div>
           </div>
@@ -896,11 +1095,8 @@ export default function CommentPage() {
                       <div className="bg-[#faf8f5] shadow-lg hover:shadow-xl border-2 border-[#d4c4b0] overflow-hidden">
                         <div className="p-4">
                           <h4 className="text-[#2c2419] font-noto-bengali text-sm font-medium mb-2 line-clamp-2">
-                            {commentText || "মন্তব্য"}
+                            {title || "শিরোনাম"}
                           </h4>
-                          <p className="text-xs font-noto-bengali text-[#5d4e37]">
-                            {personName} - {personRole}
-                          </p>
                           {newsImage && (
                             <div className="mt-2 bg-[#f5f0e8] aspect-video">
                               <img
@@ -915,8 +1111,8 @@ export default function CommentPage() {
                     </div>
                     <div className="flex justify-center">
                       <DownloadControls
-                        isVisible={!!(logo || newsImage || commentText)}
-                        targetId="photocard-comment"
+                        isVisible={!!(logo || newsImage || title)}
+                        targetId="photocard-poll"
                       />
                     </div>
                   </div>
@@ -925,31 +1121,26 @@ export default function CommentPage() {
                     <EditingToolbar
                       currentLogo={currentLogo || mockData.logo}
                       currentImage={currentImage || mockData.image}
-                      currentTitle={commentText || ""}
+                      currentTitle={currentTitle || mockData.title}
                       isDragMode={isDragMode}
-                      isPersonOverlayMode={isPersonOverlayEnabled}
                       onLogoChange={handleLogoChange}
                       onImageChange={handleImageChange}
-                      onTitleChange={(text) => setCommentText(text)}
+                      onTitleChange={handleTitleChange}
                       onDragModeToggle={() => setIsDragMode(!isDragMode)}
-                      onPersonOverlayToggle={() =>
-                        setIsPersonOverlayEnabled(!isPersonOverlayEnabled)
-                      }
                       showImageTool={false}
                       showLogoTool={false}
                       showTitleTool={false}
                       showDragTool={true}
-                      showPersonOverlayTool={true}
                     />
 
                     <div className="flex flex-col items-center pt-16">
                       <div className="flex-shrink-0">
-                        {renderCard(photocardData, "photocard-comment", true)}
+                        {renderCard(photocardData, "photocard-poll", true)}
                       </div>
                       <div className="mt-6">
                         <DownloadControls
-                          isVisible={!!(logo || newsImage || commentText)}
-                          targetId="photocard-comment"
+                          isVisible={!!(logo || newsImage || title)}
+                          targetId="photocard-poll"
                         />
                       </div>
                     </div>
@@ -963,7 +1154,7 @@ export default function CommentPage() {
         <UpgradeModal
           isOpen={showUpgradeModal}
           onClose={() => setShowUpgradeModal(false)}
-          feature="Comment Cards"
+          feature="Poll Cards"
           requiredPlan="Basic"
         />
       </div>

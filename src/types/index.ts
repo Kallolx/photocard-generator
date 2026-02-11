@@ -14,6 +14,9 @@ export interface PhotocardData extends UrlData {
   commentText?: string;
   personName?: string;
   personRole?: string;
+  // Poll card specific fields
+  pollTitle?: string;
+  pollOptions?: Array<{ text: string; icon?: string }>;
 }
 
 export interface BackgroundOptions {
@@ -60,6 +63,9 @@ export interface CardFontStyles {
   commentText?: FontStyles;
   personName?: FontStyles;
   personRole?: FontStyles;
+  // Poll card specific fonts
+  pollTitle?: FontStyles;
+  pollOptions?: FontStyles;
 }
 
 export interface FooterOverlaySettings {
@@ -82,6 +88,18 @@ export interface CommentCardVisibilitySettings {
   showCommentText: boolean;
   showPersonName: boolean;
   showPersonRole: boolean;
+  showImage: boolean;
+  showSocialMedia: boolean;
+  showAdBanner: boolean;
+}
+
+export interface PollCardVisibilitySettings {
+  showLogo: boolean;
+  showWeek: boolean;
+  showDate: boolean;
+  showPollTitle: boolean;
+  showPollOptions: boolean;
+  showPollIcons: boolean;
   showImage: boolean;
   showSocialMedia: boolean;
   showAdBanner: boolean;

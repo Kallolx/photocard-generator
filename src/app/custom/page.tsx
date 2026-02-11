@@ -772,7 +772,7 @@ export default function CustomPage() {
 
           {/* Left Sidebar */}
           <div
-            className="w-full bg-[#f5f0e8] p-4 md:p-6 flex flex-col md:min-h-0"
+            className="w-full bg-[#f5f0e8] p-4 md:p-6 flex flex-col md:min-h-0 md:overflow-y-auto"
             style={isDesktop ? { width: `${leftPanelWidth}%` } : undefined}
           >
             {/* Custom Input Section */}
@@ -1018,7 +1018,7 @@ export default function CustomPage() {
             </div>
 
             {/* Customization Panel */}
-            <div className="mt-6 flex-1 md:min-h-0 md:overflow-hidden">
+            <div className="mt-6 flex-shrink-0 md:h-auto">
               <CustomizationPanel
                 background={background}
                 onBackgroundChange={setBackground}
