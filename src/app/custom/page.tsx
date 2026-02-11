@@ -748,7 +748,7 @@ export default function CustomPage() {
           {!features?.customCards &&
             user?.plan !== "Basic" &&
             user?.plan !== "Premium" && (
-              <div className="fixed inset-0 z-40 bg-[#2c2419]/80 backdrop-blur-sm flex items-center justify-center">
+              <div className="fixed inset-0 z-40 bg-[#2c2419]/80 backdrop-blur-md flex items-center justify-center">
                 <div className="bg-[#faf8f5] p-8 border-4 border-[#8b6834] max-w-md mx-4 text-center">
                   <div className="w-16 h-16 bg-[#8b6834] rounded-full flex items-center justify-center mx-auto mb-4">
                     <Lock className="w-8 h-8 text-[#faf8f5]" />

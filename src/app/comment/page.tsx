@@ -523,7 +523,7 @@ export default function CommentPage() {
         {/* Main Content - Split Panel Layout */}
         <div className="flex-1 flex flex-col md:flex-row md:min-h-0">
           {user?.plan === "Free" && (
-            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
               <div className="bg-white border-4 border-[#8b6834] p-8 max-w-md text-center shadow-2xl">
                 <div className="mb-4 flex justify-center">
                   <div className="p-4 bg-[#f5f0e8] rounded-full">
