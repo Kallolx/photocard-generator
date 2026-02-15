@@ -9,6 +9,7 @@ import ModernUrlCard from "@/components/cards/url-cards/ModernUrlCard";
 import Modern2UrlCard from "@/components/cards/url-cards/Modern2UrlCard";
 import VerticalUrlCard from "@/components/cards/url-cards/VerticalUrlCard";
 import MinimalUrlCard from "@/components/cards/url-cards/MinimalUrlCard";
+import MagazineUrlCard from "@/components/cards/url-cards/MagazineUrlCard";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import {
   PhotocardData,
@@ -46,7 +47,7 @@ export default function Home() {
     type: "solid",
     color: "#dc2626",
   });
-  const [frameBorderColor, setFrameBorderColor] = useState("#FFFFFF");
+  const [frameBorderColor, setFrameBorderColor] = useState("#dc2626");
   const [frameBorderThickness, setFrameBorderThickness] = useState(0);
   const [mode, setMode] = useState<"single" | "multiple">("single");
   const [clearUrl, setClearUrl] = useState(false);
@@ -206,14 +207,37 @@ export default function Home() {
         week: {
           ...prev.week,
           fontSize: "12px",
+          color: "#FFFFFF",
         },
         date: {
           ...prev.date,
           fontSize: "12px",
+          color: "#FFFFFF",
         },
         headline: {
           ...prev.headline,
           fontSize: "25px",
+          color: "#FFFFFF",
+        },
+      }));
+    } else if (theme === "magazine") {
+      // Set specific defaults for magazine theme
+      setFontStyles((prev) => ({
+        ...prev,
+        week: {
+          ...prev.week,
+          fontSize: "14px",
+          color: "#000000",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "14px",
+          color: "#000000",
+        },
+        headline: {
+          ...prev.headline,
+          fontSize: "24px",
+          color: "#000000",
         },
       }));
     } else {
@@ -223,16 +247,26 @@ export default function Home() {
         week: {
           ...prev.week,
           fontSize: "18px",
+          color: "#FFFFFF",
         },
         date: {
           ...prev.date,
           fontSize: "18px",
+          color: "#FFFFFF",
         },
         headline: {
           ...prev.headline,
           fontSize: "24px",
+          color: "#FFFFFF",
         },
       }));
+    }
+
+    // Set frame border thickness based on theme
+    if (theme === "magazine") {
+      setFrameBorderThickness(5);
+    } else {
+      setFrameBorderThickness(0);
     }
   }, [theme]);
 
@@ -442,6 +476,41 @@ export default function Home() {
           letterSpacing: "0px",
         },
       });
+    } else if (theme === "magazine") {
+      setFontStyles({
+        week: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "14px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
+        date: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "14px",
+          fontWeight: "400",
+          color: "#FFFFFF",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
+        headline: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "24px",
+          fontWeight: "700",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+        footer: {
+          fontFamily: "Noto Sans Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
+      });
     } else {
       setFontStyles({
         week: {
@@ -480,8 +549,12 @@ export default function Home() {
     }
 
     // Reset frame border
-    setFrameBorderColor("#FFFFFF");
-    setFrameBorderThickness(0);
+    setFrameBorderColor("#dc2626");
+    if (theme === "magazine") {
+      setFrameBorderThickness(5);
+    } else {
+      setFrameBorderThickness(0);
+    }
 
     // Reset ad banner
     setAdBannerImage(null);
@@ -559,6 +632,8 @@ export default function Home() {
             elementLayout={minimalElementLayout}
             onLayoutChange={setMinimalElementLayout}
           />
+        ) : theme === "magazine" ? (
+          <MagazineUrlCard {...commonProps} />
         ) : (
           <ClassicUrlCard
             {...commonProps}
@@ -841,6 +916,23 @@ export default function Home() {
                 adBannerZoom={adBannerZoom}
                 fontStyles={fontStyles}
                 visibilitySettings={visibilitySettings}
+              />,
+            );
+          } else if (theme === "magazine") {
+            root.render(
+              <MagazineUrlCard
+                data={item.data}
+                isGenerating={true}
+                background={background}
+                id={`temp-card-${i}`}
+                fullSize={true}
+                frameBorderColor={frameBorderColor}
+                frameBorderThickness={frameBorderThickness}
+                adBannerImage={adBannerImage}
+                adBannerZoom={adBannerZoom}
+                fontStyles={fontStyles}
+                visibilitySettings={visibilitySettings}
+                isLogoFavicon={isLogoFavicon}
               />,
             );
           } else {

@@ -1,35 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { DotBackground } from "@/components/DotBackground";
-import { ArrowRight, Copy, RefreshCw, FileText, Check } from "lucide-react";
+import { Copy, RefreshCw, Check } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-
-type ConversionMode = "bijoy-to-unicode" | "unicode-to-bijoy" | "english-to-bangla";
+import { convertText, type ConversionMode } from "@/utils/banglaConverter";
 
 export default function BanglaConverterPage() {
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
-  const [mode, setMode] = useState<ConversionMode>("bijoy-to-unicode");
+  const [mode, setMode] = useState<ConversionMode>("english-to-bangla");
   const [copied, setCopied] = useState(false);
 
+  // Auto-convert when input text or mode changes
+  useEffect(() => {
+    const performConversion = async () => {
+      if (inputText.trim()) {
+        try {
+          const converted = await convertText(inputText, mode);
+          setOutputText(converted);
+        } catch (error) {
+          console.error("Auto-conversion error:", error);
+          setOutputText("রূপান্তরে ত্রুটি হয়েছে। দয়া করে আবার চেষ্টা করুন।");
+        }
+      } else {
+        setOutputText("");
+      }
+    };
+
+    performConversion();
+  }, [inputText, mode]);
+
   const modes = [
+    { id: "english-to-bangla", label: "English → Bangla", description: "Transliterate English to Bangla" },
     { id: "bijoy-to-unicode", label: "Bijoy → Unicode", description: "Convert Bijoy to Unicode" },
     { id: "unicode-to-bijoy", label: "Unicode → Bijoy", description: "Convert Unicode to Bijoy" },
-    { id: "english-to-bangla", label: "English → Bangla", description: "Transliterate English to Bangla" },
   ];
 
-  const handleConvert = () => {
-    // Placeholder conversion logic (backend will be added later)
-    if (mode === "bijoy-to-unicode") {
-      setOutputText("আপনার টেক্সট এখানে রূপান্তরিত হবে");
-    } else if (mode === "unicode-to-bijoy") {
-      setOutputText("Avcbvi †UKó GLv‡b iƒcvšÍwiZ n‡e");
-    } else {
-      setOutputText("apnar text ekhane rupantorito hobe");
-    }
-  };
+
 
   const handleCopy = async () => {
     if (outputText) {
@@ -68,9 +77,6 @@ export default function BanglaConverterPage() {
             <h1 className="text-3xl md:text-4xl font-lora font-bold text-[#2c2419] mb-3">
               Bangla Text Converter
             </h1>
-            <p className="text-[#5d4e37] text-lg">
-              Convert between Bijoy, Unicode, and English transliteration
-            </p>
           </div>
 
           {/* Conversion Mode Selector */}
@@ -116,34 +122,24 @@ export default function BanglaConverterPage() {
                   onChange={(e) => setInputText(e.target.value)}
                   placeholder={
                     mode === "bijoy-to-unicode"
-                      ? "Avcbvi Bijoy †UKó GLv‡b wjLyb..."
+                      ? "আপনার Bijoy টেক্সট এখানে পেস্ট করুন..."
                       : mode === "unicode-to-bijoy"
                       ? "আপনার Unicode টেক্সট এখানে লিখুন..."
                       : "Type your English text here..."
                   }
-                  className="w-full h-64 p-4 border-2 border-[#d4c4b0] focus:border-[#8b6834] focus:outline-none resize-none font-noto-bengali"
+                  className="text-xl w-full h-64 p-4 border-2 border-[#d4c4b0] focus:border-[#8b6834] focus:outline-none resize-none font-noto-bengali text-black placeholder:text-gray-400"
                 />
               </div>
 
               {/* Middle Actions */}
               <div className="flex md:flex-col gap-3 items-center justify-center pt-8">
                 <button
-                  onClick={handleConvert}
-                  disabled={!inputText}
-                  className="p-3 bg-[#8b6834] text-[#faf8f5] hover:bg-[#6d4f28] transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-full"
-                  title="Convert"
+                  onClick={handleSwap}
+                  className="p-3 border-2 border-[#d4c4b0] text-[#2c2419] hover:bg-[#f5f0e8] transition-colors rounded-full"
+                  title="Swap Input & Output"
                 >
-                  <ArrowRight className="w-6 h-6 md:rotate-90" />
+                  <RefreshCw className="w-5 h-5" />
                 </button>
-                {mode !== "english-to-bangla" && (
-                  <button
-                    onClick={handleSwap}
-                    className="p-3 border-2 border-[#d4c4b0] text-[#2c2419] hover:bg-[#f5f0e8] transition-colors rounded-full"
-                    title="Swap"
-                  >
-                    <RefreshCw className="w-5 h-5" />
-                  </button>
-                )}
               </div>
 
               {/* Output */}
@@ -161,7 +157,7 @@ export default function BanglaConverterPage() {
                     value={outputText}
                     readOnly
                     placeholder="Converted text will appear here..."
-                    className="w-full h-64 p-4 border-2 border-[#d4c4b0] bg-[#f5f0e8] resize-none font-noto-bengali"
+                    className="text-xl w-full h-64 p-4 border-2 border-[#d4c4b0] bg-[#f5f0e8] resize-none font-noto-bengali text-black placeholder:text-gray-400"
                   />
                   {outputText && (
                     <button
@@ -182,32 +178,6 @@ export default function BanglaConverterPage() {
                   )}
                 </div>
               </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t-2 border-[#d4c4b0]">
-              <button
-                onClick={handleConvert}
-                disabled={!inputText}
-                className="flex-1 min-w-[200px] py-3 px-6 bg-[#8b6834] text-[#faf8f5] font-bold hover:bg-[#6d4f28] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Convert Text
-              </button>
-              <button
-                onClick={handleCopy}
-                disabled={!outputText}
-                className="flex items-center gap-2 py-3 px-6 border-2 border-[#8b6834] text-[#8b6834] font-bold hover:bg-[#8b6834] hover:text-[#faf8f5] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                {copied ? "Copied!" : "Copy"}
-              </button>
-              <button
-                onClick={handleClear}
-                className="flex items-center gap-2 py-3 px-6 border-2 border-[#d4c4b0] text-[#2c2419] font-bold hover:bg-[#f5f0e8] transition-colors"
-              >
-                <RefreshCw className="w-5 h-5" />
-                Clear
-              </button>
             </div>
           </div>
         </main>

@@ -31,6 +31,8 @@ import {
   Scissors,
   LayoutGrid,
   Languages,
+  VideoIcon,
+  GitCompare,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import CompactCreditDisplay from "./CompactCreditDisplay";
@@ -75,9 +77,9 @@ export default function Navbar() {
         },
         {
           id: "comment",
-          label: "Comment Card",
+          label: "Comment/Quote",
           href: "/comment",
-          icon: <MessageSquare className="w-4 h-4" />,
+          icon: <Quote className="w-4 h-4" />,
           locked: isFreeUser,
           description: "Social media comment cards",
         },
@@ -90,18 +92,26 @@ export default function Navbar() {
           description: "Interactive poll cards",
         },
         {
-          id: "quote",
-          label: "Quote Card",
-          href: "/quote",
-          icon: <Quote className="w-4 h-4" />,
+          id: "compare",
+          label: "Compare Card",
+          href: "/compare",
+          icon: <GitCompare className="w-4 h-4" />,
           locked: isFreeUser,
-          description: "Inspirational & famous quotes",
+          description: "Compare products or services",
         },
       ],
     },
     {
       name: "Business & Marketing",
       cards: [
+        {
+          id: "video",
+          label: "Video Card",
+          href: "/videocard",
+          icon: <VideoIcon className="w-4 h-4" />,
+          locked: isFreeUser,
+          description: "Product showcase & e-commerce",
+        },
         {
           id: "marketing",
           label: "Marketing Card",
@@ -117,14 +127,6 @@ export default function Navbar() {
           icon: <Home className="w-4 h-4" />,
           locked: isFreeUser,
           description: "Property listings & tours",
-        },
-        {
-          id: "product",
-          label: "Product Card",
-          href: "/product",
-          icon: <Package className="w-4 h-4" />,
-          locked: isFreeUser,
-          description: "Product showcase & e-commerce",
         },
         {
           id: "thumbnail",

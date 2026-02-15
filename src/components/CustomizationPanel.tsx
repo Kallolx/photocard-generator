@@ -17,6 +17,7 @@ import {
   Eye,
   EyeOff,
   RotateCcw,
+  Edit2,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "./UpgradeModal";
@@ -46,7 +47,7 @@ interface CustomizationPanelProps {
 
 const SOLID_COLORS = [
   { color: "#E53E3E", name: "Soft Red" },
-  { color: "#D53F8C", name: "Muted Pink" },
+  { color: "#E9E9E9", name: "Muted Gray" },
   { color: "#DD6B20", name: "Warm Orange" },
 ];
 
@@ -57,66 +58,13 @@ const GRADIENTS = [
 ];
 
 const FRAME_COLORS = [
+  { color: "#dc2626", name: "Soft Red" },
   { color: "#FFFFFF", name: "Pure White" },
-  { color: "#F1F5F9", name: "Soft Gray" },
-  { color: "#CBD5E1", name: "Cool Gray" },
-  { color: "#22C55E", name: "Soft Green" },
+  { color: "#000000", name: "Black" },
   { color: "#3B82F6", name: "Clean Blue" },
 ];
 
-const THEMES = [
-  {
-    id: "classic",
-    name: "Classic",
-    locked: false,
-    thumbnail: "/themes/cus-1.png",
-  },
-  {
-    id: "modern",
-    name: "Modern",
-    locked: false,
-    thumbnail: "/themes/cus-2.png",
-  },
-  {
-    id: "vertical",
-    name: "Vertical",
-    locked: false,
-    thumbnail: "/themes/cus-3.png",
-  },
-  {
-    id: "minimal",
-    name: "Minimal",
-    locked: true,
-    thumbnail: "/themes/cus-1.png",
-  },
-];
 
-const COMMENT_THEMES = [
-  {
-    id: "classic",
-    name: "Classic",
-    locked: false,
-    thumbnail: "/themes/comment-1.png",
-  },
-  {
-    id: "modern",
-    name: "Modern",
-    locked: false,
-    thumbnail: "/themes/comment-2.png",
-  },
-  {
-    id: "elegant",
-    name: "Elegant",
-    locked: false,
-    thumbnail: "/themes/comment-3.png",
-  },
-  {
-    id: "minimal",
-    name: "Minimal",
-    locked: true,
-    thumbnail: "/themes/comment-4.png",
-  },
-];
 
 type Tab =
   | "Background"
@@ -182,6 +130,23 @@ export default function CustomizationPanel({
   const [tempSolidColor, setTempSolidColor] = useState("#000000");
   const [tempGradientFrom, setTempGradientFrom] = useState("#000000");
   const [tempGradientTo, setTempGradientTo] = useState("#FFFFFF");
+  const [editingColorIndex, setEditingColorIndex] = useState<number | null>(null);
+
+  // Custom pattern colors state
+  const [customPatternColors, setCustomPatternColors] = useState<string[]>([]);
+  const [showPatternColorPicker, setShowPatternColorPicker] = useState(false);
+  const [tempPatternColor, setTempPatternColor] = useState("#000000");
+  const [editingPatternColorIndex, setEditingPatternColorIndex] = useState<number | null>(null);
+
+  const PATTERN_PRESET_COLORS = [
+    { color: "#FFFFFF", name: "White" },
+    { color: "#000000", name: "Black" },
+    { color: "#9CA3AF", name: "Gray" },
+  ];
+
+  // Frame color picker state
+  const [showFrameColorPicker, setShowFrameColorPicker] = useState(false);
+  const [tempFrameColor, setTempFrameColor] = useState("#000000");
 
   // Drag to scroll state
   const tabsScrollRef = useRef<HTMLDivElement>(null);
@@ -230,6 +195,12 @@ export default function CustomizationPanel({
       name: "Classic",
       locked: false,
       thumbnail: "/themes/cus-1.png",
+    },
+        {
+      id: "magazine",
+      name: "Magazine",
+      locked: false, // Free for all users
+      thumbnail: "/themes/cus-6.png",
     },
     {
       id: "minimal",
@@ -409,7 +380,7 @@ export default function CustomizationPanel({
               <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
                 Solid Colors{" "}
                 <span className="text-xs text-[#5d4e37]">
-                  ({SOLID_COLORS.length + customSolidColors.length} colors)
+                  ({SOLID_COLORS.length + customSolidColors.length}/5 colors)
                 </span>
               </h3>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
@@ -480,6 +451,18 @@ export default function CustomizationPanel({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
+                        setEditingColorIndex(index);
+                        setTempSolidColor(color);
+                        setShowSolidColorPicker(true);
+                      }}
+                      className="absolute top-1 left-1 w-4 h-4 bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10 text-[10px]"
+                      title="Edit color"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setCustomSolidColors((prev) =>
                           prev.filter((_, i) => i !== index),
                         );
@@ -501,6 +484,8 @@ export default function CustomizationPanel({
                         setShowUpgradeModal(true);
                         return;
                       }
+                      setEditingColorIndex(null);
+                      setTempSolidColor("#000000");
                       setShowSolidColorPicker(!showSolidColorPicker);
                     }}
                     className={`relative w-14 h-14 flex-shrink-0 border-2 border-dashed transition-all overflow-hidden flex items-center justify-center ${
@@ -528,10 +513,13 @@ export default function CustomizationPanel({
                 <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
                   <div className="flex items-center justify-between mb-3">
                     <label className="text-sm font-medium text-[#2c2419] font-inter">
-                      Pick a custom color
+                      {editingColorIndex !== null ? 'Edit Custom Color' : 'Pick a custom color'}
                     </label>
                     <button
-                      onClick={() => setShowSolidColorPicker(false)}
+                      onClick={() => {
+                        setShowSolidColorPicker(false);
+                        setEditingColorIndex(null);
+                      }}
                       className="text-[#5d4e37] hover:text-[#2c2419]"
                     >
                       <X className="w-4 h-4" />
@@ -577,26 +565,32 @@ export default function CustomizationPanel({
                   </div>
                   <button
                     onClick={() => {
-                      if (
-                        tempSolidColor.length === 7 &&
-                        !customSolidColors.includes(tempSolidColor)
-                      ) {
-                        setCustomSolidColors((prev) => [
-                          ...prev,
-                          tempSolidColor,
-                        ]);
+                      if (tempSolidColor.length === 7) {
+                        if (editingColorIndex !== null) {
+                          // Edit existing color
+                          setCustomSolidColors((prev) =>
+                            prev.map((c, i) => (i === editingColorIndex ? tempSolidColor : c))
+                          );
+                        } else if (customSolidColors.length < 2 && !customSolidColors.includes(tempSolidColor)) {
+                          // Add new color
+                          setCustomSolidColors((prev) => [
+                            ...prev,
+                            tempSolidColor,
+                          ]);
+                        }
                         onBackgroundChange({
                           type: "solid",
                           color: tempSolidColor,
                         });
                         setShowSolidColorPicker(false);
                         setTempSolidColor("#000000");
+                        setEditingColorIndex(null);
                       }
                     }}
                     className="w-full mt-3 py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
                     disabled={tempSolidColor.length !== 7}
                   >
-                    Add Color
+                    {editingColorIndex !== null ? 'Update Color' : 'Add Color'}
                   </button>
                 </div>
               )}
@@ -607,7 +601,7 @@ export default function CustomizationPanel({
               <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
                 Gradients{" "}
                 <span className="text-xs text-[#5d4e37]">
-                  ({GRADIENTS.length + customGradients.length} colors)
+                  ({GRADIENTS.length + customGradients.length}/5 gradients)
                 </span>
               </h3>
               <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
@@ -1076,30 +1070,11 @@ export default function CustomizationPanel({
                     <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
                       Pattern Color
                     </h3>
+                    
+                    {/* All Pattern Colors in One Row: Preset + Custom + Add Button */}
                     <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                      <button
-                        onClick={() =>
-                          onBackgroundChange({
-                            ...background,
-                            patternColor: "#FFFFFF",
-                          })
-                        }
-                        className={`w-10 h-10 flex-shrink-0 border-2 ${background.patternColor === "#FFFFFF" ? "border-black" : "border-[#d4c4b0]"}`}
-                        style={{ backgroundColor: "#FFFFFF" }}
-                        title="White"
-                      />
-                      <button
-                        onClick={() =>
-                          onBackgroundChange({
-                            ...background,
-                            patternColor: "#000000",
-                          })
-                        }
-                        className={`w-10 h-10 flex-shrink-0 border-2 ${background.patternColor === "#000000" ? "border-black" : "border-[#d4c4b0]"}`}
-                        style={{ backgroundColor: "#000000" }}
-                        title="Black"
-                      />
-                      {SOLID_COLORS.map((item) => (
+                      {/* Preset Pattern Colors */}
+                      {PATTERN_PRESET_COLORS.map((item) => (
                         <button
                           key={item.color}
                           onClick={() =>
@@ -1117,7 +1092,155 @@ export default function CustomizationPanel({
                           title={item.name}
                         />
                       ))}
+
+                      {/* Custom Pattern Colors */}
+                      {customPatternColors.map((color, index) => (
+                        <div key={index} className="relative group">
+                          <button
+                            onClick={() =>
+                              onBackgroundChange({
+                                ...background,
+                                patternColor: color,
+                              })
+                            }
+                            className={`w-10 h-10 flex-shrink-0 border-2 transition-all ${
+                              background.patternColor === color
+                                ? "border-black"
+                                : "border-[#d4c4b0]"
+                            }`}
+                            style={{ backgroundColor: color }}
+                          />
+                          {/* Edit Button - Top Left */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingPatternColorIndex(index);
+                              setTempPatternColor(color);
+                              setShowPatternColorPicker(true);
+                            }}
+                            className="absolute -top-1 -left-1 w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-600 shadow-md"
+                            title="Edit color"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                          </button>
+                          {/* Remove Button - Top Right */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCustomPatternColors((prev) =>
+                                prev.filter((_, i) => i !== index)
+                              );
+                            }}
+                            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 shadow-md"
+                            title="Remove color"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+
+                      {/* Add Custom Pattern Color Button - Inline */}
+                      {customPatternColors.length < 2 && (
+                        <button
+                          onClick={() => {
+                            setEditingPatternColorIndex(null);
+                            setTempPatternColor("#000000");
+                            setShowPatternColorPicker(true);
+                          }}
+                          className="w-10 h-10 flex-shrink-0 border-2 border-dashed border-[#d4c4b0] hover:border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8] transition-all flex items-center justify-center"
+                          title="Add custom pattern color"
+                        >
+                          <Plus className="w-4 h-4 text-[#5d4e37]" />
+                        </button>
+                      )}
                     </div>
+
+                    {/* Pattern Color Picker Modal */}
+                    {showPatternColorPicker && (
+                      <div className="mt-4 p-4 border-2 border-[#d4c4b0] bg-[#faf8f5]">
+                        <div className="flex items-center justify-between mb-3">
+                          <label className="text-sm font-medium text-[#2c2419] font-inter">
+                            {editingPatternColorIndex !== null ? 'Edit Custom Pattern Color' : 'Pick a custom pattern color'}
+                          </label>
+                          <button
+                            onClick={() => {
+                              setShowPatternColorPicker(false);
+                              setEditingPatternColorIndex(null);
+                            }}
+                            className="text-[#5d4e37] hover:text-[#2c2419]"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="flex gap-3">
+                          <input
+                            type="color"
+                            value={tempPatternColor}
+                            onChange={(e) => setTempPatternColor(e.target.value)}
+                            className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                          />
+                          <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                            <input
+                              type="text"
+                              value={tempPatternColor.toUpperCase()}
+                              onChange={(e) => {
+                                let value = e.target.value.toUpperCase();
+                                // Always start with #
+                                if (!value.startsWith("#")) {
+                                  value = "#" + value.replace(/[^0-9A-F]/g, "");
+                                } else {
+                                  value =
+                                    "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
+                                }
+                                value = value.slice(0, 7);
+                                setTempPatternColor(value);
+                              }}
+                              onBlur={(e) => {
+                                const value = e.target.value;
+                                if (
+                                  value.length !== 7 ||
+                                  !/^#[0-9A-F]{6}$/i.test(value)
+                                ) {
+                                  setTempPatternColor("#000000");
+                                }
+                              }}
+                              placeholder="#000000"
+                              className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                              maxLength={7}
+                            />
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            if (tempPatternColor.length === 7) {
+                              if (editingPatternColorIndex !== null) {
+                                // Edit existing pattern color
+                                setCustomPatternColors((prev) =>
+                                  prev.map((c, i) => (i === editingPatternColorIndex ? tempPatternColor : c))
+                                );
+                              } else if (customPatternColors.length < 2 && !customPatternColors.includes(tempPatternColor)) {
+                                // Add new pattern color
+                                setCustomPatternColors((prev) => [
+                                  ...prev,
+                                  tempPatternColor,
+                                ]);
+                              }
+                              onBackgroundChange({
+                                ...background,
+                                patternColor: tempPatternColor,
+                              });
+                              setShowPatternColorPicker(false);
+                              setTempPatternColor("#000000");
+                              setEditingPatternColorIndex(null);
+                            }
+                          }}
+                          className="w-full mt-3 py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
+                          disabled={tempPatternColor.length !== 7}
+                        >
+                          {editingPatternColorIndex !== null ? 'Update Color' : 'Add Color'}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -3027,12 +3150,80 @@ export default function CustomizationPanel({
                   </button>
                 ))}
                 <button
-                  className="w-14 h-14 flex-shrink-0 border-2 border-[#d4c4b0] bg-[#e8dcc8] hover:bg-[#d4c4b0] transition-colors flex items-center justify-center"
+                  onClick={() => setShowFrameColorPicker(!showFrameColorPicker)}
+                  className="w-14 h-14 flex-shrink-0 border-2 border-dashed border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8] transition-all overflow-hidden flex items-center justify-center"
                   title="Add custom color"
                 >
-                  <Plus className="w-5 h-5 text-[#5d4e37]" />
+                  <Plus className="w-5 h-5 text-[#8b6834]" />
                 </button>
               </div>
+
+              {/* Color Picker Modal for Frame */}
+              {showFrameColorPicker && (
+                <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="text-sm font-medium text-[#2c2419] font-inter">
+                      Pick a custom frame color
+                    </label>
+                    <button
+                      onClick={() => setShowFrameColorPicker(false)}
+                      className="text-[#5d4e37] hover:text-[#2c2419]"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex gap-3">
+                    <input
+                      type="color"
+                      value={tempFrameColor}
+                      onChange={(e) => setTempFrameColor(e.target.value)}
+                      className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                    />
+                    <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                      <input
+                        type="text"
+                        value={tempFrameColor.toUpperCase()}
+                        onChange={(e) => {
+                          let value = e.target.value.toUpperCase();
+                          // Always start with #
+                          if (!value.startsWith("#")) {
+                            value = "#" + value.replace(/[^0-9A-F]/g, "");
+                          } else {
+                            value =
+                              "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
+                          }
+                          value = value.slice(0, 7);
+                          setTempFrameColor(value);
+                        }}
+                        onBlur={(e) => {
+                          const value = e.target.value;
+                          if (
+                            value.length !== 7 ||
+                            !/^#[0-9A-F]{6}$/i.test(value)
+                          ) {
+                            setTempFrameColor("#000000");
+                          }
+                        }}
+                        placeholder="#000000"
+                        className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                        maxLength={7}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (tempFrameColor.length === 7) {
+                        handleFrameColorChange(tempFrameColor);
+                        setShowFrameColorPicker(false);
+                        setTempFrameColor("#000000");
+                      }
+                    }}
+                    className="w-full mt-3 bg-[#8b6834] text-[#faf8f5] py-2 px-4 font-inter font-medium hover:bg-[#6b4e1f] transition-colors shadow-sm"
+                  >
+                    Apply Color
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Border Thickness */}

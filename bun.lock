@@ -5,6 +5,7 @@
     "": {
       "name": "photocard",
       "dependencies": {
+        "@codesigntheory/bnbijoy2unicode": "^1.3.0",
         "@dnd-kit/core": "^6.3.1",
         "@dnd-kit/utilities": "^3.2.2",
         "@imgly/background-removal": "^1.7.0",
@@ -76,6 +77,8 @@
     "@babel/types": ["@babel/types@7.28.6", "", { "dependencies": { "@babel/helper-string-parser": "^7.27.1", "@babel/helper-validator-identifier": "^7.28.5" } }, "sha512-0ZrskXVEHSWIqZM/sQZ4EV3jZJXRkio/WCxaqKZP1g//CEWEPSfeZFcms4XeKBCHU0ZKnIkdJeU/kF+eRp5lBg=="],
 
     "@cfcs/core": ["@cfcs/core@0.0.6", "", { "dependencies": { "@egjs/component": "^3.0.2" } }, "sha512-FxfJMwoLB8MEMConeXUCqtMGqxdtePQxRBOiGip9ULcYYam3WfCgoY6xdnMaSkYvRvmosp5iuG+TiPofm65+Pw=="],
+
+    "@codesigntheory/bnbijoy2unicode": ["@codesigntheory/bnbijoy2unicode@1.3.0", "", {}, "sha512-P6mkb/Omo4ozAwBgviYSwCTleEIP8lBbQxjSg6Nc5iXAkrzaGnFdyDL5bhpEmpdMkA0FFbaVFmsBlK5GkdI8Fg=="],
 
     "@daybrush/utils": ["@daybrush/utils@1.13.0", "", {}, "sha512-ALK12C6SQNNHw1enXK+UO8bdyQ+jaWNQ1Af7Z3FNxeAwjYhQT7do+TRE4RASAJ3ObaS2+TJ7TXR3oz2Gzbw0PQ=="],
 

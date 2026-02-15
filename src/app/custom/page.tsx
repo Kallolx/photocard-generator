@@ -32,6 +32,9 @@ export default function CustomPage() {
   const [title, setTitle] = useState("");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const { user, features } = useAuth();
+  const [urlInput, setUrlInput] = useState<string>("");
+  const [isExtractingUrl, setIsExtractingUrl] = useState(false);
+  const [urlError, setUrlError] = useState<string>("");
   const [background, setBackground] = useState<BackgroundOptions>({
     type: "solid",
     color: "#dc2626",
@@ -243,6 +246,55 @@ export default function CustomPage() {
       }));
     }
   }, [theme]);
+
+  // URL Extraction function
+  const handleUrlExtract = async () => {
+    if (!urlInput.trim()) {
+      setUrlError("Please enter a URL");
+      return;
+    }
+
+    setIsExtractingUrl(true);
+    setUrlError("");
+
+    try {
+      const response = await fetch("/api/extract-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: urlInput.trim() }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to extract URL data");
+      }
+
+      const data = await response.json();
+
+      // Populate the form with extracted data
+      if (data.title) setTitle(data.title);
+      if (data.image) setNewsImage(data.image);
+      if (data.logo) setLogo(data.logo);
+      if (data.favicon) setFavicon(data.favicon);
+
+      // Also update current states for editing
+      if (data.title) setCurrentTitle(data.title);
+      if (data.image) setCurrentImage(data.image);
+      if (data.logo) setCurrentLogo(data.logo);
+
+      // Clear URL input after successful extraction
+      setUrlInput("");
+    } catch (err) {
+      console.error("URL extraction error:", err);
+      setUrlError(
+        err instanceof Error ? err.message : "Failed to extract URL data",
+      );
+    } finally {
+      setIsExtractingUrl(false);
+    }
+  };
 
   const handleFrameChange = (color: string, thickness: number) => {
     setFrameBorderColor(color);
@@ -828,6 +880,89 @@ export default function CustomPage() {
                       </span>
                     </div>
                   </label>
+                </div>
+              </div>
+
+              {/* URL Extract Section */}
+              <div className="bg-[#e8dcc8] p-2 border-2 border-[#d4c4b0]">
+                <h3 className="text-sm font-lora font-bold text-[#2c2419] mb-2">
+                  Extract from URL
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={urlInput}
+                      onChange={(e) => {
+                        setUrlInput(e.target.value);
+                        setUrlError("");
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !isExtractingUrl) {
+                          handleUrlExtract();
+                        }
+                      }}
+                      placeholder="Paste article URL..."
+                      className="flex-1 px-2 py-1.5 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] focus:outline-none focus:ring-2 focus:ring-[#8b6834] font-inter text-sm"
+                      disabled={isExtractingUrl}
+                    />
+                    <button
+                      onClick={handleUrlExtract}
+                      disabled={isExtractingUrl || !urlInput.trim()}
+                      className="px-4 py-1.5 bg-[#8b6834] text-[#faf8f5] font-inter font-medium text-sm hover:bg-[#6b4e25] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {isExtractingUrl ? (
+                        <>
+                          <svg
+                            className="animate-spin h-4 w-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          <span>Extracting...</span>
+                        </>
+                      ) : (
+                        "Extract"
+                      )}
+                    </button>
+                  </div>
+                  {urlError && (
+                    <p className="text-red-600 text-xs font-inter">
+                      {urlError}
+                    </p>
+                  )}
+                  {(logo || newsImage || title) && (
+                    <p className="text-[#38A169] text-xs font-inter flex items-center gap-1">
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                      Data loaded! Edit below as needed.
+                    </p>
+                  )}
                 </div>
               </div>
 
