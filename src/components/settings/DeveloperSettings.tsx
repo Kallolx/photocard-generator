@@ -249,8 +249,8 @@ export default function DeveloperSettings() {
                 <div className="space-y-4 text-sm text-[#5d4e37] font-inter">
                   <p>
                     Send a <code>POST</code> request to{" "}
-                    <code>/api/external/v1/generate</code> with your API key in
-                    the code <code>x-api-key</code> header.
+                    <code>https://api.onedigitalspot.com/api/external/v1/generate</code> with your API key in
+                    the <code>x-api-key</code> header. The API automatically extracts metadata (title, image, logo) from the URL.
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-[#d4c4b0]/30 pt-4">
@@ -278,13 +278,14 @@ export default function DeveloperSettings() {
 
                   <div className="mt-4">
                     <h4 className="font-bold text-[#2c2419] mb-2">
-                      Required Parameters
+                      Request Parameters
                     </h4>
                     <table className="w-full text-left border-collapse">
                       <thead>
                         <tr className="border-b border-[#d4c4b0]/30 text-xs uppercase text-[#8b6834]">
                           <th className="py-2">Field</th>
                           <th className="py-2">Type</th>
+                          <th className="py-2">Required</th>
                           <th className="py-2">Description</th>
                         </tr>
                       </thead>
@@ -293,84 +294,87 @@ export default function DeveloperSettings() {
                           <td className="py-2 font-mono">url</td>
                           <td className="py-2 text-gray-500">string</td>
                           <td className="py-2">
-                            The source URL to generate the card for.
+                            <span className="inline-block bg-red-100 text-red-800 px-1.5 py-0.5 text-xs font-bold border border-red-200">Yes</span>
+                          </td>
+                          <td className="py-2">
+                            The article URL to generate the card from.
                           </td>
                         </tr>
                         <tr className="border-b border-[#d4c4b0]/10">
                           <td className="py-2 font-mono">theme</td>
                           <td className="py-2 text-gray-500">string</td>
                           <td className="py-2">
-                            Card layout style ('classic' or 'modern').
+                            <span className="inline-block bg-gray-100 text-gray-600 px-1.5 py-0.5 text-xs border border-gray-200">No</span>
+                          </td>
+                          <td className="py-2">
+                            Card theme: 'classic', 'modern', 'modern2', 'vertical', 'minimal', 'magazine'. Default: 'classic'
+                          </td>
+                        </tr>
+                        <tr className="border-b border-[#d4c4b0]/10">
+                          <td className="py-2 font-mono">bgColor</td>
+                          <td className="py-2 text-gray-500">string</td>
+                          <td className="py-2">
+                            <span className="inline-block bg-gray-100 text-gray-600 px-1.5 py-0.5 text-xs border border-gray-200">No</span>
+                          </td>
+                          <td className="py-2">
+                            Background color (hex). Default: '#dc2626'
                           </td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
+                  
+                  <div className="bg-blue-50 border border-blue-200 p-3 rounded-sm mt-4">
+                    <p className="text-xs text-blue-900">
+                      <strong>🎯 Auto-extraction:</strong> The API automatically extracts the title, main image, site logo, and site name from the provided URL. No need to manually specify these!
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4 text-sm text-[#5d4e37] font-inter">
                   <p>
-                    Customize the card's appearance by passing an{" "}
-                    <code>options</code> object in your JSON body.
+                    Customize the card's appearance with background colors and themes.
                   </p>
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-[#d4c4b0]/30 text-xs uppercase text-[#8b6834]">
-                        <th className="py-2 w-1/4">Option Key</th>
-                        <th className="py-2 w-1/4">Values / Example</th>
-                        <th className="py-2">Description</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-xs">
-                      <tr className="border-b border-[#d4c4b0]/10">
-                        <td className="py-2 font-mono font-bold">bgType</td>
-                        <td className="py-2 font-mono">'solid' | 'gradient'</td>
-                        <td className="py-2">Background fill type.</td>
-                      </tr>
-                      <tr className="border-b border-[#d4c4b0]/10">
-                        <td className="py-2 font-mono font-bold">bgFrom</td>
-                        <td className="py-2 font-mono">#1e3a8a</td>
-                        <td className="py-2">
-                          Starting color (or solid color).
-                        </td>
-                      </tr>
-                      <tr className="border-b border-[#d4c4b0]/10">
-                        <td className="py-2 font-mono font-bold">bgTo</td>
-                        <td className="py-2 font-mono">#0f172a</td>
-                        <td className="py-2">Ending color (if gradient).</td>
-                      </tr>
-                      <tr className="border-b border-[#d4c4b0]/10">
-                        <td className="py-2 font-mono font-bold">pattern</td>
-                        <td className="py-2 font-mono">
-                          'circuit', 'dots', 'none'
-                        </td>
-                        <td className="py-2">Background pattern style.</td>
-                      </tr>
-                      <tr className="border-b border-[#d4c4b0]/10">
-                        <td className="py-2 font-mono font-bold">
-                          patternColor
-                        </td>
-                        <td className="py-2 font-mono">#ffffff</td>
-                        <td className="py-2">Color of the pattern overlay.</td>
-                      </tr>
-                      <tr className="border-b border-[#d4c4b0]/10">
-                        <td className="py-2 font-mono font-bold">
-                          frameThickness
-                        </td>
-                        <td className="py-2 font-mono">0 - 20</td>
-                        <td className="py-2">
-                          Width of the card frame border.
-                        </td>
-                      </tr>
-                      <tr className="border-b border-[#d4c4b0]/10">
-                        <td className="py-2 font-mono font-bold">title</td>
-                        <td className="py-2 font-mono">"My Article Title"</td>
-                        <td className="py-2">
-                          Override the auto-detected title.
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  
+                  <div className="mt-4">
+                    <h4 className="font-bold text-[#2c2419] mb-2">Available Themes</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {['classic', 'modern', 'modern2', 'vertical', 'minimal', 'magazine'].map(theme => (
+                        <div key={theme} className="bg-[#f5f0e8] border border-[#d4c4b0] p-3 rounded-sm">
+                          <code className="text-xs font-mono font-bold text-[#8b6834]">{theme}</code>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <h4 className="font-bold text-[#2c2419] mb-2">Background Colors</h4>
+                    <p className="text-xs mb-3">Use any hex color code for the background. The API uses solid colors only.</p>
+                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                      {[
+                        { color: '#dc2626', name: 'Red' },
+                        { color: '#2563eb', name: 'Blue' },
+                        { color: '#16a34a', name: 'Green' },
+                        { color: '#ea580c', name: 'Orange' },
+                        { color: '#9333ea', name: 'Purple' },
+                        { color: '#0891b2', name: 'Cyan' },
+                      ].map(({ color, name }) => (
+                        <div key={color} className="text-center">
+                          <div 
+                            className="w-full h-12 border-2 border-[#d4c4b0] rounded-sm mb-1"
+                            style={{ backgroundColor: color }}
+                          ></div>
+                          <code className="text-xs font-mono">{color}</code>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-amber-50 border border-amber-200 p-3 rounded-sm mt-4">
+                    <p className="text-xs text-amber-900">
+                      <strong>💡 Pro Tip:</strong> Keep it simple! Just provide the URL, optionally set a theme and background color. We handle all the metadata extraction, image proxying, and rendering automatically.
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
@@ -386,24 +390,22 @@ export default function DeveloperSettings() {
             </div>
             <div className="p-6 overflow-x-auto">
               <pre className="font-mono text-xs md:text-sm whitespace-pre-wrap leading-relaxed">
-                {`curl -X POST ${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/external/v1/generate \\
+                {`# Simple request (minimal - recommended)
+curl -X POST https://api.onedigitalspot.com/api/external/v1/generate \\
   -H "x-api-key: ${apiKey}" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "url": "https://example.com",
+    "url": "https://www.bbc.com/news/article-example"
+  }' > card.png
+
+# With theme and custom background color
+curl -X POST https://api.onedigitalspot.com/api/external/v1/generate \\
+  -H "x-api-key: ${apiKey}" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "url": "https://www.bbc.com/news/article-example",
     "theme": "modern",
-    "options": {
-      "title": "My Custom Article Card",
-      "siteName": "mysite.com",
-      "bgType": "gradient",
-      "bgFrom": "#1e3a8a",
-      "bgTo": "#0f172a",
-      "pattern": "circuit",
-      "patternColor": "#ffffff",
-      "patternOpacity": "0.1",
-      "frameColor": "#ffffff",
-      "frameThickness": "4"
-    }
+    "bgColor": "#2563eb"
   }' > card.png`}
               </pre>
             </div>

@@ -4,6 +4,10 @@ import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ClassicUrlCard from "@/components/cards/url-cards/ClassicUrlCard";
 import ModernUrlCard from "@/components/cards/url-cards/ModernUrlCard";
+import Modern2UrlCard from "@/components/cards/url-cards/Modern2UrlCard";
+import VerticalUrlCard from "@/components/cards/url-cards/VerticalUrlCard";
+import MinimalUrlCard from "@/components/cards/url-cards/MinimalUrlCard";
+import MagazineUrlCard from "@/components/cards/url-cards/MagazineUrlCard";
 import { BackgroundOptions, PhotocardData } from "@/types";
 
 function CardRenderer() {
@@ -64,6 +68,34 @@ function CardRenderer() {
   // Ad Banner
   const adBannerImage = searchParams.get("adBanner") || null;
 
+  // Render the appropriate card based on theme
+  const renderCard = () => {
+    const commonProps = {
+      data: photocardData,
+      background: background,
+      fullSize: true,
+      frameBorderColor: frameColor,
+      frameBorderThickness: frameThickness,
+      adBannerImage: adBannerImage,
+    };
+
+    switch (theme.toLowerCase()) {
+      case "modern":
+        return <ModernUrlCard {...commonProps} />;
+      case "modern2":
+        return <Modern2UrlCard {...commonProps} />;
+      case "vertical":
+        return <VerticalUrlCard {...commonProps} />;
+      case "minimal":
+        return <MinimalUrlCard {...commonProps} />;
+      case "magazine":
+        return <MagazineUrlCard {...commonProps} />;
+      case "classic":
+      default:
+        return <ClassicUrlCard {...commonProps} />;
+    }
+  };
+
   // Render
   return (
     <div
@@ -74,25 +106,7 @@ function CardRenderer() {
         backgroundColor: "transparent", // Ensure background is transparent so we only capture the card
       }}
     >
-      {theme === "modern" ? (
-        <ModernUrlCard
-          data={photocardData}
-          background={background}
-          fullSize={true}
-          frameBorderColor={frameColor}
-          frameBorderThickness={frameThickness}
-          adBannerImage={adBannerImage}
-        />
-      ) : (
-        <ClassicUrlCard
-          data={photocardData}
-          background={background}
-          fullSize={true}
-          frameBorderColor={frameColor}
-          frameBorderThickness={frameThickness}
-          adBannerImage={adBannerImage}
-        />
-      )}
+      {renderCard()}
     </div>
   );
 }
