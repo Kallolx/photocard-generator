@@ -410,7 +410,7 @@ export default function ClassicUrlCard({
     const elementId = selectedElement.id;
 
     // Only allow upload for logo
-    if (elementId === "logo" && onLogoUpload) {
+    if (elementId === 'logo' && onLogoUpload) {
       fileInputRef.current?.click();
     }
     setSelectedElement(null);

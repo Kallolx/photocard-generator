@@ -345,7 +345,7 @@ export default function Modern2CustomCard({
     if (!selectedElement) return;
     const elementId = selectedElement.id;
 
-    if (elementId === "logo" && onLogoUpload) {
+    if (elementId === 'logo' && onLogoUpload) {
       fileInputRef.current?.click();
     } else if (elementId === "favicon" && onFaviconUpload) {
       faviconInputRef.current?.click();

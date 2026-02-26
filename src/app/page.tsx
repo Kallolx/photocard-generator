@@ -23,7 +23,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.push("/url");
+      router.push("/dashboard");
     }
   }, [user, isLoading, router]);
 

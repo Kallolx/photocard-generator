@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (user.role === "admin") {
           router.push("/admin");
         } else {
-          router.push("/url");
+          router.push("/dashboard");
         }
       }
     } catch (error: any) {
@@ -154,7 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         // Redirect to URL page (regular users only)
-        router.push("/url");
+        router.push("/dashboard");
       }
     } catch (error: any) {
       throw new Error(error.response?.data?.message || "Registration failed");

@@ -56,7 +56,7 @@ export default function SignupPage() {
       "aol.com",
       "gmx.com",
       "mail.com",
-      "yandex.com"
+      "yandex.com",
     ];
 
     const emailDomain = formData.email.split("@")[1];
@@ -71,7 +71,7 @@ export default function SignupPage() {
       await register(formData.name, formData.email, formData.password);
 
       // Redirect to main app after successful registration
-      router.push("/url");
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Registration failed. Please try again.");
     } finally {

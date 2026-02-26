@@ -425,7 +425,7 @@ export default function ClassicCommentCard({
     if (!selectedElement) return;
     const elementId = selectedElement.id;
 
-    if (elementId === "logo" && onLogoUpload) {
+    if (elementId === 'logo' && onLogoUpload) {
       fileInputRef.current?.click();
     }
     setSelectedElement(null);

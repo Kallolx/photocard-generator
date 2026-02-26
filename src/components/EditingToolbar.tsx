@@ -1,8 +1,24 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Upload, Image as ImageIcon, Type, Move, Sparkles, Copy, Lock, User } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Upload,
+  Image as ImageIcon,
+  X,
+  Plus,
+  Type,
+  Move,
+  Lock,
+  Sparkles,
+  Copy,
+  ChevronRight,
+  User,
+  Briefcase, // Added Briefcase icon
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import AssetManagerModal from "@/components/AssetManagerModal"; // Added AssetManagerModal import
+import { generateAIVariations } from "@/lib/ai-service";
+import toast from "react-hot-toast";
 
 interface EditingToolbarProps {
   onUpgradeClick?: () => void;
@@ -12,6 +28,7 @@ interface EditingToolbarProps {
   isDragMode?: boolean;
   isPersonOverlayMode?: boolean;
   onLogoChange: (logo: string, isFavicon: boolean) => void;
+  onAssetsApply?: (logoUrl?: string, faviconUrl?: string) => void; // Added onAssetsApply
   onImageChange: (image: string) => void;
   onTitleChange: (title: string) => void;
   onDragModeToggle?: () => void;
@@ -37,6 +54,7 @@ export default function EditingToolbar({
   isDragMode = false,
   isPersonOverlayMode = false,
   onLogoChange,
+  onAssetsApply, // Added onAssetsApply
   onImageChange,
   onTitleChange,
   onDragModeToggle,
@@ -56,43 +74,57 @@ export default function EditingToolbar({
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  const [showAssetManager, setShowAssetManager] = useState(false);
+  const [hashtagLang, setHashtagLang] = useState<"en" | "bn">("bn");
+
+  // Reset AI results when switching to a completely new headline (not from variations)
+  useEffect(() => {
+    const isFromVariations = titleVariations.some(
+      (v) => v.text === currentTitle,
+    );
+    if (!isFromVariations && currentTitle !== editedTitle) {
+      setTitleVariations([]);
+      setSocialSummary("");
+      setHashtags([]);
+    }
+  }, [currentTitle]);
+
   const logoInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
   const isFreeUser = user?.plan === "Free";
   const isPremiumUser = user?.plan === "Premium";
 
-  // Simulate AI generation (will be replaced with actual API call)
+  // Real AI generation using Gemini
   const generateVariations = async () => {
+    if (!currentTitle.trim()) {
+      toast.error("Please enter a headline first");
+      return;
+    }
+
     setIsGenerating(true);
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    // Placeholder AI-generated content
-    setTitleVariations([
-      { id: 1, text: `${currentTitle} - Enhanced Version` },
-      { id: 2, text: `Breaking: ${currentTitle.substring(0, 50)}...` },
-      { id: 3, text: `${currentTitle.split(' ').slice(0, 8).join(' ')}...` },
-    ]);
-    
-    setSocialSummary(
-      `Check out this amazing story: ${currentTitle.substring(0, 80)}... Perfect for sharing with your audience! 🎯`
-    );
-    
-    setHashtags([
-      "#news",
-      "#trending",
-      "#breakingnews",
-      "#socialmedia",
-      "#viral",
-      "#mustread",
-      "#headline",
-      "#story",
-      "#share",
-      "#engage",
-    ]);
-    
-    setIsGenerating(false);
+    try {
+      const data = await generateAIVariations(
+        currentTitle,
+        hashtagLang === "bn" ? "Bengali" : "English",
+      );
+
+      setTitleVariations(
+        data.headlines.map((text, index) => ({
+          id: index + 1,
+          text,
+        })),
+      );
+
+      setSocialSummary(data.summary);
+      setHashtags(data.hashtags);
+      toast.success("AI variations generated!");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Failed to generate AI content");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleCopy = (text: string, type: string) => {
@@ -153,7 +185,9 @@ export default function EditingToolbar({
         {showImageTool && (
           <>
             <button
-              onClick={() => handleToolClick(() => imageInputRef.current?.click())}
+              onClick={() =>
+                handleToolClick(() => imageInputRef.current?.click())
+              }
               className="p-3 bg-[#e8dcc8] hover:bg-[#d4c4b0] border-2 border-[#d4c4b0] transition-colors group relative"
               title="Change Main Image"
             >
@@ -172,26 +206,19 @@ export default function EditingToolbar({
           </>
         )}
 
-        {/* Logo Upload */}
+        {/* Brand Kit (Logo / Favicon Upload) */}
         {showLogoTool && (
           <>
             <button
-              onClick={() => handleToolClick(() => logoInputRef.current?.click())}
+              onClick={() => handleToolClick(() => setShowAssetManager(true))}
               className="p-3 bg-[#e8dcc8] hover:bg-[#d4c4b0] border-2 border-[#d4c4b0] transition-colors group relative"
-              title="Change Logo"
+              title="Brand Kit"
             >
               <Upload className="w-5 h-5 text-[#2c2419]" />
               <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                Upload Logo
+                Brand Kit
               </div>
             </button>
-            <input
-              ref={logoInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleLogoUpload}
-            />
           </>
         )}
 
@@ -202,9 +229,6 @@ export default function EditingToolbar({
               handleToolClick(() => {
                 setEditedTitle(currentTitle);
                 setShowTitleEditor(true);
-                setTitleVariations([]);
-                setSocialSummary("");
-                setHashtags([]);
               })
             }
             className="p-3 bg-[#e8dcc8] hover:bg-[#d4c4b0] border-2 border-[#d4c4b0] transition-colors group relative"
@@ -228,7 +252,9 @@ export default function EditingToolbar({
             }`}
             title="Drag Mode"
           >
-            <Move className={`w-5 h-5 ${isDragMode ? "text-white" : "text-[#2c2419]"}`} />
+            <Move
+              className={`w-5 h-5 ${isDragMode ? "text-white" : "text-[#2c2419]"}`}
+            />
             <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               {isDragMode ? "Drag Mode ON" : "Drag Mode OFF"}
             </div>
@@ -246,7 +272,9 @@ export default function EditingToolbar({
             }`}
             title="Person Overlay"
           >
-            <User className={`w-5 h-5 ${isPersonOverlayMode ? "text-white" : "text-[#2c2419]"}`} />
+            <User
+              className={`w-5 h-5 ${isPersonOverlayMode ? "text-white" : "text-[#2c2419]"}`}
+            />
             <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               {isPersonOverlayMode ? "Person Overlay ON" : "Add Person"}
             </div>
@@ -293,25 +321,56 @@ export default function EditingToolbar({
                       </span>
                     )}
                   </div>
-                  
+
                   {isPremiumUser ? (
-                    <button
-                      onClick={generateVariations}
-                      disabled={isGenerating}
-                      className="px-4 py-2 bg-[#8b6834] text-white text-sm font-bold hover:bg-[#2c2419] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      {isGenerating ? (
-                        <>
-                          <Sparkles className="w-4 h-4 animate-pulse" />
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-4 h-4" />
-                          Generate
-                        </>
-                      )}
-                    </button>
+                    <div className="flex items-center gap-3">
+                      {/* Language Selection */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-[#5d4e37] uppercase tracking-wider font-inter">
+                          Hashtags:
+                        </span>
+                        <div className="flex bg-[#e8dcc8] p-1 border border-[#d4c4b0]">
+                          <button
+                            onClick={() => setHashtagLang("bn")}
+                            className={`px-2 py-1 text-[10px] font-bold transition-colors ${
+                              hashtagLang === "bn"
+                                ? "bg-[#2c2419] text-white"
+                                : "text-[#5d4e37] hover:bg-[#d4c4b0]"
+                            }`}
+                          >
+                            BN
+                          </button>
+                          <button
+                            onClick={() => setHashtagLang("en")}
+                            className={`px-2 py-1 text-[10px] font-bold transition-colors ${
+                              hashtagLang === "en"
+                                ? "bg-[#2c2419] text-white"
+                                : "text-[#5d4e37] hover:bg-[#d4c4b0]"
+                            }`}
+                          >
+                            EN
+                          </button>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={generateVariations}
+                        disabled={isGenerating}
+                        className="px-4 py-2 bg-[#8b6834] text-white text-sm font-bold hover:bg-[#2c2419] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        {isGenerating ? (
+                          <>
+                            <Sparkles className="w-4 h-4 animate-pulse" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-4 h-4" />
+                            Generate
+                          </>
+                        )}
+                      </button>
+                    </div>
                   ) : (
                     <button
                       onClick={onUpgradeClick}
@@ -327,7 +386,8 @@ export default function EditingToolbar({
                   <div className="bg-[#f5f0e8] border-2 border-[#d4c4b0] p-6 text-center">
                     <Lock className="w-12 h-12 text-[#8b6834] mx-auto mb-3" />
                     <p className="text-sm text-[#5d4e37] mb-2">
-                      Unlock AI-powered title variations, social media summaries, and hashtag suggestions
+                      Unlock AI-powered title variations, social media
+                      summaries, and hashtag suggestions
                     </p>
                     <p className="text-xs text-[#8b6834] font-bold">
                       Upgrade to Premium to access this feature
@@ -353,12 +413,23 @@ export default function EditingToolbar({
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => setEditedTitle(variation.text)}
-                                  className="px-3 py-1 bg-[#e8dcc8] hover:bg-[#8b6834] hover:text-white text-xs font-bold transition-colors"
+                                  className={`px-3 py-1 text-xs font-bold transition-all border-2 ${
+                                    editedTitle === variation.text
+                                      ? "bg-[#2c2419] text-white border-[#2c2419] opacity-100"
+                                      : "bg-[#e8dcc8] text-[#2c2419] border-[#d4c4b0] hover:bg-[#8b6834] hover:text-white hover:border-[#8b6834]"
+                                  }`}
                                 >
-                                  Use
+                                  {editedTitle === variation.text
+                                    ? "Selected"
+                                    : "Use"}
                                 </button>
                                 <button
-                                  onClick={() => handleCopy(variation.text, `variation-${variation.id}`)}
+                                  onClick={() =>
+                                    handleCopy(
+                                      variation.text,
+                                      `variation-${variation.id}`,
+                                    )
+                                  }
                                   className="p-1 hover:bg-[#e8dcc8] transition-colors"
                                   title="Copy"
                                 >
@@ -387,7 +458,9 @@ export default function EditingToolbar({
                           </button>
                         </div>
                         <div className="bg-white border-2 border-[#d4c4b0] p-3">
-                          <p className="text-sm text-[#2c2419]">{socialSummary}</p>
+                          <p className="text-sm text-[#2c2419] font-noto-bengali leading-relaxed">
+                            {socialSummary}
+                          </p>
                         </div>
                       </div>
                     )}
@@ -400,7 +473,9 @@ export default function EditingToolbar({
                             Relevant Hashtags
                           </p>
                           <button
-                            onClick={() => handleCopy(hashtags.join(" "), "hashtags")}
+                            onClick={() =>
+                              handleCopy(hashtags.join(" "), "hashtags")
+                            }
                             className="flex items-center gap-1 text-xs text-[#8b6834] hover:text-[#2c2419] transition-colors"
                           >
                             <Copy className="w-3 h-3" />
@@ -413,7 +488,9 @@ export default function EditingToolbar({
                               <span
                                 key={index}
                                 className="px-3 py-1 bg-[#f5f0e8] text-[#8b6834] text-xs font-bold border border-[#d4c4b0] hover:bg-[#8b6834] hover:text-white transition-colors cursor-pointer"
-                                onClick={() => handleCopy(tag, `hashtag-${index}`)}
+                                onClick={() =>
+                                  handleCopy(tag, `hashtag-${index}`)
+                                }
                               >
                                 {tag}
                               </span>
@@ -446,6 +523,23 @@ export default function EditingToolbar({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Brand Kit Asset Manager Modal */}
+      {showAssetManager && (
+        <AssetManagerModal
+          onClose={() => setShowAssetManager(false)}
+          onApply={(logoUrl, faviconUrl) => {
+            if (onAssetsApply) {
+              onAssetsApply(logoUrl, faviconUrl);
+            } else if (logoUrl) {
+              // Backward compatibility
+              onLogoChange(logoUrl, false);
+            }
+          }}
+          currentLogoUrl={currentLogo}
+          requiresFavicon={true}
+        />
       )}
     </>
   );

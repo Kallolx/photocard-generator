@@ -43,6 +43,27 @@ export default function Home() {
   );
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
+
+  // Auto-fill and auto-submit URL from the All News page
+  useEffect(() => {
+    const pendingUrl = sessionStorage.getItem("pendingUrlGeneration");
+    const pendingTheme = sessionStorage.getItem("pendingThemeGeneration");
+
+    if (pendingTheme) {
+      sessionStorage.removeItem("pendingThemeGeneration");
+      setTheme(pendingTheme);
+    }
+
+    if (pendingUrl) {
+      sessionStorage.removeItem("pendingUrlGeneration");
+      setUrl(pendingUrl);
+
+      // Auto-submit form briefly after rendering
+      setTimeout(() => {
+        handleUrlSubmit(pendingUrl);
+      }, 500);
+    }
+  }, []);
   const [background, setBackground] = useState<BackgroundOptions>({
     type: "solid",
     color: "#dc2626",
@@ -362,9 +383,33 @@ export default function Home() {
   };
 
   // Editing toolbar handlers
+  const handleAssetsApply = (logoUrl?: string, faviconUrl?: string) => {
+    if (logoUrl) {
+      setCurrentLogo(logoUrl);
+      setIsLogoFavicon(false);
+    }
+    if (faviconUrl) {
+      setCurrentFavicon(faviconUrl);
+    }
+
+    if (photocardData && (logoUrl || faviconUrl)) {
+      setPhotocardData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          ...(logoUrl ? { logo: logoUrl } : {}),
+          ...(faviconUrl ? { favicon: faviconUrl } : {}),
+        };
+      });
+    }
+  };
+
   const handleLogoChange = (logo: string, isFavicon: boolean) => {
     setCurrentLogo(logo);
     setIsLogoFavicon(isFavicon);
+    if (photocardData && !isFavicon) {
+      setPhotocardData({ ...photocardData, logo });
+    }
   };
 
   const handleImageChange = (image: string) => {
@@ -1157,6 +1202,7 @@ export default function Home() {
                 currentTitle={currentTitle || mockData.title}
                 isDragMode={isDragMode}
                 onLogoChange={handleLogoChange}
+                onAssetsApply={handleAssetsApply}
                 onImageChange={handleImageChange}
                 onTitleChange={handleTitleChange}
                 onDragModeToggle={() => setIsDragMode(!isDragMode)}
