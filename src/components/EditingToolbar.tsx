@@ -215,6 +215,10 @@ export default function EditingToolbar({
               title="Brand Kit"
             >
               <Upload className="w-5 h-5 text-[#2c2419]" />
+              {/* Brand Kit New Badge */}
+              <span className="absolute -top-1 -right-1 px-1 bg-gradient-to-br from-[#10b981] to-[#059669] text-white text-[7px] font-black rounded flex items-center justify-center shadow-md z-10 border border-white/40 group-hover:scale-110 transition-transform">
+                NEW
+              </span>
               <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 Brand Kit
               </div>
@@ -235,6 +239,10 @@ export default function EditingToolbar({
             title="Edit Title"
           >
             <Type className="w-5 h-5 text-[#2c2419]" />
+            {/* AI Modern Badge */}
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-[#8b5cf6] to-[#6d28d9] text-white text-[8px] font-bold rounded-full flex items-center justify-center shadow-md z-10 border border-white/40 group-hover:scale-110 transition-transform">
+              AI
+            </span>
             <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               Edit Title
             </div>
@@ -315,8 +323,12 @@ export default function EditingToolbar({
                     <h4 className="text-base font-bold text-[#2c2419]">
                       AI-Powered Variations
                     </h4>
+                    <span className="flex items-center gap-1.5 px-2.5 py-1 bg-[#8b6834]/5 border border-[#8b6834]/20 text-[#8b6834] text-[10px] font-bold rounded-full backdrop-blur-sm">
+                      <Sparkles className="w-3 h-3" />
+                      Magic AI
+                    </span>
                     {!isPremiumUser && (
-                      <span className="px-2 py-1 bg-[#8b6834] text-white text-xs font-bold rounded">
+                      <span className="px-2 py-1 bg-[#8b6834] text-white text-[10px] font-bold rounded">
                         PREMIUM
                       </span>
                     )}
