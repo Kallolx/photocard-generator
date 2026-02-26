@@ -121,19 +121,22 @@ export default function LoginPage() {
 
               {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between">
-                <label className="flex items-center group cursor-pointer">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={formData.remember}
-                      onChange={(e) =>
-                        setFormData({ ...formData, remember: e.target.checked })
-                      }
-                      className="peer sr-only"
-                    />
-                    <div className="w-5 h-5 border-2 border-[#2c2419] bg-white rounded-none peer-checked:bg-[#8b6834] transition-colors flex items-center justify-center">
+                <label className="flex items-center group cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={formData.remember}
+                    onChange={(e) =>
+                      setFormData({ ...formData, remember: e.target.checked })
+                    }
+                    className="sr-only"
+                  />
+                  <div
+                    className={`w-5 h-5 border border-[#d4c4b0] transition-all flex items-center justify-center
+                      ${formData.remember ? "bg-[#8b6834] border-[#8b6834]" : "bg-white"}`}
+                  >
+                    {formData.remember && (
                       <svg
-                        className="w-3 h-3 text-white hidden peer-checked:block"
+                        className="w-3 h-3 text-white"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -145,7 +148,7 @@ export default function LoginPage() {
                           d="M5 13l4 4L19 7"
                         />
                       </svg>
-                    </div>
+                    )}
                   </div>
                   <span className="ml-3 text-xs font-black uppercase tracking-wider text-[#5d4e37] group-hover:text-[#2c2419] transition-colors">
                     {t.auth.rememberMe}

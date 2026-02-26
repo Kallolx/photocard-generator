@@ -225,8 +225,8 @@ export default function SignupPage() {
               </div>
 
               {/* Terms Agreement */}
-              <div className="flex items-start pt-2">
-                <div className="relative flex items-center">
+              <div className="pt-2">
+                <label className="flex items-start cursor-pointer group select-none">
                   <input
                     type="checkbox"
                     checked={formData.agreeToTerms}
@@ -236,39 +236,46 @@ export default function SignupPage() {
                         agreeToTerms: e.target.checked,
                       })
                     }
-                    className="peer sr-only"
+                    className="sr-only"
                   />
-                  <div className="w-5 h-5 border-2 border-[#2c2419] bg-white rounded-none peer-checked:bg-[#8b6834] transition-colors flex items-center justify-center">
-                    <svg
-                      className="w-3 h-3 text-white hidden peer-checked:block"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={4}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
+                  <div
+                    className={`w-5 h-5 border border-[#d4c4b0] flex-shrink-0 transition-all flex items-center justify-center
+                      ${formData.agreeToTerms ? "bg-[#8b6834] border-[#8b6834]" : "bg-white"}`}
+                  >
+                    {formData.agreeToTerms && (
+                      <svg
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={4}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
                   </div>
-                </div>
-                <label className="ml-3 text-[10px] font-bold text-[#5d4e37] uppercase tracking-tight">
-                  Agree to{" "}
-                  <Link
-                    href="/terms"
-                    className="text-[#8b6834] underline underline-offset-2"
-                  >
-                    Terms
-                  </Link>{" "}
-                  &{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-[#8b6834] underline underline-offset-2"
-                  >
-                    Privacy
-                  </Link>
+                  <span className="ml-3 text-[10px] font-bold text-[#5d4e37] uppercase tracking-tight leading-5">
+                    Agree to{" "}
+                    <Link
+                      href="/terms"
+                      className="text-[#8b6834] underline underline-offset-2 hover:text-[#2c2419]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Terms
+                    </Link>{" "}
+                    &{" "}
+                    <Link
+                      href="/privacy"
+                      className="text-[#8b6834] underline underline-offset-2 hover:text-[#2c2419]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Privacy
+                    </Link>
+                  </span>
                 </label>
               </div>
 
