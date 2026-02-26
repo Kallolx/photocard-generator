@@ -24,23 +24,6 @@ export default function HeroSection({ t }: HeroSectionProps) {
       id="home"
       className="relative pt-32 pb-20 px-6 lg:px-12 bg-[#faf8f5] overflow-hidden border-b-2 border-[#d4c4b0]/40"
     >
-      {/* Background Decorative Text */}
-      <div className="absolute top-1/4 left-[-5%] text-[15rem] font-black text-[#8b6834]/[0.02] uppercase select-none pointer-events-none tracking-tighter hidden lg:block">
-        Social
-      </div>
-      <div className="absolute bottom-1/4 right-[-5%] text-[15rem] font-black text-[#8b6834]/[0.02] uppercase select-none pointer-events-none tracking-tighter hidden lg:block">
-        News
-      </div>
-
-      {/* Background Grid Pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(#8b6834 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-        }}
-      ></div>
-
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
           <div className="flex flex-col items-center lg:items-start text-center lg:text-left relative">
@@ -159,7 +142,7 @@ export default function HeroSection({ t }: HeroSectionProps) {
             </button>
             <div className="aspect-video w-full bg-black">
               <iframe
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=1"
+                src="https://www.youtube.com/embed/JQx1hi48Z8Q?autoplay=1&controls=1"
                 title="Product Demo"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
