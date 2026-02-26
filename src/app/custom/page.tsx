@@ -20,7 +20,7 @@ import {
   CardFontStyles,
   VisibilitySettings,
 } from "@/types";
-import { Upload, Edit, Lock } from "lucide-react";
+import { Upload, Edit, Lock, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "@/components/UpgradeModal";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -781,7 +781,10 @@ export default function CustomPage() {
         <div className="h-screen bg-[#faf8f5] flex flex-col">
           <Navbar />
           <div className="flex-1 flex items-center justify-center">
-            <div className="text-[#5d4e37] font-inter">Loading...</div>
+            <div className="text-[#5d4e37] font-inter flex flex-col items-center gap-3">
+              <Loader2 className="w-10 h-10 text-[#8b6834] animate-spin rounded-full" />
+              Loading...
+            </div>
           </div>
         </div>
       </ProtectedRoute>

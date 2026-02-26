@@ -55,23 +55,23 @@ export default function AdminHeader({
   };
 
   return (
-    <header className="h-20 bg-[#faf8f5] border-b-2 border-[#d4c4b0] flex items-center justify-between px-6 sticky top-0 z-20">
+    <header className="h-20 bg-[#faf8f5] border-b border-[#d4c4b0] flex items-center justify-between px-6 sticky top-0 z-20">
       <div className="flex items-center gap-4">
         {/* Mobile Menu Trigger */}
         <button
           onClick={toggleSidebar}
-          className="md:hidden p-2 text-[#5d4e37] hover:bg-[#f5f0e8] border border-[#d4c4b0]"
+          className="md:hidden p-2 text-[#5d4e37] hover:bg-[#f5f0e8] border border-[#d4c4b0] shadow-none"
         >
           <Menu className="w-6 h-6" />
         </button>
 
         {/* Global Search - Soft Boxed Style */}
-        <div className="hidden md:flex items-center gap-2 bg-white border border-[#d4c4b0] px-4 py-2 w-80 focus-within:border-[#8b6834] transition-colors shadow-sm">
+        <div className="hidden md:flex items-center gap-2 bg-[#f5f0e8]/50 border border-[#d4c4b0]/40 px-4 py-2 w-80 focus-within:bg-white focus-within:border-[#8b6834]/40 transition-all rounded-none">
           <Search className="w-4 h-4 text-[#a08d74]" />
           <input
             type="text"
-            placeholder="Search..."
-            className="bg-transparent border-none text-sm placeholder-[#a08d74] focus:outline-none w-full text-[#2c2419] font-inter"
+            placeholder="SEARCH TOOLS OR USERS..."
+            className="bg-transparent border-none text-[10px] font-black uppercase tracking-widest placeholder-[#a08d74]/60 focus:outline-none w-full text-[#2c2419]"
           />
         </div>
       </div>
@@ -90,9 +90,9 @@ export default function AdminHeader({
           </button>
 
           {isNotificationsOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-[#d4c4b0] shadow-xl z-50 max-h-[80vh] flex flex-col">
-              <div className="p-3 border-b border-[#f5f0e8] bg-[#faf8f5] flex justify-between items-center">
-                <h3 className="font-lora font-bold text-[#2c2419]">
+            <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-[#d4c4b0]/60 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.05)] z-50 max-h-[80vh] flex flex-col">
+              <div className="p-4 border-b border-[#f5f0e8] bg-[#faf8f5] flex justify-between items-center">
+                <h3 className="text-xs font-black uppercase tracking-widest text-[#2c2419]">
                   Notifications
                 </h3>
                 {unreadCount > 0 && (
@@ -126,15 +126,15 @@ export default function AdminHeader({
                       >
                         <div className="flex justify-between items-start mb-1">
                           <p
-                            className={`text-sm font-bold ${!notif.is_read ? "text-[#2c2419]" : "text-[#5d4e37]"}`}
+                            className={`text-[11px] font-black uppercase tracking-tight ${!notif.is_read ? "text-[#2c2419]" : "text-[#5d4e37]/70"}`}
                           >
                             {notif.title}
                           </p>
-                          <span className="text-[10px] text-[#a08d74]">
+                          <span className="text-[9px] font-bold text-[#a08d74] uppercase">
                             {new Date(notif.created_at).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-xs text-[#5d4e37] leading-relaxed">
+                        <p className="text-[10px] font-bold uppercase tracking-tight text-[#5d4e37]/80 leading-snug">
                           {notif.message}
                         </p>
                       </div>
@@ -152,35 +152,38 @@ export default function AdminHeader({
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="flex items-center gap-3 p-1 hover:bg-[#f5f0e8] border border-transparent hover:border-[#d4c4b0] transition-colors"
           >
-            <div className="w-9 h-9 bg-[#d4c4b0] text-[#2c2419] flex items-center justify-center font-lora font-bold text-lg border border-[#faf8f5] shadow-sm">
+            <div className="w-10 h-10 bg-[#e8dcc8] text-[#8b6834] flex items-center justify-center font-bold text-lg border-2 border-white shadow-none">
               {user?.name?.charAt(0).toUpperCase() || "A"}
             </div>
             <div className="hidden md:block text-left pr-2">
-              <p className="text-sm font-bold text-[#2c2419] leading-none">
+              <p className="text-xs font-black text-[#2c2419] uppercase tracking-tight leading-none">
                 {user?.name || "Admin"}
+              </p>
+              <p className="text-[9px] font-bold text-[#8b6834] uppercase tracking-widest mt-0.5">
+                Administrator
               </p>
             </div>
           </button>
 
           {/* Dropdown Menu */}
           {isProfileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-[#d4c4b0] shadow-xl z-50">
+            <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-[#d4c4b0]/60 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.05)] z-50">
               <div className="p-4 border-b border-[#f5f0e8] bg-[#faf8f5]">
-                <p className="text-xs font-bold text-[#a08d74] uppercase mb-1">
+                <p className="text-[9px] font-black text-[#a08d74] uppercase tracking-widest mb-1.5">
                   Signed in as
                 </p>
-                <p className="text-sm font-mono text-[#5d4e37] truncate">
+                <p className="text-[11px] font-black text-[#2c2419] uppercase tracking-tight truncate">
                   {user?.email}
                 </p>
               </div>
               <div className="p-1">
-                <button className="w-full text-left px-4 py-3 text-sm font-medium text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419] transition-colors">
+                <button className="w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419] transition-colors">
                   Account Settings
                 </button>
-                <div className="h-px bg-[#f5f0e8] my-1"></div>
+                <div className="h-px bg-[#f5f0e8] my-1 mx-2"></div>
                 <button
                   onClick={logout}
-                  className="w-full text-left px-4 py-3 text-sm font-bold text-red-700 hover:bg-red-50 transition-colors uppercase tracking-wider"
+                  className="w-full text-left px-4 py-3 text-[10px] font-black uppercase tracking-widest text-red-600 hover:bg-red-50 transition-colors"
                 >
                   Sign Out
                 </button>

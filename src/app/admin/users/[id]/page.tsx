@@ -133,12 +133,7 @@ export default function UserDetailPage({
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#faf8f5]">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#d4c4b0] border-t-[#8b6834]"></div>
-          <p className="mt-4 text-[#5d4e37] font-inter">
-            Loading user details...
-          </p>
-        </div>
+        <div className="w-12 h-12 border-2 border-[#d4c4b0] border-t-[#8b6834] animate-spin rounded-full"></div>
       </div>
     );
   }
@@ -146,15 +141,15 @@ export default function UserDetailPage({
   if (!user) {
     return (
       <div className="p-8 min-h-screen bg-[#faf8f5] flex items-center justify-center">
-        <div className="bg-white border-2 border-[#d4c4b0] p-12 text-center shadow-lg">
-          <p className="text-[#5d4e37] font-inter mb-4 text-xl">
-            User not found
+        <div className="bg-white border border-[#d4c4b0]/60 p-16 text-center shadow-[12px_12px_0px_0px_rgba(44,36,25,0.05)]">
+          <p className="text-[10px] font-black uppercase tracking-widest text-[#a08d74] mb-8">
+            Access credentials not found in registry
           </p>
           <button
             onClick={() => router.push("/admin")}
-            className="px-6 py-2 bg-[#8b6834] text-white font-inter hover:bg-[#6d5229] transition-colors font-semibold"
+            className="px-8 py-3 bg-[#8b6834] text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#2c2419] transition-all active:translate-x-[1px] active:translate-y-[1px]"
           >
-            Back to Dashboard
+            Return to Dashboard
           </button>
         </div>
       </div>
@@ -164,33 +159,35 @@ export default function UserDetailPage({
   // ... (warm boxed update for User Detail)
   return (
     <div className="min-h-screen bg-[#faf8f5] p-6 md:p-12 font-inter text-[#2c2419]">
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-10">
         {/* Header */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <button
             onClick={() => router.push("/admin")}
-            className="p-3 border border-[#d4c4b0] hover:bg-[#8b6834] hover:text-[#faf8f5] hover:border-[#8b6834] transition-colors bg-white shadow-sm"
+            className="p-3 border border-[#d4c4b0]/60 hover:bg-[#8b6834] hover:text-[#faf8f5] hover:border-[#8b6834] transition-all bg-white active:scale-95 group"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
           </button>
           <div>
-            <h1 className="text-3xl font-lora font-bold text-[#2c2419]">
+            <h1 className="text-2xl md:text-3xl font-black text-[#2c2419] uppercase tracking-tight">
               {user.name}
             </h1>
-            <div className="flex items-center gap-3 mt-1">
-              <span className="px-3 py-0.5 bg-[#f5f0e8] text-[#5d4e37] text-xs font-bold uppercase tracking-wider rounded-full border border-[#d4c4b0]">
-                ID: {user.id}
+            <div className="flex flex-wrap items-center gap-4 mt-2">
+              <span className="px-3 py-1 bg-[#f5f0e8]/50 text-[#8b6834] text-[9px] font-black uppercase tracking-widest border border-[#d4c4b0]/40">
+                REGISTRY ID: {user.id}
               </span>
-              <span className="text-[#5d4e37]">{user.email}</span>
+              <span className="text-[10px] font-bold text-[#5d4e37] uppercase tracking-wider">
+                {user.email}
+              </span>
             </div>
           </div>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
             <button
               onClick={fetchUserDetails}
-              className="p-2 text-[#5d4e37] hover:text-[#8b6834] transition-colors"
-              title="Refresh Data"
+              className="p-3 bg-white border border-[#d4c4b0]/40 text-[#5d4e37] hover:text-[#8b6834] hover:border-[#8b6834]/40 transition-all active:rotate-180"
+              title="Sync Account Data"
             >
-              <RefreshCw className="w-5 h-5" />
+              <RefreshCw className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -199,50 +196,52 @@ export default function UserDetailPage({
           {/* Left Column: User Info & API Key */}
           <div className="lg:col-span-2 space-y-6">
             {/* Basic Info Card */}
-            <div className="bg-white border-2 border-[#d4c4b0] p-8 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-10">
-                <User className="w-32 h-32 text-[#8b6834]" />
+            <div className="bg-white border border-[#d4c4b0]/60 p-8 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.03)] relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-6 opacity-[0.03]">
+                <User className="w-48 h-48 text-[#8b6834]" />
               </div>
 
-              <h3 className="text-xl font-lora font-bold text-[#2c2419] mb-6 flex items-center gap-2 relative z-10">
-                <User className="w-5 h-5 text-[#8b6834]" />
-                User Information
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-[#2c2419] mb-8 border-b border-[#f5f0e8] pb-4 flex items-center gap-2 relative z-10">
+                <User className="w-4 h-4 text-[#8b6834]" />
+                Identity & Access Metadata
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                 <div>
-                  <p className="text-xs font-bold uppercase text-[#a08d74] mb-1">
-                    Current Status
+                  <p className="text-[9px] font-black uppercase tracking-widest text-[#a08d74] mb-2">
+                    Current Registry State
                   </p>
                   <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 text-sm font-bold uppercase tracking-wider rounded-full border ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-widest border transition-all ${
                       user.status === "active"
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-red-50 text-red-700 border-red-200"
+                        ? "bg-green-50/50 text-green-700 border-green-200"
+                        : "bg-red-50/50 text-red-700 border-red-200"
                     }`}
                   >
                     {user.status === "active" && (
                       <CheckCircle className="w-3 h-3" />
                     )}
-                    {user.status}
+                    {user.status === "active"
+                      ? "OPERATIONAL"
+                      : user.status.toUpperCase()}
                   </span>
                 </div>
 
                 <div>
-                  <p className="text-xs font-bold uppercase text-[#a08d74] mb-1">
-                    Current Plan
+                  <p className="text-[9px] font-black uppercase tracking-widest text-[#a08d74] mb-2">
+                    Active Provisioning
                   </p>
                   <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 text-sm font-bold uppercase tracking-wider rounded-full border ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-widest border transition-all ${
                       user.plan === "Premium"
-                        ? "bg-[#2c2419] text-[#d4c4b0] border-[#2c2419]"
+                        ? "bg-[#2c2419] text-[#faf8f5] border-[#2c2419]"
                         : user.plan === "Basic"
                           ? "bg-[#8b6834] text-white border-[#8b6834]"
-                          : "bg-gray-100 text-gray-600 border-gray-200"
+                          : "bg-gray-100/50 text-gray-500 border-gray-200"
                     }`}
                   >
                     {user.plan === "Premium" && <Shield className="w-3 h-3" />}
-                    {user.plan}
+                    {user.plan} PLAN
                   </span>
                 </div>
 
@@ -258,43 +257,44 @@ export default function UserDetailPage({
             </div>
 
             {/* API Key Section - Enhanced */}
-            <div className="bg-white border-2 border-[#d4c4b0] p-8 shadow-sm">
-              <h3 className="text-xl font-lora font-bold text-[#2c2419] mb-4 flex items-center gap-2">
-                <Key className="w-5 h-5 text-[#8b6834]" />
-                API Access & Keys
+            <div className="bg-white border border-[#d4c4b0]/60 p-8 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.03)]">
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-[#2c2419] mb-6 border-b border-[#f5f0e8] pb-4 flex items-center gap-2">
+                <Key className="w-4 h-4 text-[#8b6834]" />
+                API Protocols & Authorization
               </h3>
 
               {user.api_key ? (
-                <div className="bg-[#fcfbf9] border border-[#d4c4b0] p-6 rounded relative">
-                  <div className="flex justify-between items-start mb-4">
+                <div className="bg-[#faf8f5] border border-[#d4c4b0]/40 p-6 relative">
+                  <div className="flex justify-between items-start mb-6">
                     <div>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-100 text-green-800 text-xs font-bold uppercase mb-2">
-                        <CheckCircle className="w-3 h-3" /> Active Key
+                      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-[#4a7c59]/10 text-[#4a7c59] text-[9px] font-black uppercase mb-2 border border-[#4a7c59]/20">
+                        <CheckCircle className="w-2.5 h-2.5" /> SECURE KEY
+                        VERIFIED
                       </span>
-                      <p className="text-xs text-[#a08d74]">
-                        Created on{" "}
+                      <p className="text-[10px] font-bold text-[#a08d74] uppercase tracking-tight">
+                        GENERATED:{" "}
                         {user.api_key_created_at
                           ? new Date(
                               user.api_key_created_at,
                             ).toLocaleDateString()
-                          : "Unknown"}
+                          : "NULL"}
                       </p>
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase text-[#5d4e37]">
-                      API Key Details
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase text-[#5d4e37] tracking-widest">
+                      Encrypted Key Details
                     </label>
-                    <div className="flex gap-2">
-                      <code className="bg-white border border-[#e5e5e5] p-3 rounded font-mono text-sm text-[#2c2419] flex-grow break-all select-all">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <code className="bg-white border border-[#d4c4b0]/30 p-4 font-bold text-[11px] text-[#2c2419] flex-grow break-all select-all border-dashed">
                         {user.api_key}
                       </code>
                       <button
                         onClick={copyApiKey}
-                        className="bg-[#f5f0e8] border border-[#d4c4b0] text-[#8b6834] px-4 rounded hover:bg-[#ebdcc6] transition-colors font-medium flex items-center gap-2"
+                        className="bg-[#2c2419] text-white px-6 py-4 text-[10px] font-black uppercase tracking-widest hover:bg-[#8b6834] transition-all active:scale-95 flex items-center justify-center gap-2"
                       >
-                        <Copy className="w-4 h-4" /> Copy
+                        <Copy className="w-3.5 h-3.5" /> COPY
                       </button>
                     </div>
                   </div>
@@ -318,30 +318,41 @@ export default function UserDetailPage({
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white border-2 border-[#d4c4b0] p-8 shadow-sm">
-              <h3 className="text-xl font-lora font-bold text-[#2c2419] mb-6 flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#8b6834]" />
-                Recent Generations ({recentCards.length})
+            <div className="bg-white border border-[#d4c4b0]/60 p-8 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.03)]">
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-[#2c2419] mb-8 border-b border-[#f5f0e8] pb-4 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-[#8b6834]" />
+                Recent Generation Logs ({recentCards.length})
               </h3>
 
               {recentCards.length > 0 ? (
-                <div className="overflow-hidden border border-[#e5e5e5] rounded">
-                  <table className="w-full text-sm text-left">
-                    <thead className="bg-[#f5f0e8] text-[#5d4e37] font-bold uppercase text-xs">
+                <div className="overflow-hidden border border-[#d4c4b0]/40">
+                  <table className="w-full text-left">
+                    <thead className="bg-[#f5f0e8]/50 text-[#5d4e37] font-black uppercase text-[10px] tracking-widest">
                       <tr>
-                        <th className="px-4 py-3">ID</th>
-                        <th className="px-4 py-3">Theme</th>
-                        <th className="px-4 py-3">Date</th>
+                        <th className="px-5 py-4 border-b border-[#d4c4b0]/20">
+                          Trace ID
+                        </th>
+                        <th className="px-5 py-4 border-b border-[#d4c4b0]/20">
+                          Template
+                        </th>
+                        <th className="px-5 py-4 border-b border-[#d4c4b0]/20">
+                          Execution Date
+                        </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#e5e5e5]">
+                    <tbody className="divide-y divide-[#f5f0e8]">
                       {recentCards.map((card) => (
-                        <tr key={card.id} className="bg-white hover:bg-gray-50">
-                          <td className="px-4 py-3 font-mono text-[#8b6834]">
+                        <tr
+                          key={card.id}
+                          className="bg-white hover:bg-[#faf8f5] transition-colors"
+                        >
+                          <td className="px-5 py-4 text-[10px] font-black text-[#8b6834] uppercase tracking-tight">
                             #{card.id}
                           </td>
-                          <td className="px-4 py-3">{card.theme}</td>
-                          <td className="px-4 py-3 text-[#5d4e37]">
+                          <td className="px-5 py-4 text-[11px] font-bold uppercase tracking-tight text-[#2c2419]">
+                            {card.theme}
+                          </td>
+                          <td className="px-5 py-4 text-[10px] font-bold text-[#5d4e37] uppercase tracking-tight">
                             {formatDate(card.created_at)}
                           </td>
                         </tr>
@@ -358,20 +369,20 @@ export default function UserDetailPage({
           </div>
 
           {/* Right Column: Actions & Limits */}
-          <div className="space-y-6">
+          <div className="space-y-10">
             {/* Quick Actions Panel */}
-            <div className="bg-[#2c2419] text-[#faf8f5] p-6 shadow-lg rounded-sm relative overflow-hidden">
-              <div className="absolute -right-4 -top-4 opacity-10">
-                <Shield className="w-32 h-32" />
+            <div className="bg-[#2c2419] text-[#faf8f5] p-8 shadow-[12px_12px_0px_0px_rgba(44,36,25,0.08)] relative overflow-hidden">
+              <div className="absolute -right-8 -top-8 opacity-10">
+                <Shield className="w-48 h-48" />
               </div>
-              <h3 className="text-lg font-lora font-bold mb-4 border-b border-[#faf8f5]/20 pb-2">
-                Administrative Actions
+              <h3 className="text-[11px] font-black uppercase tracking-widest mb-8 border-b border-[#faf8f5]/20 pb-4">
+                Administrative Overrides
               </h3>
 
-              <div className="space-y-4 relative z-10">
+              <div className="space-y-6 relative z-10">
                 <div>
-                  <label className="text-xs font-bold uppercase text-[#d4c4b0] mb-2 block">
-                    Change Plan
+                  <label className="text-[9px] font-black uppercase text-[#d4c4b0] mb-3 block tracking-widest">
+                    Provision Account Level
                   </label>
                   <div className="space-y-2">
                     {(["Free", "Basic", "Premium"] as const).map((plan) => (
@@ -379,24 +390,24 @@ export default function UserDetailPage({
                         key={plan}
                         onClick={() => handlePlanChange(plan)}
                         disabled={user.plan === plan || updating}
-                        className={`w-full px-4 py-3 text-xs font-bold uppercase tracking-wider text-left transition-all flex items-center justify-between border ${
+                        className={`w-full px-4 py-3.5 text-[10px] font-black uppercase tracking-widest text-left transition-all flex items-center justify-between border ${
                           user.plan === plan
                             ? "bg-[#faf8f5] text-[#2c2419] border-[#faf8f5]"
-                            : "bg-transparent text-[#d4c4b0] border-[#d4c4b0]/30 hover:bg-[#faf8f5]/10 hover:border-[#faf8f5]"
+                            : "bg-transparent text-[#d4c4b0] border-[#d4c4b0]/40 hover:bg-[#faf8f5]/10 hover:border-[#faf8f5]/30"
                         }`}
                       >
                         {plan}
                         {user.plan === plan && (
-                          <div className="h-2 w-2 bg-[#2c2419] rounded-full"></div>
+                          <div className="h-1.5 w-1.5 bg-[#8b6834]"></div>
                         )}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#faf8f5]/20">
-                  <label className="text-xs font-bold uppercase text-[#d4c4b0] mb-2 block">
-                    Account Status
+                <div className="pt-6 border-t border-[#faf8f5]/10">
+                  <label className="text-[9px] font-black uppercase text-[#d4c4b0] mb-3 block tracking-widest">
+                    Registry Security Status
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {(["active", "inactive", "suspended"] as const).map(
@@ -423,30 +434,30 @@ export default function UserDetailPage({
             </div>
 
             {/* Limits & Usage Card */}
-            <div className="bg-white border border-[#d4c4b0] p-6 shadow-sm">
-              <h3 className="text-lg font-lora font-bold text-[#2c2419] mb-4 flex items-center gap-2 uppercase tracking-wide border-b border-[#f5f0e8] pb-2">
-                <CreditCard className="w-5 h-5 text-[#8b6834]" />
-                Usage Details
+            <div className="bg-white border border-[#d4c4b0]/60 p-8 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.03)]">
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-[#2c2419] mb-8 border-b border-[#f5f0e8] pb-4 flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-[#8b6834]" />
+                Resource Utilization
               </h3>
 
               <div className="space-y-4">
-                <div className="bg-[#fcfbf9] p-4 border border-[#d4c4b0]">
-                  <div className="flex justify-between items-end mb-2">
-                    <span className="text-[10px] font-bold uppercase text-[#5d4e37] tracking-widest">
-                      Daily Usage (Web)
+                <div className="bg-[#faf8f5] p-5 border border-[#d4c4b0]/40">
+                  <div className="flex justify-between items-end mb-3">
+                    <span className="text-[9px] font-black uppercase text-[#a08d74] tracking-widest">
+                      WEB GENERATION LOAD
                     </span>
-                    <span className="text-xl font-bold text-[#2c2419] font-mono leading-none">
+                    <span className="text-2xl font-black text-[#2c2419] tracking-tight leading-none">
                       {user.cards_generated_today}
-                      <span className="text-xs text-[#a08d74] font-normal mx-1">
-                        /
+                      <span className="text-[10px] text-[#a08d74] font-bold mx-2 opacity-50">
+                        OF
                       </span>
                       {user.daily_limit === -1 ? "∞" : user.daily_limit}
                     </span>
                   </div>
                   {user.daily_limit !== -1 && (
-                    <div className="w-full bg-[#e5e5e5] h-1.5 mt-2 border border-[#d4c4b0] overflow-hidden">
+                    <div className="w-full bg-[#f5f0e8] h-1.5 border border-[#d4c4b0]/30 overflow-hidden">
                       <div
-                        className={`h-full ${
+                        className={`h-full transition-all duration-700 ${
                           user.cards_generated_today >= user.daily_limit
                             ? "bg-red-600"
                             : "bg-[#8b6834]"
@@ -464,38 +475,38 @@ export default function UserDetailPage({
                 </div>
 
                 {/* API Usage Block */}
-                <div className="bg-[#fcfbf9] p-4 border border-[#d4c4b0]">
+                <div className="bg-[#faf8f5] p-5 border border-[#d4c4b0]/40">
                   <div className="flex justify-between items-end">
-                    <span className="text-[10px] font-bold uppercase text-[#5d4e37] tracking-widest">
-                      API Usage Today
+                    <span className="text-[9px] font-black uppercase text-[#a08d74] tracking-widest">
+                      API REQUEST VOLUME / 24H
                     </span>
-                    <span className="text-xl font-bold text-[#4a7c59] font-mono leading-none">
+                    <span className="text-2xl font-black text-[#2c2419] tracking-tight leading-none">
                       {user.api_usage_today || 0}
                     </span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-white border border-[#d4c4b0] text-center">
-                    <p className="text-xs uppercase font-bold text-[#a08d74] mb-1">
-                      Lifetime
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 bg-white border border-[#d4c4b0]/40 text-center">
+                    <p className="text-[8px] font-black uppercase text-[#a08d74] mb-2 tracking-widest">
+                      TOTAL ASSETS
                     </p>
-                    <p className="text-xl font-bold text-[#2c2419]">
+                    <p className="text-xl font-black text-[#2c2419] tracking-tight">
                       {user.total_cards_generated}
                     </p>
                   </div>
-                  <div className="p-3 bg-white border border-[#d4c4b0] text-center">
-                    <p className="text-xs uppercase font-bold text-[#a08d74] mb-1">
-                      Batch Mode
+                  <div className="p-4 bg-white border border-[#d4c4b0]/40 text-center">
+                    <p className="text-[8px] font-black uppercase text-[#a08d74] mb-2 tracking-widest">
+                      BATCH ENGINE
                     </p>
                     <p
-                      className={`text-xs font-bold uppercase tracking-wider ${
+                      className={`text-[10px] font-black uppercase tracking-widest ${
                         user.batch_processing_enabled
-                          ? "text-[#4a7c59]"
-                          : "text-[#a08d74]"
+                          ? "text-[#4a7c59] bg-[#4a7c59]/10 py-1"
+                          : "text-[#a08d74] opacity-50"
                       }`}
                     >
-                      {user.batch_processing_enabled ? "ON" : "OFF"}
+                      {user.batch_processing_enabled ? "ENABLED" : "DISABLED"}
                     </p>
                   </div>
                 </div>

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { ReactNode, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { ReactNode, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -19,7 +19,7 @@ export default function ProtectedRoute({
   children,
   requireAuth = true,
   requireAdmin = false,
-  redirectTo = '/auth/login',
+  redirectTo = "/auth/login",
 }: ProtectedRouteProps) {
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -30,13 +30,21 @@ export default function ProtectedRoute({
         router.push(redirectTo);
         return;
       }
-      
-      if (requireAdmin && user?.role !== 'admin') {
-        router.push('/url');
+
+      if (requireAdmin && user?.role !== "admin") {
+        router.push("/url");
         return;
       }
     }
-  }, [isAuthenticated, user, isLoading, requireAuth, requireAdmin, redirectTo, router]);
+  }, [
+    isAuthenticated,
+    user,
+    isLoading,
+    requireAuth,
+    requireAdmin,
+    redirectTo,
+    router,
+  ]);
 
   if (isLoading) {
     return (
@@ -53,7 +61,7 @@ export default function ProtectedRoute({
     return null;
   }
 
-  if (requireAdmin && user?.role !== 'admin') {
+  if (requireAdmin && user?.role !== "admin") {
     return null;
   }
 

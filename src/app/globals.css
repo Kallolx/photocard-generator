@@ -109,3 +109,19 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+/* Hero Animations */
+@utility animate-hero-slide-in {
+  animation: hero-slide-in 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes hero-slide-in {
+  from {
+    transform: translateX(-50px) rotate(-1deg) skewX(-4deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) rotate(-1deg) skewX(-4deg);
+    opacity: 1;
+  }
+}

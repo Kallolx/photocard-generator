@@ -183,6 +183,11 @@ export default function Navbar() {
 
   const otherLinks = [
     {
+      label: "Dashboard",
+      href: "/dashboard",
+      icon: <LayoutGrid className="w-4 h-4" />,
+    },
+    {
       label: "Background Remover",
       href: "/background-remover",
       icon: <Scissors className="w-4 h-4" />,
@@ -209,7 +214,7 @@ export default function Navbar() {
               href="/dashboard"
               className="hover:text-[#8b6834] transition-colors"
             >
-              Socialcard Generator
+              Socialcard
             </Link>
           </h1>
         </div>

@@ -28,23 +28,81 @@ export interface NewsItem {
   category?: string;
 }
 
-const RSS_FEEDS = [
-  { name: "BD24Live", url: "https://www.bd24live.com/feed" },
-  {
-    name: "bdnews24",
-    url: "https://bdnews24.com/?widgetName=rssfeed&widgetId=1150&getXmlFeed=true",
-  },
-  { name: "Bangla News 24", url: "https://www.banglanews24.com/rss/rss.xml" },
-  { name: "Jugantor", url: "https://www.jugantor.com/feed/rss.xml" },
-  { name: "Bangladesh Pratidin", url: "https://www.bd-pratidin.com/rss.xml" },
-  { name: "Jago News", url: "https://www.jagonews24.com/rss/rss.xml" },
-  { name: "Prothom Alo", url: "https://www.prothomalo.com/feed/" },
-  { name: "RisingBD", url: "https://www.risingbd.com/rss/rss.xml" },
-  {
-    name: "The Daily Star",
-    url: "https://www.thedailystar.net/frontpage/rss.xml",
-  },
-];
+const REGION_FEEDS: Record<string, { name: string; url: string }[]> = {
+  bd: [
+    { name: "BD24Live", url: "https://www.bd24live.com/feed" },
+    {
+      name: "bdnews24",
+      url: "https://bdnews24.com/?widgetName=rssfeed&widgetId=1150&getXmlFeed=true",
+    },
+    { name: "Bangla News 24", url: "https://www.banglanews24.com/rss/rss.xml" },
+    { name: "Jugantor", url: "https://www.jugantor.com/feed/rss.xml" },
+    { name: "Bangladesh Pratidin", url: "https://www.bd-pratidin.com/rss.xml" },
+    { name: "Jago News", url: "https://www.jagonews24.com/rss/rss.xml" },
+    { name: "Prothom Alo", url: "https://www.prothomalo.com/feed/" },
+    { name: "RisingBD", url: "https://www.risingbd.com/rss/rss.xml" },
+    {
+      name: "The Daily Star",
+      url: "https://www.thedailystar.net/frontpage/rss.xml",
+    },
+  ],
+  global: [
+    {
+      name: "Reuters World",
+      url: "https://www.reutersagency.com/feed/?best-types=reuters-world-service&post_type=best",
+    },
+    { name: "Associated Press", url: "https://newsatme.com/en/rss/apnews/top" },
+    { name: "BBC World", url: "https://feeds.bbci.co.uk/news/world/rss.xml" },
+    { name: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml" },
+    {
+      name: "UN News",
+      url: "https://news.un.org/feed/subscribe/en/news/all/rss.xml",
+    },
+  ],
+  asia: [
+    {
+      name: "CNA Asia",
+      url: "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?category=1041",
+    },
+    { name: "SCMP Asia", url: "https://www.scmp.com/rss/91/feed" },
+    { name: "Nikkei Asia", url: "https://asia.nikkei.com/rss/feed/nar" },
+    {
+      name: "The Straits Times",
+      url: "https://www.straitstimes.com/news/asia/rss.xml",
+    },
+    {
+      name: "The Hindu",
+      url: "https://www.thehindu.com/news/national/feeder/default.rss",
+    },
+  ],
+  europe: [
+    {
+      name: "Euronews",
+      url: "https://www.euronews.com/rss?level=vertical&name=news",
+    },
+    { name: "DW Europe", url: "https://rss.dw.com/rdf/rss-en-eu" },
+    { name: "France 24", url: "https://www.france24.com/en/europe/rss" },
+    {
+      name: "Sky News Europe",
+      url: "https://feeds.skynews.com/feeds/rss/world.xml",
+    },
+  ],
+  usa: [
+    {
+      name: "NYT Home",
+      url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+    },
+    {
+      name: "Wall Street Journal",
+      url: "https://feeds.a.dj.com/rss/RSSWorldNews.xml",
+    },
+    { name: "CNN Top", url: "http://rss.cnn.com/rss/cnn_topstories.rss" },
+    {
+      name: "Washington Post",
+      url: "https://feeds.washingtonpost.com/rss/world",
+    },
+  ],
+};
 
 // Helper to extract text from sometimes heavily nested parsed elements
 function extractText(value: any): string {
@@ -69,16 +127,20 @@ function extractText(value: any): string {
   return String(value);
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const region = searchParams.get("region")?.toLowerCase() || "bd";
+    const feeds = REGION_FEEDS[region] || REGION_FEEDS.bd;
+
     const allNews: NewsItem[] = [];
     const seenLinks = new Set<string>();
     const seenTitles = new Set<string>();
     const ONE_DAY_MS = 24 * 60 * 60 * 1000;
     const now = Date.now();
 
-    // Fetch all feeds in parallel
-    const feedPromises = RSS_FEEDS.map(async (feed) => {
+    // Fetch all relevant feeds in parallel
+    const feedPromises = feeds.map(async (feed) => {
       try {
         // Use native fetch to add custom User-Agent, bypassing some Cloudflare/bot blocks
         const response = await fetch(feed.url, {
@@ -226,7 +288,7 @@ export async function GET() {
       success: true,
       stats: {
         total: mixedNews.length,
-        sources: RSS_FEEDS.length,
+        sources: feeds.length,
         lastUpdated: new Date().toISOString(),
       },
       data: mixedNews,

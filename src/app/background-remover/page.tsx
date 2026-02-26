@@ -74,7 +74,7 @@ export default function BackgroundRemoverPage() {
         if (simulatedProgress > lastProgressRef.current) {
           lastProgressRef.current = simulatedProgress;
           setProcessingProgress(simulatedProgress);
-          
+
           if (simulatedProgress < 20) {
             setProcessingStatus("Initializing...");
           } else if (simulatedProgress < 50) {
@@ -90,8 +90,9 @@ export default function BackgroundRemoverPage() {
 
     try {
       // Dynamically import the background removal library
-      const { removeBackground: removeBg } = await import("@imgly/background-removal");
-      
+      const { removeBackground: removeBg } =
+        await import("@imgly/background-removal");
+
       // Convert data URL to blob
       const response = await fetch(originalImage);
       const blob = await response.blob();
@@ -122,7 +123,7 @@ export default function BackgroundRemoverPage() {
 
       setProcessingStatus("Finalizing...");
       setProcessingProgress(95);
-      
+
       // Convert blob back to data URL
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -139,10 +140,13 @@ export default function BackgroundRemoverPage() {
         clearInterval(progressIntervalRef.current);
         progressIntervalRef.current = null;
       }
-      
+
       console.error("Background removal failed:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      alert(`Failed to remove background: ${errorMessage}\n\nPlease try again with a different image.`);
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      alert(
+        `Failed to remove background: ${errorMessage}\n\nPlease try again with a different image.`,
+      );
       setIsProcessing(false);
       setProcessingProgress(0);
       setProcessingStatus("");
@@ -152,15 +156,15 @@ export default function BackgroundRemoverPage() {
   // Add keyboard shortcut for paste (Ctrl+V)
   useEffect(() => {
     const handleKeyPress = async (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "v") {
         e.preventDefault();
         await handlePaste();
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
     return () => {
-      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener("keydown", handleKeyPress);
       // Cleanup interval on unmount
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
@@ -183,14 +187,14 @@ export default function BackgroundRemoverPage() {
       clearInterval(progressIntervalRef.current);
       progressIntervalRef.current = null;
     }
-    
+
     setOriginalImage(null);
     setProcessedImage(null);
     setProcessingProgress(0);
     setProcessingStatus("");
     lastProgressRef.current = 0;
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -251,7 +255,9 @@ export default function BackgroundRemoverPage() {
 
               <div className="flex items-center gap-4 my-8">
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#d4c4b0] to-transparent"></div>
-                <span className="text-sm text-[#5d4e37] font-medium px-4 py-2 bg-white/50 rounded-full">OR</span>
+                <span className="text-sm text-[#5d4e37] font-medium px-4 py-2 bg-white/50 rounded-full">
+                  OR
+                </span>
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#d4c4b0] to-transparent"></div>
               </div>
 
@@ -260,7 +266,9 @@ export default function BackgroundRemoverPage() {
                 className="w-full max-w-md mx-auto block py-4 px-6 bg-white text-[#2c2419] font-bold rounded-2xl hover:shadow-lg transition-all duration-300 border border-[#d4c4b0]/30"
               >
                 📋 Paste from Clipboard
-                <span className="block text-xs text-[#5d4e37] mt-1 font-normal">or press Ctrl+V</span>
+                <span className="block text-xs text-[#5d4e37] mt-1 font-normal">
+                  or press Ctrl+V
+                </span>
               </button>
             </div>
           ) : (
@@ -285,7 +293,7 @@ export default function BackgroundRemoverPage() {
                 >
                   {isProcessing ? (
                     <span className="flex items-center gap-2">
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-5 h-5 animate-spin rounded-full" />
                       Processing...
                     </span>
                   ) : (
@@ -339,7 +347,9 @@ export default function BackgroundRemoverPage() {
                 {/* Processed */}
                 <div className="space-y-3">
                   <h3 className="text-base font-bold text-[#2c2419] font-lora flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${isProcessing ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`}></span>
+                    <span
+                      className={`w-2 h-2 rounded-full ${isProcessing ? "bg-yellow-500 animate-pulse" : "bg-green-500"}`}
+                    ></span>
                     Background Removed
                   </h3>
                   <div className="relative group">
@@ -352,13 +362,14 @@ export default function BackgroundRemoverPage() {
                           backgroundImage:
                             "linear-gradient(45deg, #f5f0e8 25%, transparent 25%), linear-gradient(-45deg, #f5f0e8 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f5f0e8 75%), linear-gradient(-45deg, transparent 75%, #f5f0e8 75%)",
                           backgroundSize: "20px 20px",
-                          backgroundPosition: "0 0, 0 10px, 10px -10px, -10px 0px",
+                          backgroundPosition:
+                            "0 0, 0 10px, 10px -10px, -10px 0px",
                         }}
                       ></div>
                       {isProcessing ? (
                         <div className="relative z-10 flex flex-col items-center gap-4 w-full px-8">
                           <div className="relative">
-                            <Loader2 className="w-12 h-12 text-[#8b6834] animate-spin" />
+                            <Loader2 className="w-12 h-12 text-[#8b6834] animate-spin rounded-full" />
                           </div>
                           <div className="w-full max-w-xs">
                             <div className="flex items-center justify-between mb-2">
@@ -377,8 +388,9 @@ export default function BackgroundRemoverPage() {
                             </div>
                           </div>
                           <p className="text-xs text-[#5d4e37]/70">
-                            {processingStatus.includes("Initializing") || processingStatus.includes("Loading") 
-                              ? "This may take 10-20 seconds on first use" 
+                            {processingStatus.includes("Initializing") ||
+                            processingStatus.includes("Loading")
+                              ? "This may take 10-20 seconds on first use"
                               : "Processing and removing background"}
                           </p>
                         </div>
@@ -407,7 +419,10 @@ export default function BackgroundRemoverPage() {
                   <div className="inline-flex items-center gap-2 px-6 py-3 bg-green-50 border border-green-200 backdrop-blur-sm rounded-full shadow-lg">
                     <span className="text-green-600 text-2xl">✓</span>
                     <span className="text-sm text-green-800">
-                      <span className="font-bold">Background removed successfully!</span> Download your image above
+                      <span className="font-bold">
+                        Background removed successfully!
+                      </span>{" "}
+                      Download your image above
                     </span>
                   </div>
                 </div>

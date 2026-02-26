@@ -137,10 +137,19 @@ export default function NewsPage() {
 
   // Pagination & Filtering state
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRegion, setSelectedRegion] = useState<string>("bd");
   const [selectedSource, setSelectedSource] = useState<string>("All");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const ITEMS_PER_PAGE = 24;
+
+  const REGIONS = [
+    { id: "bd", name: "Bangladesh" },
+    { id: "global", name: "Global" },
+    { id: "asia", name: "Asia" },
+    { id: "europe", name: "Europe" },
+    { id: "usa", name: "USA" },
+  ];
 
   // Active theme menu state (stores the ID of the card whose menu is open)
   const [activeThemeMenu, setActiveThemeMenu] = useState<string | null>(null);
@@ -151,18 +160,31 @@ export default function NewsPage() {
     return /[\u0980-\u09FF]/.test(text);
   };
 
-  const getFontClass = (text: string) => {
-    return isBangla(text) ? "font-noto-bengali" : "font-dm-sans";
+  const getFontClass = (
+    text: string,
+    type: "filter" | "title" | "body" = "body",
+  ) => {
+    const isB = isBangla(text);
+    if (isB) {
+      const sizeClass =
+        type === "title"
+          ? "text-[1.15em] leading-tight"
+          : type === "filter"
+            ? "text-[13px] leading-none"
+            : "text-[1.1em] leading-relaxed";
+      return `font-noto-bengali ${sizeClass}`;
+    }
+    return "font-dm-sans";
   };
 
-  const fetchNews = async (forceRefresh = false) => {
+  const fetchNews = async (forceRefresh = false, region = selectedRegion) => {
     try {
       setIsLoading(true);
       setError(null);
 
       // Try to load from cache if not forcing refresh
       if (!forceRefresh) {
-        const cachedStr = sessionStorage.getItem("cachedNewsData");
+        const cachedStr = sessionStorage.getItem(`cachedNewsData_${region}`);
         if (cachedStr) {
           try {
             const cached = JSON.parse(cachedStr);
@@ -179,7 +201,7 @@ export default function NewsPage() {
 
       // Add a slight artificial delay so the beautiful loader is visible
       const [res] = await Promise.all([
-        fetch("/api/news"),
+        fetch(`/api/news?region=${region}`),
         new Promise((r) => setTimeout(r, 800)),
       ]);
 
@@ -190,7 +212,7 @@ export default function NewsPage() {
         setNews(data.data);
         setStats(data.stats);
         sessionStorage.setItem(
-          "cachedNewsData",
+          `cachedNewsData_${region}`,
           JSON.stringify({
             timestamp: Date.now(),
             news: data.data,
@@ -208,8 +230,8 @@ export default function NewsPage() {
   };
 
   useEffect(() => {
-    fetchNews();
-  }, []);
+    fetchNews(false, selectedRegion);
+  }, [selectedRegion]);
 
   // Additional tools for sidebar
   const otherTools = [
@@ -257,9 +279,9 @@ export default function NewsPage() {
     <Link
       href={locked ? "#" : href}
       onClick={onClick}
-      className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all font-medium ${
+      className={`flex items-center justify-between px-4 py-3 rounded-none transition-all font-medium ${
         isActive
-          ? "bg-[#8b6834] text-white shadow-md shadow-[#8b6834]/20"
+          ? "bg-[#8b6834] text-white"
           : "text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419]"
       } ${locked ? "opacity-75" : ""}`}
     >
@@ -270,6 +292,109 @@ export default function NewsPage() {
       {locked && <Lock className="w-3.5 h-3.5" />}
     </Link>
   );
+
+  const CustomDropdown = ({
+    value,
+    options,
+    onChange,
+    icon: Icon,
+    label,
+    className = "",
+  }: {
+    value: string;
+    options: { id: string; name: string; icon?: string | React.ReactNode }[];
+    onChange: (val: string) => void;
+    icon: any;
+    label?: string;
+    className?: string;
+  }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (
+          dropdownRef.current &&
+          !dropdownRef.current.contains(event.target as Node)
+        ) {
+          setIsOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    const selectedOption =
+      options.find((opt) => opt.id === value) || options[0];
+
+    return (
+      <div
+        ref={dropdownRef}
+        className={`relative w-full sm:w-auto h-11 ${className}`}
+      >
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`w-full h-full bg-[#f5f0e8] border-2 border-[#d4c4b0]/40 text-[#2c2419] rounded-none py-2 pl-9 pr-10 flex items-center justify-between transition-all hover:bg-white hover:border-[#8b6834]/30 focus:outline-none focus:border-[#8b6834]/30 ${getFontClass(selectedOption.name, "filter")}`}
+        >
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+            {selectedOption.icon && typeof selectedOption.icon === "string" ? (
+              <img
+                src={selectedOption.icon}
+                alt=""
+                className="w-4 h-4 rounded-full border border-[#d4c4b0]/40 object-contain"
+              />
+            ) : (
+              <Icon className="w-4 h-4 text-[#8b6834]" />
+            )}
+          </div>
+          <span
+            className={`font-black uppercase tracking-widest truncate ${!isBangla(selectedOption.name) ? "text-[11px]" : ""}`}
+          >
+            {selectedOption.name}
+          </span>
+          <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+            <ChevronRight
+              className={`w-4 h-4 text-[#8b6834] transition-transform duration-200 ${isOpen ? "rotate-90" : "rotate-0"}`}
+            />
+          </div>
+        </button>
+
+        {isOpen && (
+          <div className="absolute z-[100] top-[calc(100%+4px)] left-0 w-full bg-white border-2 border-[#d4c4b0] max-h-64 overflow-y-auto no-scrollbar animate-in fade-in slide-in-from-top-1 duration-150">
+            {options.map((option) => (
+              <button
+                key={option.id}
+                onClick={() => {
+                  onChange(option.id);
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-4 py-2.5 font-black uppercase tracking-widest transition-colors flex items-center justify-between
+                  ${option.id === value ? "bg-[#8b6834] text-white" : "text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#8b6834]"}
+                  ${getFontClass(option.name, "filter")} ${!isBangla(option.name) ? "text-[11px]" : ""}`}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  {option.icon && typeof option.icon === "string" ? (
+                    <img
+                      src={option.icon}
+                      alt=""
+                      className="w-4 h-4 rounded-full border border-[#d4c4b0]/40 shrink-0 object-contain"
+                    />
+                  ) : option.icon ? (
+                    <div className="shrink-0">{option.icon}</div>
+                  ) : null}
+                  <span className="truncate">{option.name}</span>
+                </div>
+                {option.id === value && (
+                  <Sparkles className="w-3 h-3 text-white/60 ml-2 flex-shrink-0" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Apply Filters to News
   const filteredNews = news.filter((item) => {
@@ -306,19 +431,19 @@ export default function NewsPage() {
         {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
           <div
             key={i}
-            className="bg-white rounded-2xl border border-[#d4c4b0]/30 shadow-sm overflow-hidden flex flex-col h-[400px] animate-pulse"
+            className="bg-white rounded-none border-2 border-[#d4c4b0] overflow-hidden flex flex-col h-[400px] animate-pulse"
           >
             <div className="h-48 bg-[#d4c4b0]/20 w-full" />
             <div className="p-6 flex-1 flex flex-col">
               <div className="flex items-center justify-between mb-4">
-                <div className="h-6 w-24 bg-[#d4c4b0]/30 rounded-full" />
-                <div className="h-4 w-16 bg-[#d4c4b0]/20 rounded-md" />
+                <div className="h-6 w-24 bg-[#d4c4b0]/30 rounded-none" />
+                <div className="h-4 w-16 bg-[#d4c4b0]/20 rounded-none" />
               </div>
               <div className="space-y-3 mb-4">
-                <div className="h-6 bg-[#d4c4b0]/40 rounded-md w-full" />
-                <div className="h-6 bg-[#d4c4b0]/40 rounded-md w-4/5" />
+                <div className="h-6 bg-[#d4c4b0]/40 rounded-none w-full" />
+                <div className="h-6 bg-[#d4c4b0]/40 rounded-none w-4/5" />
               </div>
-              <div className="mt-auto h-12 bg-[#d4c4b0]/20 rounded-xl w-full" />
+              <div className="mt-auto h-12 bg-[#d4c4b0]/20 rounded-none w-full" />
             </div>
           </div>
         ))}
@@ -356,17 +481,17 @@ export default function NewsPage() {
         `}
         >
           {/* Sidebar Header */}
-          <div className="h-20 flex items-center px-6 border-b border-[#d4c4b0]/30 shadow-sm relative">
+          <div className="h-20 flex items-center px-6 border-b border-[#d4c4b0] shadow-none relative">
             <Link href="/dashboard" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8b6834] to-[#5d4e37] flex items-center justify-center text-white shadow-md group-hover:shadow-lg transition-shadow">
+              <div className="w-8 h-8 rounded-none bg-gradient-to-br from-[#8b6834] to-[#5d4e37] flex items-center justify-center text-white group-hover:shadow-none transition-shadow">
                 <LayoutDashboard className="w-5 h-5" />
               </div>
-              <span className="text-xl font-lora font-bold text-[#2c2419] tracking-tight group-hover:text-[#8b6834] transition-colors">
+              <span className="text-xl font-black text-[#2c2419] tracking-tight group-hover:text-[#8b6834] transition-colors uppercase">
                 Socialcard
               </span>
             </Link>
             <button
-              className="lg:hidden absolute right-4 p-2 text-[#5d4e37] hover:bg-[#f5f0e8] rounded-full transition-colors"
+              className="lg:hidden absolute right-4 p-2 text-[#5d4e37] hover:bg-[#f5f0e8] rounded-none transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <X className="w-5 h-5" />
@@ -422,8 +547,8 @@ export default function NewsPage() {
 
           {/* Sidebar Footer */}
           <div className="p-4 border-t border-[#d4c4b0]/40 bg-[#faf8f5]/50">
-            <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-white border border-[#d4c4b0]/40 shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-[#e8dcc8] flex items-center justify-center text-[#8b6834] font-bold border-2 border-white shadow-sm flex-shrink-0">
+            <div className="flex items-center gap-3 mb-4 p-3 rounded-none bg-white border border-[#d4c4b0]/40">
+              <div className="w-10 h-10 rounded-none bg-[#e8dcc8] flex items-center justify-center text-[#8b6834] font-bold border-2 border-white shadow-none flex-shrink-0">
                 {user?.name?.charAt(0).toUpperCase() || "U"}
               </div>
               <div className="flex-1 min-w-0">
@@ -439,7 +564,7 @@ export default function NewsPage() {
                 logout();
                 window.location.href = "/";
               }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold text-red-600 hover:text-white hover:bg-red-500 rounded-xl transition-all border border-red-200 hover:border-red-500"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold text-red-600 hover:text-white hover:bg-red-500 rounded-none transition-all border border-red-200 hover:border-red-500"
             >
               <LogOut className="w-4 h-4" />
               Sign Out
@@ -451,13 +576,13 @@ export default function NewsPage() {
         <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
           {isFreeUser ? (
             <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-[#faf8f5]/50 backdrop-blur-sm">
-              <div className="w-24 h-24 rounded-full bg-white shadow-xl flex items-center justify-center text-[#8b6834] mb-8 animate-bounce">
+              <div className="w-24 h-24 rounded-none bg-white border-2 border-[#d4c4b0] shadow-none flex items-center justify-center text-[#8b6834] mb-8 animate-bounce">
                 <Lock className="w-12 h-12" />
               </div>
-              <h1 className="text-3xl font-lora font-bold text-[#2c2419] mb-4">
-                Today's News is a Premium Feature
+              <h1 className="text-3xl font-black text-[#2c2419] mb-4 uppercase tracking-tight">
+                Today's News
               </h1>
-              <p className="text-[#5d4e37] max-w-md mb-8 leading-relaxed">
+              <p className="text-[#5d4e37] max-w-md mb-8 leading-relaxed font-medium">
                 Stay ahead of the competition with real-time news feeds from top
                 sources. Generate professional newscards from the latest
                 headlines in seconds.
@@ -467,7 +592,7 @@ export default function NewsPage() {
                   setUpgradeFeature("Today's News Feed");
                   setShowUpgradeModal(true);
                 }}
-                className="px-8 py-4 bg-[#8b6834] text-white font-bold rounded-2xl shadow-lg shadow-[#8b6834]/30 hover:bg-[#5d4e37] transform hover:-translate-y-1 transition-all flex items-center gap-3"
+                className="px-8 py-4 bg-[#8b6834] text-white text-xs font-black uppercase tracking-widest rounded-none border-2 border-[#8b6834] hover:bg-[#2c2419] hover:border-[#2c2419] transform hover:-translate-y-1 transition-all flex items-center gap-3"
               >
                 <Sparkles className="w-6 h-6" />
                 Upgrade to Premium
@@ -476,35 +601,34 @@ export default function NewsPage() {
           ) : (
             <>
               {/* Top Header */}
-              <header className="flex-shrink-0 h-20 lg:h-24 px-4 sm:px-6 lg:px-10 flex items-center justify-between border-b border-[#d4c4b0]/20 bg-[#faf8f5]/80 backdrop-blur-md z-30">
-                <div className="flex items-center gap-4">
+              <header className="flex-shrink-0 h-20 lg:h-24 px-4 sm:px-6 lg:px-10 flex items-center justify-between border-b border-[#d4c4b0] bg-white z-30">
+                <div className="flex items-center gap-6 flex-1">
                   <button
                     onClick={() => setIsMobileMenuOpen(true)}
-                    className="lg:hidden p-2.5 bg-white border border-[#d4c4b0]/50 rounded-xl text-[#5d4e37] hover:text-[#8b6834] hover:border-[#8b6834]/50 shadow-sm transition-all"
+                    className="lg:hidden p-2.5 bg-[#f5f0e8] border border-[#d4c4b0] rounded-none text-[#5d4e37] hover:text-[#8b6834] transition-all"
                   >
                     <Menu className="w-5 h-5" />
                   </button>
-                  <Link
-                    href="/dashboard"
-                    className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#8b6834] transition-colors border border-transparent hover:border-[#d4c4b0]/50"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span className="text-sm font-semibold">Back</span>
-                  </Link>
-                  <div className="hidden md:block h-6 w-px bg-[#d4c4b0]/50 mx-2"></div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-[#8b6834]/10 flex items-center justify-center text-[#8b6834]">
-                      <Rss className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-[#2c2419] leading-none">
-                        News Feed
-                      </h2>
+
+                  <div className="hidden md:flex flex-col">
+                    <h2 className="text-xl font-black text-[#2c2419] tracking-tight uppercase">
+                      Today's News
+                    </h2>
+                  </div>
+
+                  <div className="hidden lg:flex items-center flex-1 max-w-md ml-8">
+                    <div className="relative w-full">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#b49e82]" />
+                      <input
+                        type="text"
+                        placeholder="Search tools or templates..."
+                        className="w-full h-11 bg-[#f5f0e8]/50 border-2 border-[#d4c4b0]/40 rounded-none px-12 text-sm font-medium focus:outline-none focus:border-[#8b6834]/30 transition-all placeholder:text-[#b49e82]"
+                      />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6">
                   <CompactCreditDisplay />
                 </div>
               </header>
@@ -514,14 +638,14 @@ export default function NewsPage() {
                 {/* Stats Overview */}
                 {!isLoading && !error && stats && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-                    <div className="bg-white rounded-2xl p-6 border border-[#d4c4b0]/40 shadow-sm flex items-center gap-5 relative overflow-hidden">
-                      <div className="absolute right-0 top-0 w-24 h-24 bg-[#8b6834]/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2" />
-                      <div className="w-14 h-14 rounded-full bg-[#f5f0e8] flex items-center justify-center text-[#8b6834] flex-shrink-0">
+                    <div className="bg-white rounded-none p-6 border-2 border-[#d4c4b0] shadow-none flex items-center gap-5 relative overflow-hidden">
+                      <div className="absolute right-0 top-0 w-24 h-24 bg-[#8b6834]/5 rounded-none blur-2xl -translate-y-1/2 translate-x-1/2" />
+                      <div className="w-14 h-14 rounded-none bg-[#f5f0e8] flex items-center justify-center text-[#8b6834] flex-shrink-0 border border-[#d4c4b0]/30 shadow-none">
                         <TrendingUp className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-bold text-[#5d4e37] uppercase tracking-wide">
-                          Total Articles Today
+                        <h3 className="text-[10px] font-black text-[#b49e82] uppercase tracking-widest">
+                          Articles Today
                         </h3>
                         <p className="text-3xl font-inter font-black text-[#2c2419]">
                           {stats.total}
@@ -529,12 +653,12 @@ export default function NewsPage() {
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl p-6 border border-[#d4c4b0]/40 shadow-sm flex items-center gap-5 relative overflow-hidden">
-                      <div className="w-14 h-14 rounded-full bg-[#f5f0e8] flex items-center justify-center text-[#8b6834] flex-shrink-0">
+                    <div className="bg-white rounded-none p-6 border-2 border-[#d4c4b0] shadow-none flex items-center gap-5 relative overflow-hidden">
+                      <div className="w-14 h-14 rounded-none bg-[#f5f0e8] flex items-center justify-center text-[#8b6834] flex-shrink-0 border border-[#d4c4b0]/30 shadow-none">
                         <Globe2 className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-bold text-[#5d4e37] uppercase tracking-wide">
+                        <h3 className="text-[10px] font-black text-[#b49e82] uppercase tracking-widest">
                           Active Sources
                         </h3>
                         <p className="text-3xl font-inter font-black text-[#2c2419]">
@@ -543,16 +667,16 @@ export default function NewsPage() {
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl p-6 border border-[#d4c4b0]/40 shadow-sm flex items-center gap-5 relative overflow-hidden">
-                      <div className="w-14 h-14 rounded-full bg-[#f5f0e8] flex items-center justify-center text-[#8b6834] flex-shrink-0">
+                    <div className="bg-white rounded-none p-6 border-2 border-[#d4c4b0] shadow-none flex items-center gap-5 relative overflow-hidden">
+                      <div className="w-14 h-14 rounded-none bg-[#f5f0e8] flex items-center justify-center text-[#8b6834] flex-shrink-0 border border-[#d4c4b0]/30 shadow-none">
                         <Clock className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-bold text-[#5d4e37] uppercase tracking-wide">
+                        <h3 className="text-[10px] font-black text-[#b49e82] uppercase tracking-widest">
                           Last Updated
                         </h3>
                         <div className="flex items-center gap-3">
-                          <p className="text-base font-inter font-bold text-[#2c2419]">
+                          <p className="text-base font-inter font-black text-[#2c2419]">
                             {new Date(stats.lastUpdated).toLocaleTimeString(
                               [],
                               {
@@ -563,7 +687,7 @@ export default function NewsPage() {
                           </p>
                           <button
                             onClick={() => fetchNews(true)}
-                            className="p-1 bg-[#f5f0e8] hover:bg-[#8b6834] text-[#8b6834] hover:text-white rounded-md transition-colors shadow-sm"
+                            className="p-1 px-2.5 bg-[#f5f0e8] hover:bg-[#8b6834] text-[#8b6834] hover:text-white rounded-none transition-colors border border-[#d4c4b0]/50"
                             title="Refresh Feed"
                           >
                             <svg
@@ -581,7 +705,6 @@ export default function NewsPage() {
                             </svg>
                           </button>
                         </div>
-                        <p className="text-xs text-[#5d4e37] mt-1">Live Feed</p>
                       </div>
                     </div>
                   </div>
@@ -589,15 +712,15 @@ export default function NewsPage() {
 
                 {/* Error State */}
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-8 rounded-2xl mb-8 flex flex-col items-center text-center">
+                  <div className="bg-red-50 border-2 border-red-200 text-red-700 px-6 py-8 rounded-none mb-8 flex flex-col items-center text-center">
                     <Globe2 className="w-12 h-12 text-red-400 mb-4" />
-                    <h3 className="text-lg font-bold mb-2">
+                    <h3 className="text-lg font-black uppercase mb-2">
                       Failed to load news feed
                     </h3>
-                    <p className="text-sm max-w-md">{error}</p>
+                    <p className="text-sm max-w-md font-medium">{error}</p>
                     <button
                       onClick={() => window.location.reload()}
-                      className="mt-6 px-6 py-2 bg-red-100 text-red-700 font-bold rounded-lg hover:bg-red-200 transition-colors"
+                      className="mt-6 px-6 py-2 bg-red-100 text-red-700 text-xs font-black uppercase rounded-none border-2 border-red-200 hover:bg-red-200 transition-colors"
                     >
                       Try Again
                     </button>
@@ -606,92 +729,63 @@ export default function NewsPage() {
 
                 {/* Filter Controls */}
                 {!isLoading && !error && news.length > 0 && (
-                  <div className="flex flex-col sm:flex-row items-center gap-4 mb-8 bg-white p-4 rounded-xl border border-[#d4c4b0]/40 shadow-sm">
-                    <div className="relative w-full sm:w-auto flex-1 max-w-md">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 mb-8 bg-white p-4 rounded-none border-2 border-[#d4c4b0]">
+                    <div className="relative w-full sm:w-auto flex-1 h-11">
                       <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5d4e37]" />
                       <input
                         type="text"
-                        placeholder="Search news..."
+                        placeholder="Search headlines..."
                         value={searchQuery}
                         onChange={(e) => {
                           setSearchQuery(e.target.value);
-                          setCurrentPage(1); // Reset to page 1 on search
+                          setCurrentPage(1);
                         }}
-                        className="w-full pl-9 pr-4 py-2 bg-[#f5f0e8] text-[#2c2419] border-none rounded-lg text-sm font-medium focus:ring-2 focus:ring-[#8b6834] focus:outline-none transition-all placeholder:text-[#5d4e37]/60"
+                        className="w-full h-11 pl-9 pr-4 bg-[#f5f0e8] text-[#2c2419] border-2 border-[#d4c4b0]/40 rounded-none text-sm font-medium focus:outline-none focus:border-[#8b6834]/30"
                       />
                     </div>
 
-                    <div className="relative w-full sm:w-[220px] flex items-center">
-                      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                        <Filter className="w-4 h-4 text-[#8b6834]" />
-                      </div>
-                      <select
-                        value={selectedSource}
-                        onChange={(e) => {
-                          setSelectedSource(e.target.value);
-                          setCurrentPage(1); // Reset to page 1 on filter
-                        }}
-                        className="w-full bg-[#f5f0e8] border border-[#d4c4b0]/50 text-[#2c2419] text-sm font-bold rounded-xl py-2 pl-9 pr-10 focus:ring-2 focus:ring-[#8b6834] focus:border-transparent outline-none appearance-none cursor-pointer shadow-sm hover:border-[#8b6834]/50 transition-colors"
-                      >
-                        <option value="All">All Sources</option>
-                        {uniqueSources.map((source) => (
-                          <option key={source} value={source}>
-                            {source}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                        <svg
-                          className="w-4 h-4 text-[#8b6834]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
+                    <CustomDropdown
+                      value={selectedSource}
+                      options={[
+                        { id: "All", name: "All Sources" },
+                        ...uniqueSources.map((s) => ({
+                          id: s,
+                          name: s,
+                          icon: news.find((n) => n.source === s)?.faviconUrl,
+                        })),
+                      ]}
+                      onChange={(val) => {
+                        setSelectedSource(val);
+                        setCurrentPage(1);
+                      }}
+                      icon={Filter}
+                      className="sm:w-[220px]"
+                    />
 
-                    <div className="relative w-full sm:w-[200px] flex items-center">
-                      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                        <LayoutGrid className="w-4 h-4 text-[#8b6834]" />
-                      </div>
-                      <select
-                        value={selectedCategory}
-                        onChange={(e) => {
-                          setSelectedCategory(e.target.value);
-                          setCurrentPage(1); // Reset to page 1 on filter
-                        }}
-                        className="w-full bg-[#f5f0e8] border border-[#d4c4b0]/50 text-[#2c2419] text-sm font-bold rounded-xl py-2 pl-9 pr-10 focus:ring-2 focus:ring-[#8b6834] focus:border-transparent outline-none appearance-none cursor-pointer shadow-sm hover:border-[#8b6834]/50 transition-colors"
-                      >
-                        <option value="All">All Categories</option>
-                        {uniqueCategories.map((category) => (
-                          <option key={category} value={category}>
-                            {category}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                        <svg
-                          className="w-4 h-4 text-[#8b6834]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
+                    <CustomDropdown
+                      value={selectedCategory}
+                      options={[
+                        { id: "All", name: "All Categories" },
+                        ...uniqueCategories.map((c) => ({ id: c, name: c })),
+                      ]}
+                      onChange={(val) => {
+                        setSelectedCategory(val);
+                        setCurrentPage(1);
+                      }}
+                      icon={LayoutGrid}
+                      className="sm:w-[200px]"
+                    />
+
+                    <CustomDropdown
+                      value={selectedRegion}
+                      options={REGIONS}
+                      onChange={(val) => {
+                        setSelectedRegion(val);
+                        setCurrentPage(1);
+                      }}
+                      icon={Globe2}
+                      className="sm:w-[180px]"
+                    />
                   </div>
                 )}
 
@@ -710,14 +804,15 @@ export default function NewsPage() {
                   !error && (
                     <div className="space-y-8">
                       {currentItems.length === 0 ? (
-                        <div className="text-center py-20 bg-white rounded-2xl border border-[#d4c4b0]/40">
+                        <div className="text-center py-20 bg-white rounded-none border-2 border-[#d4c4b0]">
                           <Newspaper className="w-12 h-12 text-[#d4c4b0] mx-auto mb-4" />
-                          <h3 className="text-lg font-bold text-[#2c2419]">
+                          <h3 className="text-lg font-black uppercase text-[#2c2419]">
                             No news found
                           </h3>
-                          <p className="text-[#5d4e37] text-sm">
+                          <p className="text-[#5d4e37] text-sm font-medium">
                             Try adjusting your filters or search query.
                           </p>
+
                           <button
                             onClick={() => {
                               setSearchQuery("");
@@ -731,17 +826,12 @@ export default function NewsPage() {
                       ) : (
                         <>
                           <div className="flex items-center gap-4 mb-4 py-3 z-10 w-full">
-                            <h2 className="text-xl font-bold text-[#2c2419]">
-                              Today's News
+                            <h2 className="text-xl font-black uppercase text-[#2c2419]">
+                              Live Headlines
                             </h2>
-                            <div className="flex-1 h-px bg-[#d4c4b0]/40"></div>
-                            <span className="text-sm font-bold text-[#5d4e37]">
-                              Showing {startIndex + 1}-
-                              {Math.min(
-                                startIndex + ITEMS_PER_PAGE,
-                                totalItems,
-                              )}{" "}
-                              of {totalItems}
+                            <div className="flex-1 h-px bg-[#d4c4b0]"></div>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-[#5d4e37]">
+                              Page {currentPage} of {totalPages}
                             </span>
                           </div>
 
@@ -749,7 +839,7 @@ export default function NewsPage() {
                             {currentItems.map((item) => (
                               <div
                                 key={item.id}
-                                className="bg-white rounded-2xl border border-[#d4c4b0]/40 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col group h-full"
+                                className="bg-white rounded-none border-2 border-[#d4c4b0] shadow-none hover:border-[#8b6834] transition-all duration-300 overflow-hidden flex flex-col group h-full"
                               >
                                 {/* Image Header */}
                                 <div className="h-48 relative overflow-hidden bg-[#f5f0e8]">
@@ -761,12 +851,12 @@ export default function NewsPage() {
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
 
                                   <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between pointer-events-none">
-                                    <div className="flex items-center gap-2 bg-[#8b6834] px-2.5 py-1 rounded shadow-lg pointer-events-auto">
+                                    <div className="flex items-center gap-2 bg-[#8b6834] px-2.5 py-1 rounded-none shadow-none pointer-events-auto">
                                       {item.faviconUrl && (
                                         <img
                                           src={item.faviconUrl}
                                           alt={`${item.source} icon`}
-                                          className="w-3 h-3 rounded-sm object-contain bg-white/20"
+                                          className="w-3 h-3 rounded-none object-contain bg-white/20"
                                           onError={(e) => {
                                             e.currentTarget.style.display =
                                               "none";
@@ -816,13 +906,13 @@ export default function NewsPage() {
                                   </div>
 
                                   <h3
-                                    className={`text-lg font-bold text-[#2c2419] mb-3 line-clamp-3 group-hover:text-[#8b6834] transition-colors leading-snug ${getFontClass(item.title)}`}
+                                    className={`text-lg font-bold text-[#2c2419] mb-3 line-clamp-3 group-hover:text-[#8b6834] transition-colors leading-snug ${getFontClass(item.title, "title")}`}
                                   >
                                     {item.title}
                                   </h3>
 
                                   <p
-                                    className={`text-sm text-[#5d4e37] line-clamp-3 mb-6 flex-grow leading-relaxed ${getFontClass(item.contentSnippet)}`}
+                                    className={`text-sm text-[#5d4e37] line-clamp-3 mb-6 flex-grow leading-relaxed ${getFontClass(item.contentSnippet, "body")}`}
                                   >
                                     {item.contentSnippet ||
                                       "No description available."}
@@ -839,16 +929,16 @@ export default function NewsPage() {
                                             : item.id,
                                         )
                                       }
-                                      className="flex-1 px-4 py-2.5 bg-[#2c2419] hover:bg-[#8b6834] text-white text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md group-hover:shadow-lg"
+                                      className="flex-1 px-4 py-2.5 bg-[#2c2419] hover:bg-[#8b6834] text-white text-xs font-black uppercase tracking-widest rounded-none transition-colors flex items-center justify-center gap-2 border-2 border-[#2c2419] hover:border-[#8b6834]"
                                     >
                                       <Sparkles className="w-4 h-4" />
-                                      Generate Card
+                                      Generate
                                     </button>
 
                                     {/* Compact Floating Theme Menu */}
                                     {activeThemeMenu === item.id && (
                                       <div
-                                        className="absolute bottom-full left-0 mb-2 w-40 bg-white border border-[#d4c4b0] justify-center rounded-lg shadow-xl z-50 animate-in fade-in slide-in-from-bottom-1 duration-150"
+                                        className="absolute bottom-full left-0 mb-2 w-40 bg-white border-2 border-[#d4c4b0] justify-center rounded-none shadow-none z-50 animate-in fade-in slide-in-from-bottom-1 duration-150"
                                         onMouseLeave={() =>
                                           setActiveThemeMenu(null)
                                         }
@@ -889,7 +979,7 @@ export default function NewsPage() {
                                       href={item.link}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="p-2.5 border border-[#d4c4b0]/60 hover:border-[#8b6834] hover:bg-[#8b6834]/5 text-[#5d4e37] hover:text-[#8b6834] rounded-xl transition-colors shrink-0"
+                                      className="p-2.5 border-2 border-[#d4c4b0] hover:border-[#8b6834] hover:bg-[#8b6834]/5 text-[#5d4e37] hover:text-[#8b6834] rounded-none transition-colors shrink-0"
                                       title="Read Original"
                                     >
                                       <ExternalLink className="w-4 h-4" />
@@ -908,7 +998,7 @@ export default function NewsPage() {
                                   handlePageChange(Math.max(1, currentPage - 1))
                                 }
                                 disabled={currentPage === 1}
-                                className="p-2 rounded-xl border border-[#d4c4b0]/40 bg-white text-[#5d4e37] hover:bg-[#8b6834] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                                className="p-2 rounded-none border-2 border-[#d4c4b0] bg-white text-[#5d4e37] hover:bg-[#8b6834] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-none"
                               >
                                 <ChevronLeft className="w-5 h-5" />
                               </button>
@@ -946,10 +1036,10 @@ export default function NewsPage() {
                                         onClick={() =>
                                           handlePageChange(pageNumber)
                                         }
-                                        className={`w-10 h-10 rounded-xl font-bold text-sm transition-all shadow-sm ${
+                                        className={`w-10 h-10 rounded-none font-black text-xs transition-all shadow-none ${
                                           currentPage === pageNumber
-                                            ? "bg-[#8b6834] text-white border-none"
-                                            : "bg-white border border-[#d4c4b0]/40 text-[#5d4e37] hover:border-[#8b6834]/50 hover:text-[#8b6834]"
+                                            ? "bg-[#8b6834] text-white border-2 border-[#8b6834]"
+                                            : "bg-white border-2 border-[#d4c4b0] text-[#5d4e37] hover:border-[#8b6834]/50 hover:text-[#8b6834]"
                                         }`}
                                       >
                                         {pageNumber}
@@ -966,7 +1056,7 @@ export default function NewsPage() {
                                   )
                                 }
                                 disabled={currentPage === totalPages}
-                                className="p-2 rounded-xl border border-[#d4c4b0]/40 bg-white text-[#5d4e37] hover:bg-[#8b6834] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                                className="p-2 rounded-none border-2 border-[#d4c4b0] bg-white text-[#5d4e37] hover:bg-[#8b6834] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-none"
                               >
                                 <ChevronRight className="w-5 h-5" />
                               </button>

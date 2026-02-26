@@ -8,8 +8,8 @@ export const en = {
     getStarted: "Get Started",
   },
   hero: {
-    title: "Professional News Cards for",
-    titleHighlight: "Journalists",
+    title: "Create News",
+    titleHighlight: "Cards Instantly",
     subtitle:
       "Create stunning news cards from any article URL in seconds. Perfect for sharing breaking news on social media platforms.",
     ctaPrimary: "Create Now",
@@ -23,45 +23,61 @@ export const en = {
   howItWorks: {
     title: "How It Works",
     subtitle:
-      "Transform any news article into a shareable card in four simple steps",
+      "Transform the latest news into shareable social media cards in seconds",
     step1: {
-      title: "Paste URL",
-      description: "Copy and paste your article URL into our generator",
+      title: "Browse Live News",
+      description:
+        "Discover trending stories from top local and international sources in one feed",
     },
     step2: {
-      title: "Auto Extract",
+      title: "Select & Generate",
       description:
-        "We automatically extract headlines, images, and key details",
+        "Choose any news item or paste a URL to instantly generate professional cards",
     },
     step3: {
-      title: "Customize",
-      description: "Fine-tune text, images, and layout to match your brand",
+      title: "Fine-Tune with AI",
+      description:
+        "Get AI-powered headline variations and add your own logo and images",
     },
     step4: {
-      title: "Download & Share",
-      description: "Export in high quality and share across all platforms",
+      title: "Export & Automate",
+      description:
+        "Download high-quality designs or auto-post directly to your social pages",
     },
   },
   features: {
-    title: "Built for Journalists",
-    subtitle: "Everything you need to create professional news cards quickly",
-    urlGeneration: {
-      title: "URL-Based Generation",
-      description: "Automatically extract article content from any news URL",
+    title: "The Ultimate Toolkit for Modern Journalists",
+    subtitle:
+      "Beyond simple card generation - a complete ecosystem for news social media",
+    newsroom: {
+      title: "Integrated Newsroom",
+      description:
+        "Browse live feeds from multiple sources and catch breaking news first",
     },
-    customDesign: {
+    aiPower: {
+      title: "AI Headline Variations",
+      description:
+        "Generate multiple catchy variants for your headings with professional AI",
+    },
+    branding: {
       title: "Custom Branding",
       description:
-        "Add your logo, colors, and typography for consistent branding",
+        "Add your publication logo and maintain your signature brand identity",
     },
-    templates: {
-      title: "News Templates",
+    automation: {
+      title: "Social Automation",
       description:
-        "Professional templates designed specifically for journalism",
+        "Directly auto-post to Facebook pages and other social platforms (v2)",
     },
-    instantDownload: {
-      title: "High-Quality Export",
-      description: "Download cards optimized for every social platform",
+    themes: {
+      title: "Premium Themes",
+      description:
+        "Dozens of professional, high-contrast 'boxy' templates for every story",
+    },
+    api: {
+      title: "API Support",
+      description:
+        "Integrate our generation engine directly into your own CMS or apps",
     },
   },
   pricing: {
@@ -121,24 +137,24 @@ export const en = {
     subtitle: "The professional choice for news content on social media",
     reasons: [
       {
-        title: "Save Editorial Time",
+        title: "AI-Powered Precision",
         description:
-          "Generate publication-ready social cards in seconds, not minutes",
+          "Generate professional headline variations and context-aware summaries in seconds using our advanced AI engine.",
       },
       {
-        title: "Consistent Brand Identity",
+        title: "Infinite Brand Control",
         description:
-          "Maintain your publication's visual standards across all platforms",
+          "Upload your own logos, custom images, and signature colors to ensure 100% brand consistency.",
       },
       {
-        title: "Boost Engagement",
+        title: "Omni-Channel Workflow",
         description:
-          "Professional cards get more clicks, shares, and reader engagement",
+          "Discover trending news, create stunning cards, and automate your social media posting from one dashboard.",
       },
       {
-        title: "Built for News",
+        title: "API-First Infrastructure",
         description:
-          "Designed specifically for journalism workflows and requirements",
+          "Seamlessly integrate our generation engine into your existing CMS or newsroom software with our robust API.",
       },
     ],
   },

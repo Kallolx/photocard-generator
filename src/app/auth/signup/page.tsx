@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LandingNavbar from "@/components/landing/LandingNavbar";
 import LandingFooter from "@/components/landing/LandingFooter";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -21,6 +22,8 @@ export default function SignupPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,39 +84,38 @@ export default function SignupPage() {
 
   return (
     <div
-      className={`min-h-screen bg-[#faf8f5] flex flex-col ${lang === "bn" ? "font-noto-bengali" : ""}`}
+      className={`min-h-screen bg-[#faf8f5] flex flex-col relative overflow-hidden ${lang === "bn" ? "font-noto-bengali" : ""}`}
     >
       <LandingNavbar lang={lang} setLang={setLang} t={t} />
 
-      <div className="flex-grow flex items-center justify-center px-4 py-12 md:py-38">
-        <div className="w-full max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+      <div className="flex-grow flex items-center justify-center px-4 py-8 md:py-24 relative z-10">
+        <div className="w-full max-w-6xl mx-auto grid md:grid-cols-2 gap-4 md:gap-12 lg:gap-24 items-center md:pt-12 pt-18 pb-12">
           {/* Left Side - Text */}
           <div className="text-center md:text-left space-y-4">
-            <h1 className="max-w-md mx-auto md:mx-0 text-4xl md:text-5xl lg:text-6xl font-lora font-bold text-[#2c2419] leading-tight">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#8b6834]/10 border border-[#8b6834]/20 text-[#8b6834] text-[10px] font-black uppercase tracking-widest mb-2">
+              Join the future
+            </div>
+            <h1 className="max-w-md mx-auto md:mx-0 text-4xl md:text-6xl lg:text-7xl font-black text-[#2c2419] leading-[0.9] uppercase tracking-tighter">
               {t.auth.signupTitle}
             </h1>
-            <p className="text-lg md:text-xl text-[#5d4e37] font-inter max-w-md mx-auto md:mx-0">
-              {t.auth.signupSubtitle}
-            </p>
           </div>
 
           {/* Right Side - Signup Card */}
-          <div className="bg-white border-2 border-[#d4c4b0] p-8 shadow-lg">
-            <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="bg-white border-4 border-[#2c2419] p-8 md:p-10 rounded-none shadow-[12px_12px_0px_0px_#8b6834] relative">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* Error Message */}
               {error && (
-                <div className="bg-[#f5e5d3] border-2 border-[#d4c4b0] p-3">
-                  <p className="text-[#8b6834] text-sm font-inter font-medium">
-                    {error}
-                  </p>
+                <div className="bg-[#f5e5d3] border-2 border-[#2c2419] p-4 rounded-none flex items-center gap-3">
+                  <div className="w-2 h-full bg-[#8b6834] absolute left-0 top-0"></div>
+                  <p className="text-[#8b6834] text-sm font-bold">{error}</p>
                 </div>
               )}
 
               {/* Name Field */}
-              <div>
+              <div className="space-y-1.5">
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium font-inter text-[#2c2419] mb-2"
+                  className="block text-[10px] font-black text-[#2c2419] uppercase tracking-widest"
                 >
                   {t.auth.nameLabel}
                 </label>
@@ -125,16 +127,16 @@ export default function SignupPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter focus:outline-none focus:ring-2 focus:ring-[#8b6834]"
+                  className="w-full px-4 py-3 bg-[#faf8f5] border-2 border-[#2c2419] text-[#2c2419] rounded-none focus:bg-white focus:outline-none focus:ring-0 transition-colors font-bold"
                   placeholder="John Doe"
                 />
               </div>
 
               {/* Email Field */}
-              <div>
+              <div className="space-y-1.5">
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium font-inter text-[#2c2419] mb-2"
+                  className="block text-[10px] font-black text-[#2c2419] uppercase tracking-widest"
                 >
                   {t.auth.emailLabel}
                 </label>
@@ -146,84 +148,126 @@ export default function SignupPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="w-full px-4 py-3 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter focus:outline-none focus:ring-2 focus:ring-[#8b6834]"
+                  className="w-full px-4 py-3 bg-[#faf8f5] border-2 border-[#2c2419] text-[#2c2419] rounded-none focus:bg-white focus:outline-none focus:ring-0 transition-colors font-bold"
                   placeholder="you@example.com"
                 />
               </div>
 
               {/* Password Field */}
-              <div>
+              <div className="space-y-1.5">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium font-inter text-[#2c2419] mb-2"
+                  className="block text-[10px] font-black text-[#2c2419] uppercase tracking-widest"
                 >
                   {t.auth.passwordLabel}
                 </label>
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  minLength={8}
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter focus:outline-none focus:ring-2 focus:ring-[#8b6834]"
-                  placeholder="••••••••"
-                />
-                <p className="mt-1 text-xs font-inter text-[#5d4e37]">
-                  Must be at least 8 characters
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    minLength={8}
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    className="w-full px-4 py-3 bg-[#faf8f5] border-2 border-[#2c2419] text-[#2c2419] rounded-none focus:bg-white focus:outline-none focus:ring-0 transition-colors font-bold pr-12"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8b6834] hover:text-[#2c2419] transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                <p className="text-[10px] font-bold text-[#8b6834] uppercase tracking-tighter">
+                  Minimum 8 characters
                 </p>
               </div>
 
               {/* Confirm Password Field */}
-              <div>
+              <div className="space-y-1.5">
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-sm font-medium font-inter text-[#2c2419] mb-2"
+                  className="block text-[10px] font-black text-[#2c2419] uppercase tracking-widest"
                 >
                   {t.auth.confirmPasswordLabel}
                 </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  required
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  className="w-full px-4 py-3 bg-[#faf8f5] border-2 border-[#d4c4b0] text-[#2c2419] placeholder-[#5d4e37] font-inter focus:outline-none focus:ring-2 focus:ring-[#8b6834]"
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    required
+                    value={formData.confirmPassword}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        confirmPassword: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-3 bg-[#faf8f5] border-2 border-[#2c2419] text-[#2c2419] rounded-none focus:bg-white focus:outline-none focus:ring-0 transition-colors font-bold pr-12"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8b6834] hover:text-[#2c2419] transition-colors"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
+                  </button>
+                </div>
               </div>
 
               {/* Terms Agreement */}
-              <div className="flex items-start">
-                <input
-                  type="checkbox"
-                  checked={formData.agreeToTerms}
-                  onChange={(e) =>
-                    setFormData({ ...formData, agreeToTerms: e.target.checked })
-                  }
-                  className="w-4 h-4 mt-1 border-2 border-[#d4c4b0] text-[#8b6834] focus:ring-[#8b6834]"
-                />
-                <label className="ml-2 text-sm font-inter text-[#5d4e37]">
-                  I agree to the{" "}
+              <div className="flex items-start pt-2">
+                <div className="relative flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.agreeToTerms}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        agreeToTerms: e.target.checked,
+                      })
+                    }
+                    className="peer sr-only"
+                  />
+                  <div className="w-5 h-5 border-2 border-[#2c2419] bg-white rounded-none peer-checked:bg-[#8b6834] transition-colors flex items-center justify-center">
+                    <svg
+                      className="w-3 h-3 text-white hidden peer-checked:block"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={4}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <label className="ml-3 text-[10px] font-bold text-[#5d4e37] uppercase tracking-tight">
+                  Agree to{" "}
                   <Link
                     href="/terms"
-                    className="font-medium text-[#8b6834] hover:text-[#6b4e25]"
+                    className="text-[#8b6834] underline underline-offset-2"
                   >
-                    Terms of Service
+                    Terms
                   </Link>{" "}
-                  and{" "}
+                  &{" "}
                   <Link
                     href="/privacy"
-                    className="font-medium text-[#8b6834] hover:text-[#6b4e25]"
+                    className="text-[#8b6834] underline underline-offset-2"
                   >
-                    Privacy Policy
+                    Privacy
                   </Link>
                 </label>
               </div>
@@ -232,19 +276,19 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-[#8b6834] text-[#faf8f5] py-3 px-4 font-inter font-semibold hover:bg-[#6b4e25] focus:outline-none focus:ring-2 focus:ring-[#8b6834] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full bg-[#8b6834] text-white py-4 px-6 rounded-none font-black uppercase tracking-[0.2em] text-xs border-2 border-[#8b6834] hover:bg-[#2c2419] hover:border-[#2c2419] active:translate-x-[2px] active:translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[4px_4px_0px_0px_#2c2419] hover:shadow-none mt-4"
               >
                 {isLoading ? "Creating account..." : t.auth.createAccountButton}
               </button>
             </form>
 
             {/* Login Link */}
-            <div className="mt-6 text-center">
-              <p className="text-sm font-inter text-[#5d4e37]">
+            <div className="mt-6 pt-6 border-t-2 border-[#f5f0e8] text-center">
+              <p className="text-xs font-bold text-[#5d4e37] uppercase tracking-wider">
                 {t.auth.haveAccount}{" "}
                 <Link
                   href="/auth/login"
-                  className="font-medium text-[#8b6834] hover:text-[#6b4e25]"
+                  className="font-black text-[#8b6834] hover:text-[#2c2419] transition-colors"
                 >
                   {t.auth.signInLink}
                 </Link>

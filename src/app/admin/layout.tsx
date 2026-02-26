@@ -22,13 +22,18 @@ export default function AdminLayout({
 
         {/* Mobile Sidebar Overlay */}
         {sidebarOpen && (
-          <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 z-50 md:hidden overflow-hidden">
             <div
-              className="absolute inset-0 bg-[#2c2419]/50 backdrop-blur-sm"
+              className={`absolute inset-0 bg-[#2c2419]/60 backdrop-blur-sm transition-opacity duration-300 ${sidebarOpen ? "opacity-100" : "opacity-0"}`}
               onClick={() => setSidebarOpen(false)}
             />
-            <div className="absolute left-0 top-0 h-full w-72 animate-slide-in">
-              <AdminSidebar />
+            <div
+              className="absolute left-0 top-0 h-full w-72 bg-[#faf8f5] shadow-[20px_0_50px_rgba(44,36,25,0.2)] border-r border-[#d4c4b0]/40"
+              style={{
+                animation: "slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              <AdminSidebar onItemClick={() => setSidebarOpen(false)} />
             </div>
           </div>
         )}

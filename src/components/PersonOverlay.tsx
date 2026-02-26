@@ -6,7 +6,11 @@ import { Upload, X, Loader2 } from "lucide-react";
 interface PersonOverlayProps {
   cardWidth: number;
   cardHeight: number;
-  onImageChange?: (imageData: string | null, position: { x: number; y: number }, scale: number) => void;
+  onImageChange?: (
+    imageData: string | null,
+    position: { x: number; y: number },
+    scale: number,
+  ) => void;
   initialImage?: string | null;
   initialPosition?: { x: number; y: number };
   initialScale?: number;
@@ -30,9 +34,24 @@ export default function PersonOverlay({
   const [error, setError] = useState<string | null>(null);
   const [position, setPosition] = useState(initialPosition);
   const [scale, setScale] = useState(initialScale);
-  const [shadow, setShadow] = useState({ enabled: false, blur: 20, opacity: 0.5, offsetY: 10 });
-  const [glow, setGlow] = useState({ enabled: false, blur: 10, color: "#ffffff", opacity: 0.6 });
-  const [outline, setOutline] = useState({ enabled: false, width: 2, color: "#ffffff", opacity: 0.8 });
+  const [shadow, setShadow] = useState({
+    enabled: false,
+    blur: 20,
+    opacity: 0.5,
+    offsetY: 10,
+  });
+  const [glow, setGlow] = useState({
+    enabled: false,
+    blur: 10,
+    color: "#ffffff",
+    opacity: 0.6,
+  });
+  const [outline, setOutline] = useState({
+    enabled: false,
+    width: 2,
+    color: "#ffffff",
+    opacity: 0.8,
+  });
   const [controlsPos, setControlsPos] = useState({ top: 0, left: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,11 +61,11 @@ export default function PersonOverlay({
   // Update controls position
   useEffect(() => {
     if (!personImage || isProcessing) return;
-    
+
     const updatePosition = () => {
       if (containerRef.current) {
         // Get the card container (parent of person overlay)
-        const cardElement = containerRef.current.closest('[id]'); // Find element with id (the card)
+        const cardElement = containerRef.current.closest("[id]"); // Find element with id (the card)
         if (cardElement) {
           const rect = cardElement.getBoundingClientRect();
           setControlsPos({
@@ -58,12 +77,12 @@ export default function PersonOverlay({
     };
 
     updatePosition();
-    window.addEventListener('resize', updatePosition);
-    window.addEventListener('scroll', updatePosition, true);
-    
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
     return () => {
-      window.removeEventListener('resize', updatePosition);
-      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
     };
   }, [personImage, isProcessing]);
 
@@ -104,7 +123,7 @@ export default function PersonOverlay({
       if (simulatedProgress <= 85) {
         if (simulatedProgress > lastProgressRef.current) {
           lastProgressRef.current = simulatedProgress;
-          
+
           if (simulatedProgress < 20) {
             setProcessingStatus("Initializing...");
           } else if (simulatedProgress < 50) {
@@ -119,8 +138,9 @@ export default function PersonOverlay({
     }, 150);
 
     try {
-      const { removeBackground: removeBg } = await import("@imgly/background-removal");
-      
+      const { removeBackground: removeBg } =
+        await import("@imgly/background-removal");
+
       const response = await fetch(imageData);
       const blob = await response.blob();
 
@@ -164,11 +184,12 @@ export default function PersonOverlay({
         clearInterval(progressIntervalRef.current);
         progressIntervalRef.current = null;
       }
-      
+
       console.error("Background removal failed:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       setError(`Failed: ${errorMessage}`);
-      
+
       setTimeout(() => {
         setPersonImage(imageData);
         if (onImageChange) {
@@ -187,7 +208,7 @@ export default function PersonOverlay({
     setScale(1);
     // Clear the file input so same file can be uploaded again
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
     if (onImageChange) {
       onImageChange(null, initialPosition, 1);
@@ -207,7 +228,10 @@ export default function PersonOverlay({
   return (
     <>
       {/* Image and upload button - stays inside card */}
-      <div ref={containerRef} className="person-overlay-content pointer-events-auto">
+      <div
+        ref={containerRef}
+        className="person-overlay-content pointer-events-auto"
+      >
         {/* Upload button */}
         {!personImage && !isProcessing && (
           <div className="absolute top-2 right-2 z-50 pointer-events-auto">
@@ -226,9 +250,13 @@ export default function PersonOverlay({
         {isProcessing && (
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg pointer-events-auto">
             <div className="bg-white p-6 rounded-lg shadow-2xl flex flex-col items-center gap-3 max-w-md">
-              <Loader2 className="w-8 h-8 text-[#8b6834] animate-spin" />
-              <p className="text-sm font-medium text-[#2c2419]">Removing background...</p>
-              <p className="text-xs text-[#5d4e37] text-center">{processingStatus || "Processing..."}</p>
+              <Loader2 className="w-8 h-8 text-[#8b6834] animate-spin rounded-full" />
+              <p className="text-sm font-medium text-[#2c2419]">
+                Removing background...
+              </p>
+              <p className="text-xs text-[#5d4e37] text-center">
+                {processingStatus || "Processing..."}
+              </p>
               {error && (
                 <p className="text-xs text-red-600 text-center mt-2">{error}</p>
               )}
@@ -257,7 +285,7 @@ export default function PersonOverlay({
               const handleMouseMove = (moveEvent: MouseEvent) => {
                 const deltaX = moveEvent.clientX - startX;
                 const deltaY = moveEvent.clientY - startY;
-                
+
                 // NO BOUNDARIES - free movement anywhere in card
                 const newPos = {
                   x: startPosX + deltaX,
@@ -269,61 +297,78 @@ export default function PersonOverlay({
                 }
               };
 
-            const handleMouseUp = () => {
-              document.removeEventListener("mousemove", handleMouseMove);
-              document.removeEventListener("mouseup", handleMouseUp);
-            };
+              const handleMouseUp = () => {
+                document.removeEventListener("mousemove", handleMouseMove);
+                document.removeEventListener("mouseup", handleMouseUp);
+              };
 
-            document.addEventListener("mousemove", handleMouseMove);
-            document.addEventListener("mouseup", handleMouseUp);
-          }}
-          onWheel={(e) => {
-            e.preventDefault();
-            const delta = e.deltaY > 0 ? -0.1 : 0.1;
-            const newScale = Math.max(0.1, Math.min(2.0, scale + delta));
-            setScale(newScale);
-            if (onImageChange && personImage) {
-              onImageChange(personImage, position, newScale);
-            }
-          }}
-        >
-          <img
-            src={personImage}
-            alt="Person cutout"
-            className="max-w-none select-none pointer-events-none"
-            style={{
-              maxHeight: `${cardHeight * 0.9}px`,
-              width: "auto",
-              height: "auto",
-              filter: [
-                shadow.enabled ? `drop-shadow(0px ${shadow.offsetY}px ${shadow.blur}px rgba(0, 0, 0, ${shadow.opacity}))` : '',
-                glow.enabled ? `drop-shadow(0 0 ${glow.blur}px ${glow.color}${Math.round(glow.opacity * 255).toString(16).padStart(2, '0')})` : '',
-                outline.enabled ? (() => {
-                  const color = `${outline.color}${Math.round(outline.opacity * 255).toString(16).padStart(2, '0')}`;
-                  const w = outline.width;
-                  // Create outline using multiple drop-shadows in 8 directions
-                  return [
-                    `drop-shadow(${w}px 0 0 ${color})`,
-                    `drop-shadow(-${w}px 0 0 ${color})`,
-                    `drop-shadow(0 ${w}px 0 ${color})`,
-                    `drop-shadow(0 -${w}px 0 ${color})`,
-                    `drop-shadow(${w * 0.707}px ${w * 0.707}px 0 ${color})`,
-                    `drop-shadow(-${w * 0.707}px ${w * 0.707}px 0 ${color})`,
-                    `drop-shadow(${w * 0.707}px -${w * 0.707}px 0 ${color})`,
-                    `drop-shadow(-${w * 0.707}px -${w * 0.707}px 0 ${color})`
-                  ].join(' ');
-                })() : ''
-              ].filter(Boolean).join(' ') || 'none',
+              document.addEventListener("mousemove", handleMouseMove);
+              document.addEventListener("mouseup", handleMouseUp);
             }}
-            draggable={false}
-          />
-        </div>
-      )}
+            onWheel={(e) => {
+              e.preventDefault();
+              const delta = e.deltaY > 0 ? -0.1 : 0.1;
+              const newScale = Math.max(0.1, Math.min(2.0, scale + delta));
+              setScale(newScale);
+              if (onImageChange && personImage) {
+                onImageChange(personImage, position, newScale);
+              }
+            }}
+          >
+            <img
+              src={personImage}
+              alt="Person cutout"
+              className="max-w-none select-none pointer-events-none"
+              style={{
+                maxHeight: `${cardHeight * 0.9}px`,
+                width: "auto",
+                height: "auto",
+                filter:
+                  [
+                    shadow.enabled
+                      ? `drop-shadow(0px ${shadow.offsetY}px ${shadow.blur}px rgba(0, 0, 0, ${shadow.opacity}))`
+                      : "",
+                    glow.enabled
+                      ? `drop-shadow(0 0 ${glow.blur}px ${glow.color}${Math.round(
+                          glow.opacity * 255,
+                        )
+                          .toString(16)
+                          .padStart(2, "0")})`
+                      : "",
+                    outline.enabled
+                      ? (() => {
+                          const color = `${outline.color}${Math.round(
+                            outline.opacity * 255,
+                          )
+                            .toString(16)
+                            .padStart(2, "0")}`;
+                          const w = outline.width;
+                          // Create outline using multiple drop-shadows in 8 directions
+                          return [
+                            `drop-shadow(${w}px 0 0 ${color})`,
+                            `drop-shadow(-${w}px 0 0 ${color})`,
+                            `drop-shadow(0 ${w}px 0 ${color})`,
+                            `drop-shadow(0 -${w}px 0 ${color})`,
+                            `drop-shadow(${w * 0.707}px ${w * 0.707}px 0 ${color})`,
+                            `drop-shadow(-${w * 0.707}px ${w * 0.707}px 0 ${color})`,
+                            `drop-shadow(${w * 0.707}px -${w * 0.707}px 0 ${color})`,
+                            `drop-shadow(-${w * 0.707}px -${w * 0.707}px 0 ${color})`,
+                          ].join(" ");
+                        })()
+                      : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || "none",
+              }}
+              draggable={false}
+            />
+          </div>
+        )}
       </div>
 
       {/* Control panel - All in ONE box */}
       {personImage && !isProcessing && (
-        <div 
+        <div
           className="fixed z-[9999] pointer-events-auto"
           style={{
             top: `${controlsPos.top}px`,
@@ -348,13 +393,15 @@ export default function PersonOverlay({
                 <Upload className="w-2.5 h-2.5" />
               </button>
             </div>
-            
+
             {/* Divider */}
             <div className="border-t border-gray-200 mb-2"></div>
 
             {/* Size control */}
             <div className="mb-2">
-              <div className="text-[10px] font-medium text-gray-700 mb-1">Size</div>
+              <div className="text-[10px] font-medium text-gray-700 mb-1">
+                Size
+              </div>
               <input
                 type="range"
                 min="0.1"
@@ -375,11 +422,15 @@ export default function PersonOverlay({
             {/* Shadow control */}
             <div className="mb-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-medium text-gray-700">Shadow</span>
+                <span className="text-[10px] font-medium text-gray-700">
+                  Shadow
+                </span>
                 <input
                   type="checkbox"
                   checked={shadow.enabled}
-                  onChange={(e) => setShadow({ ...shadow, enabled: e.target.checked })}
+                  onChange={(e) =>
+                    setShadow({ ...shadow, enabled: e.target.checked })
+                  }
                   className="w-3 h-3 rounded"
                 />
               </div>
@@ -393,31 +444,47 @@ export default function PersonOverlay({
                       max="30"
                       step="1"
                       value={shadow.blur}
-                      onChange={(e) => setShadow({ ...shadow, blur: parseInt(e.target.value) })}
+                      onChange={(e) =>
+                        setShadow({ ...shadow, blur: parseInt(e.target.value) })
+                      }
                       className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
                   <div>
-                    <div className="text-[9px] text-gray-500 mb-0.5">Opacity</div>
+                    <div className="text-[9px] text-gray-500 mb-0.5">
+                      Opacity
+                    </div>
                     <input
                       type="range"
                       min="0"
                       max="1"
                       step="0.1"
                       value={shadow.opacity}
-                      onChange={(e) => setShadow({ ...shadow, opacity: parseFloat(e.target.value) })}
+                      onChange={(e) =>
+                        setShadow({
+                          ...shadow,
+                          opacity: parseFloat(e.target.value),
+                        })
+                      }
                       className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
                   <div>
-                    <div className="text-[9px] text-gray-500 mb-0.5">Offset</div>
+                    <div className="text-[9px] text-gray-500 mb-0.5">
+                      Offset
+                    </div>
                     <input
                       type="range"
                       min="0"
                       max="20"
                       step="1"
                       value={shadow.offsetY}
-                      onChange={(e) => setShadow({ ...shadow, offsetY: parseInt(e.target.value) })}
+                      onChange={(e) =>
+                        setShadow({
+                          ...shadow,
+                          offsetY: parseInt(e.target.value),
+                        })
+                      }
                       className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -431,11 +498,15 @@ export default function PersonOverlay({
             {/* Glow control */}
             <div className="mb-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-medium text-gray-700">Glow</span>
+                <span className="text-[10px] font-medium text-gray-700">
+                  Glow
+                </span>
                 <input
                   type="checkbox"
                   checked={glow.enabled}
-                  onChange={(e) => setGlow({ ...glow, enabled: e.target.checked })}
+                  onChange={(e) =>
+                    setGlow({ ...glow, enabled: e.target.checked })
+                  }
                   className="w-3 h-3 rounded"
                 />
               </div>
@@ -449,7 +520,9 @@ export default function PersonOverlay({
                       max="20"
                       step="1"
                       value={glow.blur}
-                      onChange={(e) => setGlow({ ...glow, blur: parseInt(e.target.value) })}
+                      onChange={(e) =>
+                        setGlow({ ...glow, blur: parseInt(e.target.value) })
+                      }
                       className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -458,19 +531,28 @@ export default function PersonOverlay({
                     <input
                       type="color"
                       value={glow.color}
-                      onChange={(e) => setGlow({ ...glow, color: e.target.value })}
+                      onChange={(e) =>
+                        setGlow({ ...glow, color: e.target.value })
+                      }
                       className="w-full h-4 rounded cursor-pointer"
                     />
                   </div>
                   <div>
-                    <div className="text-[9px] text-gray-500 mb-0.5">Opacity</div>
+                    <div className="text-[9px] text-gray-500 mb-0.5">
+                      Opacity
+                    </div>
                     <input
                       type="range"
                       min="0"
                       max="1"
                       step="0.1"
                       value={glow.opacity}
-                      onChange={(e) => setGlow({ ...glow, opacity: parseFloat(e.target.value) })}
+                      onChange={(e) =>
+                        setGlow({
+                          ...glow,
+                          opacity: parseFloat(e.target.value),
+                        })
+                      }
                       className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -484,11 +566,15 @@ export default function PersonOverlay({
             {/* Outline control */}
             <div className="mb-2">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-medium text-gray-700">Outline</span>
+                <span className="text-[10px] font-medium text-gray-700">
+                  Outline
+                </span>
                 <input
                   type="checkbox"
                   checked={outline.enabled}
-                  onChange={(e) => setOutline({ ...outline, enabled: e.target.checked })}
+                  onChange={(e) =>
+                    setOutline({ ...outline, enabled: e.target.checked })
+                  }
                   className="w-3 h-3 rounded"
                 />
               </div>
@@ -502,7 +588,12 @@ export default function PersonOverlay({
                       max="10"
                       step="0.5"
                       value={outline.width}
-                      onChange={(e) => setOutline({ ...outline, width: parseFloat(e.target.value) })}
+                      onChange={(e) =>
+                        setOutline({
+                          ...outline,
+                          width: parseFloat(e.target.value),
+                        })
+                      }
                       className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>
@@ -511,19 +602,28 @@ export default function PersonOverlay({
                     <input
                       type="color"
                       value={outline.color}
-                      onChange={(e) => setOutline({ ...outline, color: e.target.value })}
+                      onChange={(e) =>
+                        setOutline({ ...outline, color: e.target.value })
+                      }
                       className="w-full h-4 rounded cursor-pointer"
                     />
                   </div>
                   <div>
-                    <div className="text-[9px] text-gray-500 mb-0.5">Opacity</div>
+                    <div className="text-[9px] text-gray-500 mb-0.5">
+                      Opacity
+                    </div>
                     <input
                       type="range"
                       min="0"
                       max="1"
                       step="0.1"
                       value={outline.opacity}
-                      onChange={(e) => setOutline({ ...outline, opacity: parseFloat(e.target.value) })}
+                      onChange={(e) =>
+                        setOutline({
+                          ...outline,
+                          opacity: parseFloat(e.target.value),
+                        })
+                      }
                       className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                   </div>

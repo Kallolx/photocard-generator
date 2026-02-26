@@ -32,6 +32,7 @@ import {
   LayoutGrid,
   Languages,
   Newspaper,
+  Search,
 } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -51,6 +52,7 @@ export default function Dashboard() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
   const pathname = usePathname();
 
   const isFreeUser = user?.plan === "Free";
@@ -63,20 +65,20 @@ export default function Dashboard() {
 
   const allCards: CardType[] = [
     {
+      id: "news",
+      label: "Today's News",
+      href: "/news",
+      icon: <Newspaper className="w-6 h-6" />,
+      locked: isFreeUser,
+      description: "Browse latest news and generate cards instantly",
+    },
+    {
       id: "url",
       label: "URL Newscard",
       href: "/url",
       icon: <LinkIcon className="w-6 h-6" />,
       locked: false,
       description: "Convert URLs to beautiful newscards instantly",
-    },
-    {
-      id: "news",
-      label: "All News",
-      href: "/news",
-      icon: <Newspaper className="w-6 h-6" />,
-      locked: isFreeUser,
-      description: "Browse latest news and generate cards instantly",
     },
     {
       id: "custom",
@@ -215,9 +217,9 @@ export default function Dashboard() {
     <Link
       href={locked ? "#" : href}
       onClick={onClick}
-      className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all font-medium ${
+      className={`flex items-center justify-between px-4 py-3 rounded-none transition-all font-medium ${
         isActive
-          ? "bg-[#8b6834] text-white shadow-md shadow-[#8b6834]/20"
+          ? "bg-[#8b6834] text-white"
           : "text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419]"
       } ${locked ? "opacity-75" : ""}`}
     >
@@ -252,7 +254,7 @@ export default function Dashboard() {
           {/* Sidebar Header (Logo) */}
           <div className="h-20 flex items-center px-6 border-b border-[#d4c4b0]/30 shadow-sm relative">
             <Link href="/dashboard" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#8b6834] to-[#5d4e37] flex items-center justify-center text-white shadow-md group-hover:shadow-lg transition-shadow">
+              <div className="w-8 h-8 rounded-none bg-gradient-to-br from-[#8b6834] to-[#5d4e37] flex items-center justify-center text-white group-hover:shadow-none transition-shadow">
                 <LayoutDashboard className="w-5 h-5" />
               </div>
               <span className="text-xl font-lora font-bold text-[#2c2419] tracking-tight group-hover:text-[#8b6834] transition-colors">
@@ -260,7 +262,7 @@ export default function Dashboard() {
               </span>
             </Link>
             <button
-              className="lg:hidden absolute right-4 p-2 text-[#5d4e37] hover:bg-[#f5f0e8] rounded-full transition-colors"
+              className="lg:hidden absolute right-4 p-2 text-[#5d4e37] hover:bg-[#f5f0e8] rounded-none transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <X className="w-5 h-5" />
@@ -329,8 +331,8 @@ export default function Dashboard() {
 
             {/* Free User Upgrade Banner */}
             {mounted && isFreeUser && (
-              <div className="mt-8 mx-4 p-4 rounded-xl bg-gradient-to-br from-[#8b6834]/10 to-[#8b6834]/5 border border-[#8b6834]/20 flex flex-col items-center text-center">
-                <div className="w-10 h-10 rounded-full bg-[#8b6834] flex items-center justify-center text-white mb-3 shadow-md">
+              <div className="mt-8 mx-4 p-4 rounded-none bg-gradient-to-br from-[#8b6834]/10 to-[#8b6834]/5 border border-[#8b6834]/20 flex flex-col items-center text-center">
+                <div className="w-10 h-10 rounded-none bg-[#8b6834] flex items-center justify-center text-white mb-3">
                   <Zap className="w-5 h-5" />
                 </div>
                 <h4 className="text-sm font-bold text-[#2c2419] mb-1">
@@ -344,7 +346,7 @@ export default function Dashboard() {
                     setUpgradeFeature("Premium Features");
                     setShowUpgradeModal(true);
                   }}
-                  className="w-full py-2 bg-[#8b6834] text-white text-xs font-bold rounded-lg hover:bg-[#2c2419] transition-colors shadow-sm"
+                  className="w-full py-2 bg-[#8b6834] text-white text-xs font-bold rounded-none hover:bg-[#2c2419] transition-colors"
                 >
                   Upgrade Now
                 </button>
@@ -355,8 +357,8 @@ export default function Dashboard() {
           {/* Sidebar Footer (User Info & Logout) */}
           <div className="p-4 border-t border-[#d4c4b0]/40 bg-[#faf8f5]/50">
             {mounted && (
-              <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-white border border-[#d4c4b0]/40 shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-[#e8dcc8] flex items-center justify-center text-[#8b6834] font-bold border-2 border-white shadow-sm flex-shrink-0">
+              <div className="flex items-center gap-3 mb-4 p-3 rounded-none bg-white border border-[#d4c4b0]/40">
+                <div className="w-10 h-10 rounded-none bg-[#e8dcc8] flex items-center justify-center text-[#8b6834] font-bold border-2 border-white shadow-none flex-shrink-0">
                   {user?.name?.charAt(0).toUpperCase() || "U"}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -375,7 +377,7 @@ export default function Dashboard() {
                 logout();
                 window.location.href = "/";
               }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold text-red-600 hover:text-white hover:bg-red-500 rounded-xl transition-all border border-red-200 hover:border-red-500"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold text-red-600 hover:text-white hover:bg-red-500 rounded-none transition-all border border-red-200 hover:border-red-500"
             >
               <LogOut className="w-4 h-4" />
               Sign Out
@@ -386,34 +388,46 @@ export default function Dashboard() {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
           {/* Top Header */}
-          <header className="flex-shrink-0 h-20 lg:h-24 px-4 sm:px-6 lg:px-10 flex items-center justify-between border-b border-[#d4c4b0]/20 bg-[#faf8f5]/80 backdrop-blur-md z-30">
-            <div className="flex items-center gap-4">
+          <header className="flex-shrink-0 h-20 lg:h-24 px-4 sm:px-6 lg:px-10 flex items-center justify-between border-b border-[#d4c4b0] bg-white z-30">
+            <div className="flex items-center gap-6 flex-1">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="lg:hidden p-2.5 bg-white border border-[#d4c4b0]/50 rounded-xl text-[#5d4e37] hover:text-[#8b6834] hover:border-[#8b6834]/50 shadow-sm transition-all"
+                className="lg:hidden p-2.5 bg-[#f5f0e8] border border-[#d4c4b0] rounded-none text-[#5d4e37] hover:text-[#8b6834] transition-all"
               >
                 <Menu className="w-5 h-5" />
               </button>
-              <div className="hidden sm:block">
-                <h2 className="text-xl font-bold text-[#2c2419]">Dashboard</h2>
-                <p className="text-sm text-[#5d4e37]">
-                  Manage your cards and projects
-                </p>
+
+              <div className="hidden md:flex flex-col">
+                <h2 className="text-xl font-black text-[#2c2419] tracking-tight uppercase">
+                  Dashboard
+                </h2>
+              </div>
+
+              <div className="hidden lg:flex items-center flex-1 max-w-md ml-8">
+                <div className="relative w-full">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#b49e82]" />
+                  <input
+                    type="text"
+                    placeholder="Search templates or tools..."
+                    className="w-full h-11 bg-[#f5f0e8]/50 border-2 border-[#d4c4b0]/40 rounded-none px-12 text-sm font-medium focus:outline-none focus:border-[#8b6834]/30 transition-all placeholder:text-[#b49e82]"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <CompactCreditDisplay />
+
               {isFreeUser && (
                 <button
                   onClick={() => {
                     setUpgradeFeature("Premium Features");
                     setShowUpgradeModal(true);
                   }}
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#8b6834] text-white text-sm font-bold rounded-xl hover:bg-[#2c2419] transition-colors shadow-md shadow-[#8b6834]/20"
+                  className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-[#8b6834] text-white text-[11px] font-black uppercase tracking-widest rounded-none hover:bg-[#2c2419] transition-all border-2 border-[#8b6834] hover:border-[#2c2419]"
                 >
-                  <Zap className="w-4 h-4" />
-                  Upgrade Plan
+                  <Zap className="w-3.5 h-3.5" />
+                  Upgrade
                 </button>
               )}
             </div>
@@ -422,30 +436,41 @@ export default function Dashboard() {
           {/* Main Content Scrollable Area */}
           <main className="flex-1 overflow-y-auto p-4 sm:px-6 lg:px-10 py-8 scroll-smooth">
             {/* Welcome Banner */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#2c2419] to-[#453a29] text-white p-6 md:p-8 mb-8 shadow-lg">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#8b6834] opacity-20 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
+            {showBanner && (
+              <div className="relative overflow-hidden rounded-none bg-[#2c2419] text-white p-8 md:p-10 mb-10 border-b-4 border-[#8b6834]">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-none blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#8b6834] opacity-10 rounded-none blur-2xl translate-y-1/3 -translate-x-1/4"></div>
 
-              <div className="relative z-10">
-                <h1 className="text-2xl md:text-3xl font-lora font-bold mb-2">
-                  Welcome back,{" "}
-                  <span className="text-[#e8dcc8]">
-                    {user?.name?.split(" ")[0] || "Creator"}
-                  </span>{" "}
-                  👋
-                </h1>
-                <p className="text-[#d4c4b0] text-sm md:text-base max-w-2xl font-medium leading-relaxed">
-                  Ready to craft something amazing? Select a template below to
-                  start generating beautiful social cards instantly.
-                </p>
+                <button
+                  onClick={() => setShowBanner(false)}
+                  className="absolute top-6 right-6 p-2 text-[#d4c4b0] hover:text-white transition-colors z-20 group"
+                  title="Dismiss banner"
+                >
+                  <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+                </button>
+
+                <div className="relative z-10">
+                  <h1 className="text-3xl md:text-4xl font-lora font-bold mb-4">
+                    Welcome back,{" "}
+                    <span className="text-[#e8dcc8]">
+                      {user?.name?.split(" ")[0] || "Admin"}
+                    </span>{" "}
+                    👋
+                  </h1>
+                  <p className="text-[#d4c4b0] text-sm md:text-base max-w-2xl font-medium leading-relaxed opacity-90">
+                    Ready to craft something amazing? Select a template below to
+                    start generating beautiful social cards instantly. Use our
+                    AI tools to speed up your workflow.
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Featured Tools Grid */}
             <section className="mb-14">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-2xl font-bold text-[#2c2419] flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#8b6834]/10 flex items-center justify-center text-[#8b6834]">
+                  <div className="w-10 h-10 rounded-none bg-[#8b6834]/10 flex items-center justify-center text-[#8b6834]">
                     <Zap className="w-5 h-5" />
                   </div>
                   Popular Actions
@@ -458,11 +483,11 @@ export default function Dashboard() {
                     href={card.locked ? "#" : card.href}
                     key={card.id}
                     onClick={(e) => handleCardClick(e, card)}
-                    className={`group relative overflow-hidden rounded-2xl border transition-all duration-300 ease-out hover:shadow-lg flex flex-col hover:-translate-y-0.5
+                    className={`group relative overflow-hidden rounded-none border-2 transition-all duration-300 ease-out flex flex-col hover:-translate-y-1
                       ${
                         card.locked
-                          ? "border-[#d4c4b0]/40 bg-white/50 cursor-not-allowed"
-                          : "border-[#d4c4b0]/40 bg-white hover:border-[#8b6834]/30 shadow-sm"
+                          ? "border-[#d4c4b0] bg-white/50 cursor-not-allowed"
+                          : "border-[#d4c4b0] bg-white hover:border-[#8b6834] shadow-none"
                       }`}
                   >
                     {/* Background glow effect on hover */}
@@ -473,7 +498,7 @@ export default function Dashboard() {
                     <div className="p-5 h-full flex flex-col relative z-10">
                       <div className="flex justify-between items-start mb-4">
                         <div
-                          className={`p-3 rounded-xl inline-flex shadow-sm transition-all duration-300 group-hover:scale-105 group-hover:rotate-2
+                          className={`p-3 rounded-none inline-flex transition-all duration-300 group-hover:scale-105 group-hover:rotate-2
                           ${card.locked ? "bg-[#f5f0e8] text-[#8b6834]/40" : "bg-[#2c2419] text-[#e8dcc8] group-hover:bg-[#8b6834] group-hover:text-white"}`}
                         >
                           {React.cloneElement(
@@ -482,7 +507,7 @@ export default function Dashboard() {
                           )}
                         </div>
                         {card.locked && (
-                          <div className="bg-[#f5f0e8] px-2 py-1 rounded-full border border-[#d4c4b0]/40 flex items-center gap-1 shadow-sm">
+                          <div className="bg-[#f5f0e8] px-2 py-1 rounded-none border border-[#d4c4b0]/40 flex items-center gap-1">
                             <Lock className="w-3 h-3 text-[#8b6834]/70" />
                             <span className="text-[10px] font-bold text-[#8b6834]/70">
                               PRO
@@ -529,7 +554,7 @@ export default function Dashboard() {
             <section className="mb-10">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-xl font-bold text-[#2c2419] flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-[#d4c4b0]/40 shadow-sm flex items-center justify-center text-[#5d4e37]">
+                  <div className="w-10 h-10 rounded-none bg-white border border-[#d4c4b0]/40 flex items-center justify-center text-[#5d4e37]">
                     <Layers className="w-5 h-5" />
                   </div>
                   More Templates
@@ -542,40 +567,43 @@ export default function Dashboard() {
                     href={card.locked ? "#" : card.href}
                     key={card.id}
                     onClick={(e) => handleCardClick(e, card)}
-                    className={`group flex flex-col p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1
+                    className={`group flex items-center gap-3 p-3.5 rounded-none transition-all duration-300 hover:bg-[#f5f0e8]/30 border-[1.5px]
                       ${
                         card.locked
-                          ? "bg-white/50 border border-[#d4c4b0]/30 cursor-not-allowed"
-                          : "bg-white border border-[#d4c4b0]/40 hover:border-[#8b6834]/40 hover:shadow-xl shadow-sm"
+                          ? "bg-white/50 border-[#d4c4b0]/60 cursor-not-allowed"
+                          : "bg-white border-[#d4c4b0] hover:border-[#8b6834]/60"
                       }`}
                   >
-                    <div className="flex items-center gap-4 mb-4">
-                      <div
-                        className={`p-3 rounded-xl transition-transform duration-300 group-hover:scale-110 
-                        ${card.locked ? "bg-[#f5f0e8] text-[#8b6834]/30" : "bg-[#f5f0e8] text-[#8b6834] group-hover:bg-[#8b6834]/10"}`}
-                      >
-                        {card.icon}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h4
-                            className={`text-base font-bold font-inter truncate transition-colors
-                            ${card.locked ? "text-[#5d4e37]/50" : "text-[#2c2419] group-hover:text-[#8b6834]"}`}
-                          >
-                            {card.label}
-                          </h4>
-                          {card.locked && (
-                            <Lock className="w-3.5 h-3.5 text-[#8b6834]/60 flex-shrink-0" />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <p
-                      className={`text-sm leading-relaxed mt-auto
-                      ${card.locked ? "text-[#5d4e37]/40" : "text-[#5d4e37]/80"}`}
+                    <div
+                      className={`transition-transform duration-300 flex-shrink-0
+                      ${card.locked ? "text-[#8b6834]/30" : "text-[#8b6834]"}`}
                     >
-                      {card.description}
-                    </p>
+                      {React.cloneElement(
+                        card.icon as React.ReactElement<any>,
+                        {
+                          className: "w-6 h-6",
+                        },
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <h4
+                          className={`text-[13px] font-black font-inter truncate transition-colors uppercase tracking-tight
+                          ${card.locked ? "text-[#5d4e37]/50" : "text-[#2c2419] group-hover:text-[#8b6834]"}`}
+                        >
+                          {card.label}
+                        </h4>
+                        {card.locked && (
+                          <Lock className="w-3 h-3 text-[#8b6834]/60 flex-shrink-0" />
+                        )}
+                      </div>
+                      <p
+                        className={`text-[11px] leading-snug font-medium line-clamp-1
+                        ${card.locked ? "text-[#5d4e37]/40" : "text-[#5d4e37]/80"}`}
+                      >
+                        {card.description}
+                      </p>
+                    </div>
                   </Link>
                 ))}
               </div>

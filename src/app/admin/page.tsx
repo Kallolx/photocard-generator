@@ -137,11 +137,11 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-lora font-bold text-[#2c2419]">
-              Admin Dashboard
+            <h1 className="text-2xl md:text-3xl font-black text-[#2c2419] uppercase tracking-tight">
+              Admin Overview
             </h1>
-            <p className="text-[#5d4e37] mt-1">
-              Manage users, plans, and system status.
+            <p className="text-[11px] font-bold text-[#5d4e37] mt-1 uppercase tracking-widest opacity-70">
+              System monitoring & user administration
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -150,11 +150,11 @@ export default function AdminDashboard() {
                 fetchStats();
                 fetchUsers(pagination.page);
               }}
-              className="px-4 py-2 border-2 border-[#d4c4b0] text-[#5d4e37] font-semibold hover:border-[#8b6834] hover:text-[#2c2419] transition-colors flex items-center gap-2"
+              className="px-4 py-2 border border-[#d4c4b0] text-[10px] font-black uppercase tracking-widest text-[#5d4e37] hover:border-[#8b6834] hover:text-[#2c2419] transition-all flex items-center gap-2 bg-white active:translate-x-[1px] active:translate-y-[1px]"
             >
-              <RefreshCw className="w-4 h-4" /> Refresh
+              <RefreshCw className="w-3.5 h-3.5" /> Refresh
             </button>
-            <div className="px-4 py-2 bg-[#d4c4b0] text-[#2c2419] font-bold font-lora">
+            <div className="px-4 py-2 bg-[#2c2419] text-[#faf8f5] text-[10px] font-black uppercase tracking-widest border border-[#2c2419] shadow-[2px_2px_0px_0px_#8b6834]">
               ADMIN MODE
             </div>
           </div>
@@ -162,21 +162,21 @@ export default function AdminDashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white p-6 border-2 border-[#d4c4b0] shadow-sm">
+          <div className="bg-white p-6 border border-[#d4c4b0]/60 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <p className="text-sm text-[#5d4e37] font-medium uppercase tracking-wide">
+                <p className="text-[10px] text-[#8b6834] font-black uppercase tracking-widest">
                   Total Users
                 </p>
-                <h3 className="text-3xl font-lora font-bold mt-1">
+                <h3 className="text-3xl font-black mt-1 text-[#2c2419] tracking-tight">
                   {stats.totalUsers}
                 </h3>
               </div>
-              <div className="p-3 bg-[#f5f0e8] text-[#8b6834] rounded-full">
-                <Users className="w-6 h-6" />
+              <div className="p-2.5 bg-[#f5f0e8]/50 text-[#8b6834] border border-[#d4c4b0]/40">
+                <Users className="w-5 h-5" />
               </div>
             </div>
-            <div className="w-full bg-[#f5f0e8] h-1.5 mt-2 rounded-full overflow-hidden flex">
+            <div className="w-full bg-[#f5f0e8] h-1 mt-4 rounded-none overflow-hidden flex">
               <div
                 className="bg-[#8b6834] h-full"
                 style={{
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
                 }}
               ></div>
               <div
-                className="bg-[#c2a178] h-full"
+                className="bg-[#2c2419] h-full"
                 style={{
                   width: `${(stats.premium / stats.totalUsers) * 100}%`,
                 }}
@@ -192,79 +192,81 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white p-6 border-2 border-[#d4c4b0] shadow-sm">
+          <div className="bg-white p-6 border border-[#d4c4b0]/60 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <p className="text-sm text-[#5d4e37] font-medium uppercase tracking-wide">
+                <p className="text-[10px] text-[#8b6834] font-black uppercase tracking-widest">
                   Premium Users
                 </p>
-                <h3 className="text-3xl font-lora font-bold mt-1">
+                <h3 className="text-3xl font-black mt-1 text-[#2c2419] tracking-tight">
                   {stats.premium}
                 </h3>
               </div>
-              <div className="p-3 bg-[#f5f0e8] text-[#8b6834] rounded-full">
-                <Shield className="w-6 h-6" />
+              <div className="p-2.5 bg-[#f5f0e8]/50 text-[#8b6834] border border-[#d4c4b0]/40">
+                <Shield className="w-5 h-5" />
               </div>
             </div>
-            <p className="text-xs text-[#5d4e37]">
-              {((stats.premium / stats.totalUsers) * 100).toFixed(1)}% of total
-              base
+            <p className="text-[10px] font-bold text-[#5d4e37] uppercase tracking-tight mt-1">
+              {((stats.premium / stats.totalUsers) * 100).toFixed(1)}%
+              Conversion rate
             </p>
           </div>
 
-          <div className="bg-white p-6 border-2 border-[#d4c4b0] shadow-sm">
+          <div className="bg-white p-6 border border-[#d4c4b0]/60 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <p className="text-sm text-[#5d4e37] font-medium uppercase tracking-wide">
+                <p className="text-[10px] text-[#8b6834] font-black uppercase tracking-widest">
                   Cards Generated
                 </p>
-                <h3 className="text-3xl font-lora font-bold mt-1">
+                <h3 className="text-3xl font-black mt-1 text-[#2c2419] tracking-tight">
                   {stats.totalCards}
                 </h3>
               </div>
-              <div className="p-3 bg-[#f5f0e8] text-[#8b6834] rounded-full">
-                <CreditCard className="w-6 h-6" />
+              <div className="p-2.5 bg-[#f5f0e8]/50 text-[#8b6834] border border-[#d4c4b0]/40">
+                <CreditCard className="w-5 h-5" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white p-6 border-2 border-[#d4c4b0] shadow-sm">
+          <div className="bg-white p-6 border border-[#d4c4b0]/60 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <p className="text-sm text-[#5d4e37] font-medium uppercase tracking-wide">
-                  Active Plans
+                <p className="text-[10px] text-[#8b6834] font-black uppercase tracking-widest">
+                  Plan Distribution
                 </p>
                 <div className="space-y-1 mt-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Free:</span>
-                    <span className="font-bold">{stats.free}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between text-[11px] font-bold uppercase text-[#2c2419]">
                     <span>Basic:</span>
-                    <span className="font-bold">{stats.basic}</span>
+                    <span>{stats.basic}</span>
+                  </div>
+                  <div className="flex justify-between text-[11px] font-bold uppercase text-[#8b6834]">
+                    <span>Free:</span>
+                    <span>{stats.free}</span>
                   </div>
                 </div>
               </div>
-              <div className="p-3 bg-[#f5f0e8] text-[#8b6834] rounded-full">
-                <Activity className="w-6 h-6" />
+              <div className="p-2.5 bg-[#f5f0e8]/50 text-[#8b6834] border border-[#d4c4b0]/40">
+                <Activity className="w-5 h-5" />
               </div>
             </div>
           </div>
         </div>
 
         {/* User Management Section */}
-        <div className="bg-white border-2 border-[#d4c4b0] shadow-sm overflow-hidden">
-          <div className="p-6 border-b-2 border-[#f5f0e8] flex flex-col md:flex-row justify-between md:items-center gap-4">
-            <h2 className="text-xl font-lora font-bold">User Management</h2>
+        <div className="bg-white border border-[#d4c4b0]/60 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.05)] overflow-hidden">
+          <div className="p-6 border-b border-[#f5f0e8] flex flex-col md:flex-row justify-between md:items-center gap-4">
+            <h2 className="text-sm font-black uppercase tracking-widest text-[#2c2419]">
+              User Management
+            </h2>
             <form onSubmit={handleSearch} className="relative w-full md:w-96">
               <input
                 type="text"
-                placeholder="Search by name or email..."
+                placeholder="SEARCH HEADLINES OR EMAILS..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border-2 border-[#d4c4b0] focus:outline-none focus:border-[#8b6834] transition-colors"
+                className="w-full pl-10 pr-4 py-2 bg-[#f5f0e8]/50 border border-[#d4c4b0]/40 rounded-none text-[10px] font-black uppercase tracking-widest focus:outline-none focus:bg-white focus:border-[#8b6834]/40 transition-all placeholder:opacity-50"
               />
-              <Search className="w-5 h-5 text-[#a08d74] absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#a08d74] absolute left-3 top-1/2 -translate-y-1/2" />
             </form>
           </div>
 
@@ -275,14 +277,26 @@ export default function AdminDashboard() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-[#f5f0e8] text-[#5d4e37] text-xs uppercase font-bold tracking-wider text-left">
+                <thead className="bg-[#f5f0e8]/50 text-[#5d4e37] text-[10px] uppercase font-black tracking-widest text-left">
                   <tr>
-                    <th className="px-6 py-4">User Info</th>
-                    <th className="px-6 py-4">Plan</th>
-                    <th className="px-6 py-4">Credits</th>
-                    <th className="px-6 py-4">API Key</th>
-                    <th className="px-6 py-4">Status</th>
-                    <th className="px-6 py-4 text-right">Actions</th>
+                    <th className="px-6 py-4 border-b border-[#d4c4b0]/40">
+                      User Profile
+                    </th>
+                    <th className="px-6 py-4 border-b border-[#d4c4b0]/40">
+                      Account Plan
+                    </th>
+                    <th className="px-6 py-4 border-b border-[#d4c4b0]/40">
+                      Usage Credits
+                    </th>
+                    <th className="px-6 py-4 border-b border-[#d4c4b0]/40">
+                      API Status
+                    </th>
+                    <th className="px-6 py-4 border-b border-[#d4c4b0]/40">
+                      System Status
+                    </th>
+                    <th className="px-6 py-4 border-b border-[#d4c4b0]/40 text-right">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#f5f0e8]">
@@ -294,14 +308,14 @@ export default function AdminDashboard() {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-[#d4c4b0] text-[#2c2419] flex items-center justify-center font-bold text-lg font-lora">
+                          <div className="w-9 h-9 border border-[#d4c4b0]/60 bg-[#e8dcc8] text-[#8b6834] flex items-center justify-center font-bold text-base shadow-none">
                             {user.name.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-semibold text-[#2c2419]">
+                            <p className="text-[13px] font-black uppercase tracking-tight text-[#2c2419]">
                               {user.name}
                             </p>
-                            <p className="text-sm text-[#8b6834] truncate max-w-[150px]">
+                            <p className="text-[10px] font-bold text-[#8b6834]/80 truncate max-w-[150px] uppercase tracking-wider">
                               {user.email}
                             </p>
                           </div>
@@ -309,13 +323,13 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={`px-3 py-1 text-xs font-bold border-2 inline-flex items-center gap-1
+                          className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest border inline-flex items-center gap-1.5
                           ${
                             user.plan === "Premium"
-                              ? "bg-[#2c2419] text-[#d4c4b0] border-[#2c2419]"
+                              ? "bg-[#2c2419] text-[#faf8f5] border-[#2c2419]"
                               : user.plan === "Basic"
                                 ? "bg-[#8b6834] text-white border-[#8b6834]"
-                                : "bg-transparent text-[#5d4e37] border-[#d4c4b0]"
+                                : "bg-[#f5f0e8] text-[#5d4e37] border-[#d4c4b0]/60"
                           }`}
                         >
                           {user.plan === "Premium" && (
@@ -325,39 +339,40 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm">
+                        <div className="text-[11px] font-bold uppercase tracking-tight">
                           <p>
-                            <span className="font-bold">
+                            <span className="text-[#2c2419]">
                               {user.cards_generated_today}
                             </span>
-                            <span className="text-[#a08d74]">
+                            <span className="text-[#a08d74] opacity-50">
                               {" "}
                               /{" "}
                               {user.daily_limit === -1 ? "∞" : user.daily_limit}
                             </span>
                           </p>
-                          <p className="text-xs text-[#a08d74]">Daily Limit</p>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         {user.has_api_key ? (
-                          <div className="flex items-center gap-1.5 text-green-700 font-medium text-sm">
-                            <Key className="w-4 h-4" />
+                          <div className="flex items-center gap-1.5 text-green-700 font-black text-[10px] uppercase tracking-widest">
+                            <CheckCircle className="w-3 h-3" />
                             <span>Active</span>
                           </div>
                         ) : (
-                          <span className="text-gray-400 text-sm">None</span>
+                          <span className="text-[#a08d74]/50 text-[10px] font-black uppercase tracking-widest">
+                            Disconnected
+                          </span>
                         )}
                       </td>
                       <td className="px-6 py-4">
                         {user.status === "active" ? (
-                          <div className="flex items-center gap-1.5 text-green-600 font-medium text-sm">
-                            <div className="w-2 h-2 rounded-full bg-green-600"></div>
-                            Active
+                          <div className="flex items-center gap-1.5 text-green-600 font-black text-[10px] uppercase tracking-widest">
+                            <span className="w-1.5 h-1.5 bg-green-600"></span>
+                            Online
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1.5 text-red-600 font-medium text-sm">
-                            <div className="w-2 h-2 rounded-full bg-red-600"></div>
+                          <div className="flex items-center gap-1.5 text-red-600 font-black text-[10px] uppercase tracking-widest">
+                            <span className="w-1.5 h-1.5 bg-red-600"></span>
                             {user.status}
                           </div>
                         )}
@@ -375,21 +390,21 @@ export default function AdminDashboard() {
           )}
 
           {/* Pagination */}
-          <div className="p-4 border-t-2 border-[#f5f0e8] flex items-center justify-between">
+          <div className="p-4 border-t border-[#f5f0e8] bg-[#faf8f5]/50 flex items-center justify-between">
             <button
               disabled={pagination.page === 1}
               onClick={() => fetchUsers(pagination.page - 1)}
-              className="px-4 py-2 text-sm font-medium text-[#5d4e37] hover:text-[#2c2419] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#5d4e37] hover:text-[#2c2419] disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
             >
               Previous
             </button>
-            <span className="text-sm text-[#5d4e37]">
-              Page {pagination.page} of {pagination.totalPages}
+            <span className="text-[10px] font-black uppercase tracking-widest text-[#8b6834]">
+              Page {pagination.page} / {pagination.totalPages}
             </span>
             <button
               disabled={pagination.page === pagination.totalPages}
               onClick={() => fetchUsers(pagination.page + 1)}
-              className="px-4 py-2 text-sm font-medium text-[#5d4e37] hover:text-[#2c2419] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[#5d4e37] hover:text-[#2c2419] disabled:opacity-20 disabled:cursor-not-allowed transition-colors"
             >
               Next
             </button>
@@ -404,44 +419,48 @@ export default function AdminDashboard() {
           onClick={() => setIsDetailOpen(false)}
         >
           <div
-            className="w-full max-w-md h-full bg-white shadow-2xl p-6 overflow-y-auto border-l-4 border-[#8b6834]"
+            className="w-full max-w-md h-full bg-[#faf8f5] shadow-[-20px_0_50px_rgba(44,36,25,0.1)] p-8 overflow-y-auto border-l border-[#d4c4b0]/40"
             onClick={(e) => e.stopPropagation()}
-            style={{ animation: "slideIn 0.3s ease-out" }}
+            style={{ animation: "slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}
           >
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-lora font-bold text-[#2c2419]">
+            <div className="flex items-center justify-between mb-10">
+              <h2 className="text-sm font-black uppercase tracking-widest text-[#2c2419]">
                 User Profile
               </h2>
               <button
                 onClick={() => setIsDetailOpen(false)}
-                className="text-[#5d4e37] hover:text-[#2c2419] p-2"
+                className="text-[#5d4e37] hover:text-[#2c2419] p-2 bg-[#f5f0e8]/50 border border-[#d4c4b0]/40 transition-all active:scale-95"
               >
-                <XCircle className="w-8 h-8" />
+                <XCircle className="w-6 h-6" />
               </button>
             </div>
 
             {detailLoading || !selectedUser ? (
               <div className="flex justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#d4c4b0] border-t-[#8b6834]"></div>
+                <div className="w-12 h-12 border-2 border-[#d4c4b0] border-t-[#8b6834] animate-spin rounded-full"></div>
               </div>
             ) : (
-              <div className="space-y-8">
+              <div className="space-y-10">
                 {/* Profile Header */}
                 <div className="text-center">
-                  <div className="w-24 h-24 rounded-full bg-[#d4c4b0] text-[#2c2419] flex items-center justify-center font-bold text-4xl font-lora mx-auto mb-4 border-4 border-white shadow-lg">
+                  <div className="w-24 h-24 border-2 border-[#d4c4b0]/40 bg-[#e8dcc8] text-[#8b6834] flex items-center justify-center font-black text-4xl mx-auto mb-6 shadow-[8px_8px_0px_0px_rgba(139,104,52,0.1)]">
                     {selectedUser.name.charAt(0).toUpperCase()}
                   </div>
-                  <h3 className="text-xl font-bold">{selectedUser.name}</h3>
-                  <p className="text-[#8b6834]">{selectedUser.email}</p>
-                  <div className="mt-4 flex justify-center gap-2">
-                    <span className="px-4 py-1.5 bg-[#f5f0e8] text-[#5d4e37] text-xs font-bold uppercase tracking-wider rounded-full border border-[#d4c4b0]">
+                  <h3 className="text-xl font-black uppercase tracking-tight text-[#2c2419]">
+                    {selectedUser.name}
+                  </h3>
+                  <p className="text-[11px] font-bold text-[#8b6834] uppercase tracking-widest mt-1 opacity-80">
+                    {selectedUser.email}
+                  </p>
+                  <div className="mt-6 flex justify-center gap-3">
+                    <span className="px-3 py-1.5 bg-[#f5f0e8]/50 text-[#5d4e37] text-[9px] font-black uppercase tracking-widest border border-[#d4c4b0]/60">
                       {selectedUser.plan} Plan
                     </span>
                     <span
-                      className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full border flex items-center gap-1 ${
+                      className={`px-3 py-1.5 text-[9px] font-black uppercase tracking-widest border flex items-center gap-1.5 ${
                         selectedUser.status === "active"
-                          ? "bg-green-50 text-green-700 border-green-200"
-                          : "bg-red-50 text-red-700 border-red-200"
+                          ? "bg-green-50/50 text-green-700 border-green-200"
+                          : "bg-red-50/50 text-red-700 border-red-200"
                       }`}
                     >
                       {selectedUser.status === "active" && (
@@ -453,35 +472,36 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* API Key Section */}
-                <div className="bg-[#fcfbf9] border border-[#d4c4b0] p-6 rounded-lg">
-                  <h4 className="font-lora font-bold text-lg mb-4 flex items-center gap-2">
-                    <Key className="w-5 h-5 text-[#8b6834]" /> API Access
+                <div className="bg-[#faf8f5] border border-[#d4c4b0]/60 p-6 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
+                  <h4 className="text-[10px] font-black underline decoration-[#8b6834] uppercase tracking-widest text-[#2c2419] mb-5 flex items-center gap-2">
+                    <Key className="w-3.5 h-3.5 text-[#8b6834]" /> API ACCESS
+                    STATUS
                   </h4>
                   {selectedUser.api_key ? (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <div>
-                        <label className="text-xs text-[#5d4e37] uppercase font-bold tracking-wider block mb-1">
-                          API Key
+                        <label className="text-[9px] text-[#a08d74] uppercase font-black tracking-widest block mb-2">
+                          Encrypted Key
                         </label>
                         <div
-                          className="bg-white border border-[#e5e5e5] p-3 text-sm font-mono text-[#5d4e37] break-all cursor-pointer hover:border-[#8b6834] transition-colors relative group"
+                          className="bg-white border border-[#d4c4b0]/40 p-3 text-[10px] font-bold text-[#2c2419] break-all border-dashed cursor-pointer hover:border-[#8b6834] transition-all relative group"
                           onClick={() => copyToClipboard(selectedUser.api_key!)}
                         >
                           {selectedUser.api_key}
-                          <div className="absolute top-0 right-0 h-full px-2 bg-[#f5f0e8] text-[#8b6834] text-xs font-bold flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute top-0 right-0 h-full px-2 bg-[#8b6834] text-white text-[8px] font-black uppercase flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
                             COPY
                           </div>
                         </div>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-[#a08d74]">Status:</span>
-                        <span className="font-medium text-green-700">
-                          Active
+                      <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tight">
+                        <span className="text-[#a08d74]">Auth Status</span>
+                        <span className="text-green-700 bg-green-50 px-2 py-0.5">
+                          VERIFIED
                         </span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-[#a08d74]">Created:</span>
-                        <span>
+                      <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-tight">
+                        <span className="text-[#a08d74]">Activation Date</span>
+                        <span className="text-[#2c2419]">
                           {new Date(
                             selectedUser.api_key_created_at || "",
                           ).toLocaleDateString()}
@@ -489,61 +509,58 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   ) : (
-                    <div className="text-center py-4 text-[#a08d74]">
-                      <p>No API Key generated for this user.</p>
-                      {selectedUser.plan === "Premium" && (
-                        <p className="text-xs mt-1">
-                          (They can generate one in their settings)
-                        </p>
-                      )}
+                    <div className="text-center py-6 text-[10px] font-bold uppercase tracking-widest text-[#a08d74]/60">
+                      <p>No API Credentials Provisioned</p>
                     </div>
                   )}
                 </div>
 
                 {/* Usage Stats */}
-                <div className="space-y-4">
-                  <h4 className="font-bold text-xs uppercase tracking-widest text-[#a08d74] border-b border-[#d4c4b0] pb-2">
-                    Usage Statistics
+                <div className="space-y-5">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-[#a08d74] opacity-50 border-b border-[#d4c4b0]/30 pb-2">
+                    System Usage Profile
                   </h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="p-3 border border-[#d4c4b0] bg-white text-center">
-                      <p className="text-2xl font-bold text-[#8b6834] font-lora">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="p-4 border border-[#d4c4b0]/40 bg-white">
+                      <p className="text-xl font-black text-[#8b6834] tracking-tight">
                         {selectedUser.cards_generated_today}
                       </p>
-                      <p className="text-[10px] text-[#2c2419] uppercase font-bold tracking-widest mt-1">
-                        Web Today
+                      <p className="text-[8px] text-[#2c2419] uppercase font-bold tracking-widest mt-2">
+                        WEB-CARD / 24H
                       </p>
                     </div>
-                    <div className="p-3 border border-[#d4c4b0] bg-white text-center">
-                      <p className="text-2xl font-bold text-[#4a7c59] font-lora">
+                    <div className="p-4 border border-[#d4c4b0]/40 bg-white">
+                      <p className="text-xl font-black text-[#2c2419] tracking-tight">
                         {selectedUser.api_usage_today || 0}
                       </p>
-                      <p className="text-[10px] text-[#2c2419] uppercase font-bold tracking-widest mt-1">
-                        API Today
+                      <p className="text-[8px] text-[#2c2419] uppercase font-bold tracking-widest mt-2">
+                        API-CALL / 24H
                       </p>
                     </div>
-                    <div className="p-3 border border-[#d4c4b0] bg-white text-center">
-                      <p className="text-2xl font-bold text-[#2c2419] font-lora">
+                    <div className="p-4 border border-[#d4c4b0]/40 bg-white">
+                      <p className="text-xl font-black text-[#2c2419] tracking-tight">
                         {selectedUser.total_cards_generated}
                       </p>
-                      <p className="text-[10px] text-[#2c2419] uppercase font-bold tracking-widest mt-1">
-                        Lifetime
+                      <p className="text-[8px] text-[#2c2419] uppercase font-bold tracking-widest mt-2">
+                        LIFETIME GEN
                       </p>
                     </div>
                   </div>
                 </div>
 
                 {/* Meta Info */}
-                <div className="pt-6 border-t border-[#e5e5e5] space-y-2 text-sm text-[#5d4e37]">
+                <div className="pt-6 border-t border-[#f5f0e8] space-y-3 text-[10px] font-bold uppercase tracking-tight text-[#5d4e37]/70">
                   <div className="flex justify-between">
-                    <span>Member Since:</span>
-                    <span>
+                    <span>Account Creation Date</span>
+                    <span className="text-[#2c2419]">
                       {new Date(selectedUser.created_at).toLocaleDateString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Last Limit Reset:</span>
-                    <span>{new Date().toLocaleTimeString()} (Simulated)</span>
+                    <span>System Sync Timestamp</span>
+                    <span className="text-[#2c2419]">
+                      {new Date().toLocaleTimeString()}
+                    </span>
                   </div>
                 </div>
               </div>
