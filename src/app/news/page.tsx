@@ -28,6 +28,10 @@ import {
   Search,
   ChevronLeft,
   Lock,
+  Wand2,
+  RefreshCcw,
+  Heading,
+  Image as ImageIcon,
 } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -41,6 +45,7 @@ interface NewsItem {
   pubDate: string;
   source: string;
   contentSnippet: string;
+  fullContent?: string;
   imageUrl?: string;
   faviconUrl?: string;
   category?: string;
@@ -154,6 +159,21 @@ export default function NewsPage() {
   // Active theme menu state (stores the ID of the card whose menu is open)
   const [activeThemeMenu, setActiveThemeMenu] = useState<string | null>(null);
 
+  // Remix UI State
+  const [selectedRemixItem, setSelectedRemixItem] = useState<NewsItem | null>(
+    null,
+  );
+  const [isRemixModalOpen, setIsRemixModalOpen] = useState(false);
+  const [remixData, setRemixData] = useState({
+    headline: "",
+    content: "",
+    socialTitle: "",
+    customPrompt: "",
+    customImage: "",
+  });
+  const [isRemixing, setIsRemixing] = useState(false);
+  const [remixError, setRemixError] = useState<string | null>(null);
+
   // Helper for dynamically setting fonts
   const isBangla = (text: string) => {
     // Basic regex to check for Bengali Unicode range
@@ -257,8 +277,52 @@ export default function NewsPage() {
     // Using sessionStorage is cleaner for a temporary passing of state
     sessionStorage.setItem("pendingUrlGeneration", link);
     sessionStorage.setItem("pendingThemeGeneration", theme);
+    // If the user modified the content via remix, save it to session
+    if (remixData.headline || remixData.content) {
+      sessionStorage.setItem("pendingRemixTitle", remixData.headline);
+      sessionStorage.setItem("pendingRemixContent", remixData.content);
+    }
     setActiveThemeMenu(null); // close menu
     router.push("/url?auto=true");
+  };
+
+  const handleRemix = async () => {
+    if (!selectedRemixItem) return;
+    try {
+      setIsRemixing(true);
+      setRemixError(null);
+      // We will integrate the direct API call handling here when we switch to a server route,
+      // but for now, we'll try to hit a local api wrapper, or directly if ai-service is exposed.
+      // Since ai-service is in lib, we should ideally have an API route.
+      // Assuming we have or will create `/api/remix`
+      const res = await fetch("/api/remix", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          headline: selectedRemixItem.title,
+          content: selectedRemixItem.contentSnippet || "No content available",
+          customPrompt: remixData.customPrompt,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to generate remix");
+      const data = await res.json();
+
+      if (data.success && data.data) {
+        setRemixData((prev) => ({
+          ...prev,
+          headline: data.data.rewrittenHeadline || prev.headline,
+          content: data.data.rewrittenContent || prev.content,
+          socialTitle: data.data.socialMediaTitle || prev.socialTitle,
+        }));
+      } else {
+        throw new Error(data.error || "Failed to generate remix");
+      }
+    } catch (err: any) {
+      setRemixError(err.message || "Failed to communicate with AI");
+    } finally {
+      setIsRemixing(false);
+    }
   };
 
   const NavItem = ({
@@ -842,13 +906,24 @@ export default function NewsPage() {
                                 className="bg-white rounded-none border-2 border-[#d4c4b0] shadow-none hover:border-[#8b6834] transition-all duration-300 overflow-hidden flex flex-col group h-full"
                               >
                                 {/* Image Header */}
-                                <div className="h-48 relative overflow-hidden bg-[#f5f0e8]">
+                                <div className="h-48 relative overflow-hidden bg-[#f5f0e8] group/image">
                                   <NewsImage
                                     initialImageUrl={item.imageUrl}
                                     url={item.link}
                                     sourceName={item.source}
                                   />
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+
+                                  {/* Origin Link - Moved to Top Right */}
+                                  <a
+                                    href={item.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur border-2 border-[#2c2419] text-[#2c2419] hover:bg-[#8b6834] hover:text-white hover:border-[#8b6834] z-10 rounded-none shadow-[2px_2px_0_0_#2c2419] hover:shadow-none translate-x-[2px] translate-y-[2px] opacity-0 group-hover/image:opacity-100 pointer-events-auto transition-all"
+                                    title="Read Original Article"
+                                  >
+                                    <ExternalLink className="w-4 h-4" />
+                                  </a>
 
                                   <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between pointer-events-none">
                                     <div className="flex items-center gap-2 bg-[#8b6834] px-2.5 py-1 rounded-none shadow-none pointer-events-auto">
@@ -920,70 +995,92 @@ export default function NewsPage() {
 
                                   {/* Action Footer */}
                                   <div className="flex items-center gap-3 mt-auto pt-4 border-t border-[#d4c4b0]/30 relative">
-                                    {/* The Main Generate Button triggers the menu */}
+                                    {/* Primary Remix Button */}
                                     <button
-                                      onClick={() =>
-                                        setActiveThemeMenu(
-                                          activeThemeMenu === item.id
-                                            ? null
-                                            : item.id,
-                                        )
-                                      }
-                                      className="flex-1 px-4 py-2.5 bg-[#2c2419] hover:bg-[#8b6834] text-white text-xs font-black uppercase tracking-widest rounded-none transition-colors flex items-center justify-center gap-2 border-2 border-[#2c2419] hover:border-[#8b6834]"
+                                      onClick={() => {
+                                        setSelectedRemixItem(item);
+                                        setRemixData({
+                                          headline: item.title,
+                                          content:
+                                            item.fullContent ||
+                                            item.contentSnippet,
+                                          socialTitle: "",
+                                          customPrompt: "",
+                                          customImage: "",
+                                        });
+                                        setIsRemixModalOpen(true);
+                                      }}
+                                      className="flex-1 px-4 py-2.5 bg-[#8b6834] hover:bg-[#2c2419] text-white text-xs font-black uppercase tracking-widest rounded-none transition-colors flex items-center justify-center gap-2 border-2 border-[#8b6834] hover:border-[#2c2419]"
                                     >
-                                      <Sparkles className="w-4 h-4" />
-                                      Generate
+                                      <Wand2 className="w-4 h-4" />
+                                      Remix
                                     </button>
 
-                                    {/* Compact Floating Theme Menu */}
-                                    {activeThemeMenu === item.id && (
-                                      <div
-                                        className="absolute bottom-full left-0 mb-2 w-40 bg-white border-2 border-[#d4c4b0] justify-center rounded-none shadow-none z-50 animate-in fade-in slide-in-from-bottom-1 duration-150"
-                                        onMouseLeave={() =>
-                                          setActiveThemeMenu(null)
+                                    {/* Secondary Theme Menu Trigger */}
+                                    <div className="relative">
+                                      <button
+                                        onClick={() =>
+                                          setActiveThemeMenu(
+                                            activeThemeMenu === item.id
+                                              ? null
+                                              : item.id,
+                                          )
                                         }
+                                        className="p-2.5 bg-white border-2 border-[#d4c4b0] hover:border-[#8b6834] text-[#5d4e37] hover:text-[#8b6834] hover:bg-[#f5f0e8] rounded-none transition-colors flex items-center justify-center"
+                                        title="Quick Generate Card"
                                       >
-                                        <div className="py-1 flex flex-col">
-                                          {[
-                                            { id: "classic", name: "Classic" },
-                                            { id: "modern", name: "Modern" },
-                                            { id: "modern2", name: "Modern 2" },
-                                            {
-                                              id: "vertical",
-                                              name: "Vertical",
-                                            },
-                                            { id: "minimal", name: "Minimal" },
-                                            {
-                                              id: "magazine",
-                                              name: "Magazine",
-                                            },
-                                          ].map((theme) => (
-                                            <button
-                                              key={theme.id}
-                                              onClick={() => {
-                                                handleGenerateClick(
-                                                  item.link,
-                                                  theme.id,
-                                                );
-                                              }}
-                                              className="text-left px-3 py-1.5 text-xs font-semibold text-[#5d4e37] hover:bg-[#8b6834] hover:text-white transition-colors"
-                                            >
-                                              {theme.name}
-                                            </button>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
+                                        <LayoutGrid className="w-4 h-4" />
+                                      </button>
 
-                                    <a
-                                      href={item.link}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="p-2.5 border-2 border-[#d4c4b0] hover:border-[#8b6834] hover:bg-[#8b6834]/5 text-[#5d4e37] hover:text-[#8b6834] rounded-none transition-colors shrink-0"
-                                      title="Read Original"
-                                    >
-                                      <ExternalLink className="w-4 h-4" />
-                                    </a>
+                                      {/* Compact Floating Theme Menu */}
+                                      {activeThemeMenu === item.id && (
+                                        <div
+                                          className="absolute bottom-full right-0 mb-2 w-40 bg-white border-2 border-[#d4c4b0] justify-center rounded-none shadow-none z-50 animate-in fade-in slide-in-from-bottom-1 duration-150"
+                                          onMouseLeave={() =>
+                                            setActiveThemeMenu(null)
+                                          }
+                                        >
+                                          <div className="py-1 flex flex-col">
+                                            {[
+                                              {
+                                                id: "classic",
+                                                name: "Classic",
+                                              },
+                                              { id: "modern", name: "Modern" },
+                                              {
+                                                id: "modern2",
+                                                name: "Modern 2",
+                                              },
+                                              {
+                                                id: "vertical",
+                                                name: "Vertical",
+                                              },
+                                              {
+                                                id: "minimal",
+                                                name: "Minimal",
+                                              },
+                                              {
+                                                id: "magazine",
+                                                name: "Magazine",
+                                              },
+                                            ].map((theme) => (
+                                              <button
+                                                key={theme.id}
+                                                onClick={() => {
+                                                  handleGenerateClick(
+                                                    item.link,
+                                                    theme.id,
+                                                  );
+                                                }}
+                                                className="text-left px-3 py-1.5 text-xs font-semibold text-[#5d4e37] hover:bg-[#8b6834] hover:text-white transition-colors"
+                                              >
+                                                {theme.name}
+                                              </button>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -1072,6 +1169,218 @@ export default function NewsPage() {
           )}
         </div>
       </div>
+
+      {/* Remix Modal */}
+      {isRemixModalOpen && selectedRemixItem && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-[#2c2419]/50 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border text-[#2c2419] border-[#d4c4b0] w-full max-w-4xl max-h-[90vh] flex flex-col shadow-none rounded-none animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 border-b border-[#d4c4b0] bg-white flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#f5f0e8] text-[#8b6834] flex items-center justify-center border border-[#d4c4b0]">
+                  <Wand2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-black text-[#2c2419] uppercase tracking-tight">
+                    AI Remix Studio
+                  </h2>
+                  <p className="text-xs text-[#5d4e37] font-bold uppercase tracking-widest mt-0.5">
+                    Customize before generating
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsRemixModalOpen(false)}
+                className="p-2 hover:bg-[#f5f0e8] text-[#5d4e37] hover:text-[#2c2419] transition-colors border border-transparent"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 flex-1 overflow-y-auto bg-[#faf8f5] grid md:grid-cols-2 gap-8">
+              {/* Left Column: Edit Fields */}
+              <div className="space-y-5">
+                <div>
+                  <label className="flex items-center gap-2 text-xs font-black text-[#2c2419] uppercase tracking-widest mb-2">
+                    <Heading className="w-4 h-4 text-[#8b6834]" />
+                    Headline
+                  </label>
+                  <textarea
+                    value={remixData.headline}
+                    onChange={(e) =>
+                      setRemixData({ ...remixData, headline: e.target.value })
+                    }
+                    className={`w-full p-4 bg-white border border-[#d4c4b0] text-[#2c2419] font-bold rounded-none focus:bg-white focus:outline-none focus:border-[#8b6834] transition-colors min-h-[90px] resize-none ${getFontClass(remixData.headline, "title")}`}
+                    placeholder="Enter customized headline..."
+                  />
+                </div>
+
+                <div>
+                  <label className="flex items-center gap-2 text-xs font-black text-[#2c2419] uppercase tracking-widest mb-2">
+                    <Newspaper className="w-4 h-4 text-[#8b6834]" />
+                    Content
+                  </label>
+                  <textarea
+                    value={remixData.content}
+                    onChange={(e) =>
+                      setRemixData({ ...remixData, content: e.target.value })
+                    }
+                    className={`w-full p-4 bg-white border border-[#d4c4b0] text-[#2c2419] rounded-none focus:bg-white focus:outline-none focus:border-[#8b6834] transition-colors min-h-[140px] resize-none ${getFontClass(remixData.content, "body")}`}
+                    placeholder="Enter customized story content..."
+                  />
+                </div>
+
+                <div>
+                  <label className="flex items-center gap-2 text-xs font-black text-[#2c2419] uppercase tracking-widest mb-2">
+                    <Globe2 className="w-4 h-4 text-[#8b6834]" />
+                    Social Media Ready Title
+                  </label>
+                  <textarea
+                    value={remixData.socialTitle}
+                    onChange={(e) =>
+                      setRemixData({
+                        ...remixData,
+                        socialTitle: e.target.value,
+                      })
+                    }
+                    className={`w-full p-4 bg-white border border-[#d4c4b0] text-[#2c2419] rounded-none focus:bg-white focus:outline-none focus:border-[#8b6834] transition-colors min-h-[80px] resize-none ${getFontClass(remixData.socialTitle, "body")}`}
+                    placeholder="Social media optimized title will appear here..."
+                  />
+                </div>
+
+                {remixError && (
+                  <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-xs font-medium">
+                    {remixError}
+                  </div>
+                )}
+
+                <button
+                  onClick={handleRemix}
+                  disabled={isRemixing}
+                  className="w-full py-3.5 bg-[#8b6834] text-white text-xs font-black uppercase tracking-widest hover:bg-[#2c2419] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+                >
+                  <RefreshCcw
+                    className={`w-4 h-4 ${isRemixing ? "animate-spin" : ""}`}
+                  />
+                  {isRemixing
+                    ? "Rewriting with AI..."
+                    : "AI Auto-Rewrite Content"}
+                </button>
+              </div>
+
+              {/* Right Column: Preview/Image Options */}
+              <div className="space-y-5">
+                <div>
+                  <label className="flex items-center gap-2 text-xs font-black text-[#2c2419] uppercase tracking-widest mb-2">
+                    <ImageIcon className="w-4 h-4 text-[#8b6834]" />
+                    Source Image
+                  </label>
+                  <div className="border border-[#d4c4b0] aspect-video relative bg-white flex items-center justify-center group overflow-hidden">
+                    {remixData.customImage || selectedRemixItem.imageUrl ? (
+                      <>
+                        <img
+                          src={
+                            remixData.customImage || selectedRemixItem.imageUrl
+                          }
+                          alt="Source"
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                          <label className="cursor-pointer px-4 py-2 bg-white text-[#2c2419] text-xs font-black uppercase tracking-widest border border-transparent hover:border-[#8b6834] hover:text-[#8b6834] transition-colors">
+                            Change Image
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const reader = new FileReader();
+                                  reader.onload = (e) => {
+                                    setRemixData({
+                                      ...remixData,
+                                      customImage: e.target?.result as string,
+                                    });
+                                  };
+                                  reader.readAsDataURL(file);
+                                }
+                              }}
+                            />
+                          </label>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center p-4">
+                        <ImageIcon className="w-8 h-8 text-[#d4c4b0] mx-auto mb-2" />
+                        <span className="text-xs font-bold text-[#5d4e37] uppercase">
+                          No Image Found
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-white p-5 border border-[#d4c4b0]">
+                  <h3 className="text-xs font-black text-[#2c2419] uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-[#8b6834]" />
+                    AI Image Generation
+                  </h3>
+                  <textarea
+                    value={remixData.customPrompt}
+                    onChange={(e) =>
+                      setRemixData({
+                        ...remixData,
+                        customPrompt: e.target.value,
+                      })
+                    }
+                    className="w-full p-4 bg-[#f5f0e8] border border-[#d4c4b0] text-[#2c2419] text-sm rounded-none focus:bg-white focus:outline-none focus:border-[#8b6834] transition-colors min-h-[90px] resize-none"
+                    placeholder="Describe an image you'd like the AI to generate for this story..."
+                  />
+                  <button
+                    disabled={true}
+                    className="mt-3 w-full py-3.5 bg-gradient-to-r from-[#8b6834] to-[#b49e82] text-white text-xs font-black uppercase tracking-widest hover:opacity-90 transition-opacity flex items-center justify-center gap-2 disabled:cursor-not-allowed shadow-none"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Generate AI Image (Soon)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer / Actions */}
+            <div className="p-4 sm:p-6 border-t border-[#d4c4b0] bg-white flex flex-col sm:flex-row gap-3 justify-end flex-shrink-0">
+              <button
+                onClick={() => setIsRemixModalOpen(false)}
+                className="px-6 py-2.5 bg-white text-[#5d4e37] text-xs font-black uppercase tracking-widest border border-[#d4c4b0] hover:bg-[#f5f0e8] hover:text-[#2c2419] transition-colors"
+              >
+                Cancel
+              </button>
+
+              <div className="flex gap-2 w-full sm:w-auto">
+                <button
+                  onClick={() => setIsRemixModalOpen(false)}
+                  className="flex-1 sm:flex-none px-6 py-2.5 bg-[#f5f0e8] text-[#8b6834] text-xs font-black uppercase tracking-widest border border-[#d4c4b0] hover:bg-[#e8dcc8] transition-colors flex items-center justify-center gap-2"
+                  title="Coming Soon"
+                >
+                  <Globe2 className="w-4 h-4" />
+                  Publish to Web
+                </button>
+                <button
+                  onClick={() => {
+                    handleGenerateClick(selectedRemixItem.link, "modern");
+                  }}
+                  className="flex-1 sm:flex-none px-6 py-2.5 bg-[#8b6834] text-white text-xs font-black uppercase tracking-widest border border-[#8b6834] hover:bg-[#2c2419] hover:border-[#2c2419] transition-colors flex items-center justify-center gap-2"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                  Create Photocard
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <UpgradeModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}

@@ -23,6 +23,7 @@ export interface NewsItem {
   pubDate: string;
   source: string;
   contentSnippet: string;
+  fullContent?: string;
   imageUrl?: string;
   faviconUrl?: string;
   category?: string;
@@ -233,6 +234,9 @@ export async function GET(request: Request) {
           if (link) seenLinks.add(link);
           if (title !== "Untitled") seenTitles.add(title);
 
+          const htmlContent = item.contentEncoded || item.content || "";
+          const rawContent = htmlContent.replace(/<[^>]*>?/gm, "");
+
           allNews.push({
             id:
               extractText(item.guid) ||
@@ -244,6 +248,8 @@ export async function GET(request: Request) {
             source: feed.name,
             contentSnippet:
               extractText(item.contentSnippet).slice(0, 150) || "",
+            fullContent:
+              extractText(rawContent) || extractText(item.contentSnippet) || "",
             imageUrl,
             faviconUrl,
             category,

@@ -5,13 +5,14 @@ import ProfileSettings from "@/components/settings/ProfileSettings";
 import SecuritySettings from "@/components/settings/SecuritySettings";
 import PlanSettings from "@/components/settings/PlanSettings";
 import DeveloperSettings from "@/components/settings/DeveloperSettings";
-import { User, Shield, CreditCard, Terminal } from "lucide-react";
+import IntegrationsSettings from "@/components/settings/IntegrationsSettings";
+import { User, Shield, CreditCard, Terminal, Link2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<
-    "profile" | "security" | "plans" | "developer"
+    "profile" | "security" | "plans" | "developer" | "integrations"
   >("profile");
   const { user } = useAuth();
 
@@ -78,6 +79,17 @@ export default function SettingsPage() {
                   <Terminal className="w-4 h-4" />
                   Developer API
                 </button>
+                <button
+                  onClick={() => setActiveTab("integrations")}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
+                    activeTab === "integrations"
+                      ? "bg-[#8b6834] text-white shadow-sm"
+                      : "text-[#5d4e37] hover:bg-[#e5e7eb] hover:text-[#2c2419]"
+                  }`}
+                >
+                  <Link2 className="w-4 h-4" />
+                  Integrations
+                </button>
               </nav>
 
               {/* Account Status Card */}
@@ -108,6 +120,7 @@ export default function SettingsPage() {
               {activeTab === "security" && <SecuritySettings />}
               {activeTab === "plans" && <PlanSettings />}
               {activeTab === "developer" && <DeveloperSettings />}
+              {activeTab === "integrations" && <IntegrationsSettings />}
             </div>
           </div>
         </main>
