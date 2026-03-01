@@ -122,7 +122,7 @@ export default function CustomizationPanel({
   contentLanguage = "bangla",
 }: CustomizationPanelProps) {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<Tab>("Background");
+  const [activeTab, setActiveTab] = useState<Tab>("Theme");
   const [selectedTheme, setSelectedTheme] = useState(theme);
   const [showFontModal, setShowFontModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -318,13 +318,13 @@ export default function CustomizationPanel({
   };
 
   const tabs: Tab[] = [
-    "Background",
-    "Pattern",
     "Theme",
+    "Background",
     "Fonts",
-    "Visibility",
-    "Frame",
+    "Pattern",
     "Ad Banner",
+    "Frame",
+    "Visibility",
     "Footer",
   ];
 

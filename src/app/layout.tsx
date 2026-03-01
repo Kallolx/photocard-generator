@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import FloatingSupport from "@/components/FloatingSupport";
+import WhatsNewToast from "@/components/WhatsNewToast";
 
 export const metadata: Metadata = {
   title: "Photocard Generator - Transform Articles into Visual Cards",
@@ -32,6 +33,7 @@ export default function RootLayout({
         <LanguageProvider>
           <AuthProvider>
             {children}
+            <WhatsNewToast />
             <FloatingSupport />
           </AuthProvider>
         </LanguageProvider>
