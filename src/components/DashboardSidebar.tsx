@@ -52,10 +52,15 @@ export default function DashboardSidebar({
   const pathname = usePathname();
   const [cardTypesOpen, setCardTypesOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [hasLatestNews, setHasLatestNews] = useState(true);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Auto-clear dot if user is already on the news page
+    if (pathname === "/news") {
+      setHasLatestNews(false);
+    }
+  }, [pathname]);
 
   const cardCategories = [
     {
@@ -103,6 +108,8 @@ export default function DashboardSidebar({
     isActive = false,
     locked = false,
     onClick,
+    showDot = false,
+    dotColor = "bg-green-500",
   }: {
     href: string;
     icon: React.ReactNode;
@@ -110,6 +117,8 @@ export default function DashboardSidebar({
     isActive?: boolean;
     locked?: boolean;
     onClick?: (e: React.MouseEvent) => void;
+    showDot?: boolean;
+    dotColor?: string;
   }) => (
     <Link
       href={locked ? "#" : href}
@@ -121,7 +130,14 @@ export default function DashboardSidebar({
       } ${locked ? "opacity-75" : ""}`}
     >
       <div className="flex items-center gap-3">
-        {icon}
+        <div className="relative overflow-visible">
+          {icon}
+          {showDot && (
+            <span
+              className={`absolute -top-1.5 -right-1.5 w-2.5 h-2.5 rounded-full ${dotColor} animate-pulse ring-2 ring-white z-10`}
+            />
+          )}
+        </div>
         <span>{label}</span>
       </div>
       {locked && <Lock className="w-3.5 h-3.5" />}
@@ -184,11 +200,15 @@ export default function DashboardSidebar({
               label="Today's News"
               isActive={pathname === "/news"}
               locked={isFreeUser}
+              showDot={hasLatestNews}
+              dotColor="bg-green-500"
               onClick={(e) => {
                 if (isFreeUser) {
                   e.preventDefault();
                   onUpgrade("Today's News Feed");
                 }
+                // Clear dot once user visits
+                setHasLatestNews(false);
               }}
             />
 
