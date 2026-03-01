@@ -66,7 +66,7 @@ const NOTIFICATIONS: Notification[] = [
     title: "What's new in March 2026 🎉",
     items: [
       "Browse Newses from 🛜 RSS Feeds",
-      "Remix Newses & images With ai 🪄 (Beta)",
+      "Remix Newses & images With ai ✨",
       "AI content variations in Editor Toolbar",
       "Fonts tab now has multiple fonts to select",
       "Replaced CSS patterns with image patterns",

@@ -33,6 +33,7 @@ import {
   Languages,
   Newspaper,
   Search,
+  ChevronDown,
 } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -53,6 +54,7 @@ export default function Dashboard() {
   const [upgradeFeature, setUpgradeFeature] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+  const [cardTypesOpen, setCardTypesOpen] = useState(false);
   const pathname = usePathname();
 
   const isFreeUser = user?.plan === "Free";
@@ -169,6 +171,40 @@ export default function Dashboard() {
   const otherCards = allCards.filter(
     (card) => !featuredCardIds.includes(card.id),
   );
+
+  // Card categories mirroring the Navbar
+  const cardCategories = [
+    {
+      name: "News & Social",
+      cards: [
+        { id: "url", label: "URL Newscard", href: "/url", icon: <LinkIcon className="w-4 h-4" />, locked: false },
+        { id: "comment", label: "Comment/Quote", href: "/comment", icon: <Quote className="w-4 h-4" />, locked: isFreeUser },
+        { id: "poll", label: "Poll Card", href: "/poll", icon: <BarChart3 className="w-4 h-4" />, locked: isFreeUser },
+        { id: "compare", label: "Compare Card", href: "/compare", icon: <GitCompare className="w-4 h-4" />, locked: isFreeUser },
+      ],
+    },
+    {
+      name: "Business & Marketing",
+      cards: [
+        { id: "video", label: "Video Card", href: "/videocard", icon: <VideoIcon className="w-4 h-4" />, locked: isFreeUser },
+        { id: "marketing", label: "Marketing Card", href: "/marketing", icon: <Megaphone className="w-4 h-4" />, locked: isFreeUser },
+        { id: "realestate", label: "Real Estate Card", href: "/realestate", icon: <Home className="w-4 h-4" />, locked: isFreeUser },
+        { id: "thumbnail", label: "Thumbnail Card", href: "/thumbnail", icon: <ImageIcon className="w-4 h-4" />, locked: isFreeUser },
+      ],
+    },
+    {
+      name: "Personal & Creative",
+      cards: [
+        { id: "custom", label: "Custom Card", href: "/custom", icon: <Edit className="w-4 h-4" />, locked: isFreeUser },
+        { id: "info", label: "Info Card", href: "/info", icon: <FileText className="w-4 h-4" />, locked: isFreeUser },
+        { id: "islamic", label: "Islamic Card", href: "/islamic", icon: <Moon className="w-4 h-4" />, locked: isFreeUser },
+        { id: "wish", label: "Wish Card", href: "/wish", icon: <Heart className="w-4 h-4" />, locked: isFreeUser },
+      ],
+    },
+  ];
+
+  const allCardTypes = cardCategories.flatMap((c) => c.cards);
+  const isOnCardType = allCardTypes.some((c) => c.href === pathname);
 
   // Additional tools for sidebar
   const otherTools = [
@@ -295,12 +331,66 @@ export default function Dashboard() {
                   }
                 }}
               />
-              <NavItem
-                href="/settings"
-                icon={<Settings className="w-5 h-5" />}
-                label="Settings"
-                isActive={pathname === "/settings"}
-              />
+
+              {/* Card Types accordion */}
+              <div>
+                <button
+                  onClick={() => setCardTypesOpen(!cardTypesOpen)}
+                  className={`w-full flex items-center justify-between px-4 py-3 transition-all font-medium ${
+                    isOnCardType
+                      ? "bg-[#8b6834]/10 text-[#8b6834]"
+                      : "text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419]"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Layers className="w-5 h-5" />
+                    <span>Card Types</span>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      cardTypesOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {cardTypesOpen && (
+                  <div className="ml-4 border-l border-[#d4c4b0]/60 pl-3 pb-1 space-y-4 mt-1">
+                    {cardCategories.map((cat) => (
+                      <div key={cat.name}>
+                        <p className="px-2 py-1 text-[10px] font-black text-[#b49e82] uppercase tracking-widest">
+                          {cat.name}
+                        </p>
+                        {cat.cards.map((card) => (
+                          <Link
+                            key={card.id}
+                            href={card.locked ? "#" : card.href}
+                            onClick={(e) => {
+                              if (card.locked) {
+                                e.preventDefault();
+                                setUpgradeFeature(card.label);
+                                setShowUpgradeModal(true);
+                              }
+                            }}
+                            className={`flex items-center justify-between px-2 py-1.5 text-xs font-medium rounded-none transition-all ${
+                              pathname === card.href
+                                ? "bg-[#8b6834] text-white"
+                                : card.locked
+                                  ? "text-[#5d4e37]/50"
+                                  : "text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419]"
+                            }`}
+                          >
+                            <span className="flex items-center gap-2">
+                              {card.icon}
+                              {card.label}
+                            </span>
+                            {card.locked && <Lock className="w-3 h-3 shrink-0" />}
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="space-y-1 mb-8">
@@ -322,6 +412,12 @@ export default function Dashboard() {
               <p className="px-4 text-xs font-bold text-[#b49e82] uppercase tracking-wider mb-2">
                 Support
               </p>
+              <NavItem
+                href="/settings"
+                icon={<Settings className="w-5 h-5" />}
+                label="Settings"
+                isActive={pathname === "/settings"}
+              />
               <NavItem
                 href="#"
                 icon={<HelpCircle className="w-5 h-5" />}
