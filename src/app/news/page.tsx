@@ -514,7 +514,7 @@ export default function NewsPage() {
           ) : (
             <>
               {/* Top Header */}
-              <header className="flex-shrink-0 h-20 lg:h-24 px-4 sm:px-6 lg:px-10 flex items-center justify-between border-b border-[#d4c4b0] bg-white z-30">
+              <header className="flex-shrink-0 h-14 lg:h-16 px-4 sm:px-6 lg:px-10 flex items-center justify-between border-b border-[#d4c4b0] bg-white z-30">
                 <div className="flex items-center gap-6 flex-1">
                   <button
                     onClick={() => setIsMobileMenuOpen(true)}

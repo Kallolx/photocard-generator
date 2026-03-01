@@ -55,7 +55,7 @@ export default function AdminHeader({
   };
 
   return (
-    <header className="h-20 bg-[#faf8f5] border-b border-[#d4c4b0] flex items-center justify-between px-6 sticky top-0 z-20">
+    <header className="h-14 lg:h-16 bg-white border-b border-[#d4c4b0]/40 flex items-center justify-between px-6 sticky top-0 z-20">
       <div className="flex items-center gap-4">
         {/* Mobile Menu Trigger */}
         <button
@@ -90,7 +90,7 @@ export default function AdminHeader({
           </button>
 
           {isNotificationsOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-[#d4c4b0]/60 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.05)] z-50 max-h-[80vh] flex flex-col">
+            <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-[#d4c4b0]/60 shadow-sm z-50 max-h-[80vh] flex flex-col">
               <div className="p-4 border-b border-[#f5f0e8] bg-[#faf8f5] flex justify-between items-center">
                 <h3 className="text-xs font-black uppercase tracking-widest text-[#2c2419]">
                   Notifications
@@ -167,7 +167,7 @@ export default function AdminHeader({
 
           {/* Dropdown Menu */}
           {isProfileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-[#d4c4b0]/60 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.05)] z-50">
+            <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-[#d4c4b0]/60 shadow-sm z-50">
               <div className="p-4 border-b border-[#f5f0e8] bg-[#faf8f5]">
                 <p className="text-[9px] font-black text-[#a08d74] uppercase tracking-widest mb-1.5">
                   Signed in as

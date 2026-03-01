@@ -141,13 +141,13 @@ export default function UserDetailPage({
   if (!user) {
     return (
       <div className="p-8 min-h-screen bg-[#faf8f5] flex items-center justify-center">
-        <div className="bg-white border border-[#d4c4b0]/60 p-16 text-center shadow-[12px_12px_0px_0px_rgba(44,36,25,0.05)]">
+          <div className="bg-white border border-[#d4c4b0]/60 p-16 text-center">
           <p className="text-[10px] font-black uppercase tracking-widest text-[#a08d74] mb-8">
             Access credentials not found in registry
           </p>
           <button
             onClick={() => router.push("/admin")}
-            className="px-8 py-3 bg-[#8b6834] text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#2c2419] transition-all active:translate-x-[1px] active:translate-y-[1px]"
+            className="px-8 py-3 bg-[#8b6834] text-white text-[10px] font-black uppercase tracking-widest hover:bg-[#2c2419] transition-all"
           >
             Return to Dashboard
           </button>
@@ -196,7 +196,7 @@ export default function UserDetailPage({
           {/* Left Column: User Info & API Key */}
           <div className="lg:col-span-2 space-y-6">
             {/* Basic Info Card */}
-            <div className="bg-white border border-[#d4c4b0]/60 p-8 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.03)] relative overflow-hidden">
+            <div className="bg-white border border-[#d4c4b0]/60 p-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 p-6 opacity-[0.03]">
                 <User className="w-48 h-48 text-[#8b6834]" />
               </div>
@@ -257,7 +257,7 @@ export default function UserDetailPage({
             </div>
 
             {/* API Key Section - Enhanced */}
-            <div className="bg-white border border-[#d4c4b0]/60 p-8 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.03)]">
+            <div className="bg-white border border-[#d4c4b0]/60 p-8">
               <h3 className="text-[11px] font-black uppercase tracking-widest text-[#2c2419] mb-6 border-b border-[#f5f0e8] pb-4 flex items-center gap-2">
                 <Key className="w-4 h-4 text-[#8b6834]" />
                 API Protocols & Authorization
@@ -318,7 +318,7 @@ export default function UserDetailPage({
             </div>
 
             {/* Recent Activity */}
-            <div className="bg-white border border-[#d4c4b0]/60 p-8 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.03)]">
+            <div className="bg-white border border-[#d4c4b0]/60 p-8">
               <h3 className="text-[11px] font-black uppercase tracking-widest text-[#2c2419] mb-8 border-b border-[#f5f0e8] pb-4 flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-[#8b6834]" />
                 Recent Generation Logs ({recentCards.length})
@@ -371,7 +371,7 @@ export default function UserDetailPage({
           {/* Right Column: Actions & Limits */}
           <div className="space-y-10">
             {/* Quick Actions Panel */}
-            <div className="bg-[#2c2419] text-[#faf8f5] p-8 shadow-[12px_12px_0px_0px_rgba(44,36,25,0.08)] relative overflow-hidden">
+            <div className="bg-[#2c2419] text-[#faf8f5] p-8 relative overflow-hidden">
               <div className="absolute -right-8 -top-8 opacity-10">
                 <Shield className="w-48 h-48" />
               </div>
@@ -434,7 +434,7 @@ export default function UserDetailPage({
             </div>
 
             {/* Limits & Usage Card */}
-            <div className="bg-white border border-[#d4c4b0]/60 p-8 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.03)]">
+            <div className="bg-white border border-[#d4c4b0]/60 p-8">
               <h3 className="text-[11px] font-black uppercase tracking-widest text-[#2c2419] mb-8 border-b border-[#f5f0e8] pb-4 flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-[#8b6834]" />
                 Resource Utilization

@@ -32,18 +32,18 @@ export default function AdminSidebar({
   };
 
   return (
-    <aside className="w-72 bg-[#faf8f5] border-r border-[#d4c4b0]/40 flex flex-col h-full font-inter text-[#5d4e37]">
-      {/* Brand Header - Warm & Elegant */}
-      <div className="h-24 flex items-center px-6 border-b border-[#d4c4b0]">
+    <aside className="w-72 bg-white border-r border-[#d4c4b0]/40 flex flex-col h-full font-inter text-[#5d4e37]">
+      {/* Brand Header */}
+      <div className="h-14 lg:h-16 flex items-center px-6 border-b border-[#d4c4b0]/40">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-[#2c2419] border-2 border-[#2c2419] flex items-center justify-center text-white shadow-[2px_2px_0px_0px_#8b6834]">
+          <div className="w-8 h-8 bg-gradient-to-br from-[#8b6834] to-[#5d4e37] flex items-center justify-center text-white">
             <LayoutDashboard className="w-4 h-4" />
           </div>
           <div>
-            <h1 className="text-sm font-black text-[#2c2419] tracking-tight uppercase">
+            <h1 className="text-sm font-bold text-[#2c2419] tracking-tight">
               Socialcard
             </h1>
-            <p className="text-[10px] font-black tracking-widest text-[#8b6834] uppercase opacity-70">
+            <p className="text-[10px] font-medium tracking-widest text-[#8b6834] uppercase opacity-70">
               Admin Panel
             </p>
           </div>
@@ -60,10 +60,10 @@ export default function AdminSidebar({
               key={item.name}
               href={item.href}
               onClick={onItemClick}
-              className={`group flex items-center justify-between px-4 py-3 border transition-all rounded-none ${
+              className={`group flex items-center justify-between px-4 py-3 transition-all rounded-none ${
                 active
-                  ? "bg-[#8b6834] text-white border-[#2c2419] shadow-[2px_2px_0px_0px_#2c2419]"
-                  : "text-[#5d4e37] border-transparent hover:bg-[#f5f0e8] hover:text-[#2c2419] hover:border-[#d4c4b0]/40"
+                  ? "bg-[#8b6834] text-white"
+                  : "text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419]"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -74,7 +74,7 @@ export default function AdminSidebar({
                       : "text-[#a08d74] group-hover:text-[#8b6834]"
                   }`}
                 />
-                <span className="text-xs font-bold uppercase tracking-tight">
+                <span className="text-sm font-medium">
                   {item.name}
                 </span>
               </div>
@@ -85,22 +85,22 @@ export default function AdminSidebar({
       </nav>
 
       {/* Footer Actions */}
-      <div className="p-4 border-t border-[#d4c4b0]/40 bg-[#faf8f5]/50">
-        <div className="space-y-2">
+      <div className="p-4 border-t border-[#d4c4b0]/40">
+        <div className="space-y-1">
           <Link
             href="/"
             onClick={onItemClick}
-            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[#5d4e37] hover:bg-white hover:text-[#2c2419] transition-all border border-transparent hover:border-[#d4c4b0]/40 active:translate-x-[1px] active:translate-y-[1px]"
+            className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419] transition-colors"
           >
             <Home className="w-4 h-4" />
             Return to App
           </Link>
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-red-600 hover:bg-red-50 transition-all border border-transparent active:translate-x-[1px] active:translate-y-[1px]"
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors border border-transparent hover:border-red-200"
           >
             <LogOut className="w-4 h-4" />
-            Logout
+            Sign Out
           </button>
         </div>
       </div>

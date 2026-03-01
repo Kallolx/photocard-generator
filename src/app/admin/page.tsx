@@ -150,11 +150,11 @@ export default function AdminDashboard() {
                 fetchStats();
                 fetchUsers(pagination.page);
               }}
-              className="px-4 py-2 border border-[#d4c4b0] text-[10px] font-black uppercase tracking-widest text-[#5d4e37] hover:border-[#8b6834] hover:text-[#2c2419] transition-all flex items-center gap-2 bg-white active:translate-x-[1px] active:translate-y-[1px]"
+              className="px-4 py-2 border border-[#d4c4b0] text-[10px] font-black uppercase tracking-widest text-[#5d4e37] hover:border-[#8b6834] hover:text-[#2c2419] transition-all flex items-center gap-2 bg-white"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Refresh
             </button>
-            <div className="px-4 py-2 bg-[#2c2419] text-[#faf8f5] text-[10px] font-black uppercase tracking-widest border border-[#2c2419] shadow-[2px_2px_0px_0px_#8b6834]">
+            <div className="px-4 py-2 bg-[#2c2419] text-[#faf8f5] text-[10px] font-black uppercase tracking-widest border border-[#2c2419]">
               ADMIN MODE
             </div>
           </div>
@@ -162,7 +162,7 @@ export default function AdminDashboard() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white p-6 border border-[#d4c4b0]/60 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
+          <div className="bg-white p-6 border border-[#d4c4b0]/60">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <p className="text-[10px] text-[#8b6834] font-black uppercase tracking-widest">
@@ -192,7 +192,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white p-6 border border-[#d4c4b0]/60 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
+          <div className="bg-white p-6 border border-[#d4c4b0]/60">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <p className="text-[10px] text-[#8b6834] font-black uppercase tracking-widest">
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          <div className="bg-white p-6 border border-[#d4c4b0]/60 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
+          <div className="bg-white p-6 border border-[#d4c4b0]/60">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <p className="text-[10px] text-[#8b6834] font-black uppercase tracking-widest">
@@ -228,7 +228,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white p-6 border border-[#d4c4b0]/60 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
+          <div className="bg-white p-6 border border-[#d4c4b0]/60">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <p className="text-[10px] text-[#8b6834] font-black uppercase tracking-widest">
@@ -253,7 +253,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* User Management Section */}
-        <div className="bg-white border border-[#d4c4b0]/60 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.05)] overflow-hidden">
+        <div className="bg-white border border-[#d4c4b0]/60 overflow-hidden">
           <div className="p-6 border-b border-[#f5f0e8] flex flex-col md:flex-row justify-between md:items-center gap-4">
             <h2 className="text-sm font-black uppercase tracking-widest text-[#2c2419]">
               User Management
@@ -443,7 +443,7 @@ export default function AdminDashboard() {
               <div className="space-y-10">
                 {/* Profile Header */}
                 <div className="text-center">
-                  <div className="w-24 h-24 border-2 border-[#d4c4b0]/40 bg-[#e8dcc8] text-[#8b6834] flex items-center justify-center font-black text-4xl mx-auto mb-6 shadow-[8px_8px_0px_0px_rgba(139,104,52,0.1)]">
+                  <div className="w-24 h-24 border-2 border-[#d4c4b0]/40 bg-[#e8dcc8] text-[#8b6834] flex items-center justify-center font-black text-4xl mx-auto mb-6">
                     {selectedUser.name.charAt(0).toUpperCase()}
                   </div>
                   <h3 className="text-xl font-black uppercase tracking-tight text-[#2c2419]">
@@ -472,7 +472,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* API Key Section */}
-                <div className="bg-[#faf8f5] border border-[#d4c4b0]/60 p-6 shadow-[4px_4px_0px_0px_rgba(44,36,25,0.05)]">
+                <div className="bg-[#faf8f5] border border-[#d4c4b0]/60 p-6">
                   <h4 className="text-[10px] font-black underline decoration-[#8b6834] uppercase tracking-widest text-[#2c2419] mb-5 flex items-center gap-2">
                     <Key className="w-3.5 h-3.5 text-[#8b6834]" /> API ACCESS
                     STATUS

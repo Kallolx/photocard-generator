@@ -147,7 +147,7 @@ export default function DashboardSidebar({
         `}
       >
         {/* Sidebar Header (Logo) */}
-        <div className="h-20 flex items-center px-6 border-b border-[#d4c4b0]/30 shadow-sm relative">
+        <div className="h-14 lg:h-16 flex items-center px-6 border-b border-[#d4c4b0]/30 shadow-sm relative">
           <Link href="/dashboard" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-none bg-gradient-to-br from-[#8b6834] to-[#5d4e37] flex items-center justify-center text-white group-hover:shadow-none transition-shadow">
               <LayoutDashboard className="w-5 h-5" />

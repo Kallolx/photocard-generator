@@ -24,11 +24,14 @@ import {
   Moon,
   Heart,
   LayoutGrid,
+  Calendar,
+  Key,
 } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import UpgradeModal from "@/components/UpgradeModal";
 import CompactCreditDisplay from "@/components/CompactCreditDisplay";
 import DashboardSidebar from "@/components/DashboardSidebar";
+import { developerAPI } from "@/lib/api";
 
 type CardType = {
   id: string;
@@ -40,11 +43,28 @@ type CardType = {
 };
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, credits } = useAuth();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showBanner, setShowBanner] = useState(true);
+  const [apiKeyData, setApiKeyData] = useState<{ apiKey?: string; usage?: number; limit?: number } | null>(null);
+
+  useEffect(() => {
+    const fetchApiInfo = async () => {
+      try {
+        const data = await developerAPI.getApiKey();
+        if (data.success) {
+          setApiKeyData({ apiKey: data.apiKey, usage: data.usage ?? 0, limit: data.limit ?? 20 });
+        } else {
+          setApiKeyData({});
+        }
+      } catch {
+        setApiKeyData({});
+      }
+    };
+    fetchApiInfo();
+  }, []);
 
   const isFreeUser = user?.plan === "Free";
 
@@ -189,7 +209,7 @@ export default function Dashboard() {
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
           {/* Top Header */}
-          <header className="flex-shrink-0 h-20 lg:h-24 px-4 sm:px-6 lg:px-10 flex items-center justify-between border-b border-[#d4c4b0] bg-white z-30">
+          <header className="flex-shrink-0 h-14 lg:h-16 px-4 sm:px-6 lg:px-10 flex items-center justify-between border-b border-[#d4c4b0] bg-white z-30">
             <div className="flex items-center gap-6 flex-1">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
@@ -238,31 +258,107 @@ export default function Dashboard() {
           <main className="flex-1 overflow-y-auto p-4 sm:px-6 lg:px-10 py-8 scroll-smooth">
             {/* Welcome Banner */}
             {showBanner && (
-              <div className="relative overflow-hidden rounded-none bg-[#2c2419] text-white p-8 md:p-10 mb-10 border-b-4 border-[#8b6834]">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-none blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-                <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#8b6834] opacity-10 rounded-none blur-2xl translate-y-1/3 -translate-x-1/4"></div>
+              <div className="relative overflow-hidden bg-[#2c2419] text-white px-6 md:px-8 py-5 mb-8 border-b border-[#8b6834]/40">
+                {/* Soft glow accents */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#8b6834]/10 blur-2xl translate-y-1/3 -translate-x-1/4"></div>
 
+                {/* Close button */}
                 <button
                   onClick={() => setShowBanner(false)}
-                  className="absolute top-6 right-6 p-2 text-[#d4c4b0] hover:text-white transition-colors z-20 group"
-                  title="Dismiss banner"
+                  className="absolute top-4 right-4 text-[#d4c4b0] hover:text-white transition-colors group"
+                  title="Dismiss"
                 >
-                  <X className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+                  <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                 </button>
 
-                <div className="relative z-10">
-                  <h1 className="text-3xl md:text-4xl font-lora font-bold mb-4">
-                    Welcome back,{" "}
-                    <span className="text-[#e8dcc8]">
-                      {user?.name?.split(" ")[0] || "Admin"}
-                    </span>{" "}
-                    👋
-                  </h1>
-                  <p className="text-[#d4c4b0] text-sm md:text-base max-w-2xl font-medium leading-relaxed opacity-90">
-                    Ready to craft something amazing? Select a template below to
-                    start generating beautiful social cards instantly. Use our
-                    AI tools to speed up your workflow.
-                  </p>
+                {/* Content */}
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pr-8">
+                  {/* Greeting */}
+                  <div className="shrink-0">
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-lora font-semibold">
+                      Welcome back,{" "}
+                      <span className="text-[#e8dcc8]">
+                        {user?.name?.split(" ")[0] || "Creator"}
+                      </span>
+                      👋
+                    </h1>
+                    <p className="text-[#d4c4b0] text-sm mt-1 opacity-80">
+                      Pick a template and start creating instantly.
+                    </p>
+                  </div>
+
+                  {/* Stats — 3 cols on mobile, flex row on md+ */}
+                  <div className="grid grid-cols-3 divide-x divide-[#8b6834]/30 md:flex md:items-center md:gap-6 md:divide-x-0 border-t border-[#8b6834]/20 pt-3 md:border-0 md:pt-0">
+                    {/* Total Cards */}
+                    <div className="flex items-center gap-1.5 md:gap-3 px-3 first:pl-0 md:px-0">
+                      <div className="hidden md:flex w-9 h-9 bg-[#8b6834]/25 items-center justify-center text-[#e8dcc8] shrink-0">
+                        <LayoutGrid className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-2xl md:text-3xl font-black text-white leading-none">
+                          {credits?.total_cards_generated ?? 0}
+                        </p>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#d4c4b0]/60 mt-0.5 leading-tight flex items-center gap-1">
+                          <LayoutGrid className="w-2.5 h-2.5 md:hidden" />
+                          Total
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="hidden md:block w-px h-9 bg-[#8b6834]/40 shrink-0" />
+
+                    {/* Today */}
+                    <div className="flex items-center gap-1.5 md:gap-3 px-3 md:px-0">
+                      <div className="hidden md:flex w-9 h-9 bg-[#8b6834]/25 items-center justify-center text-[#e8dcc8] shrink-0">
+                        <Calendar className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className="text-2xl md:text-3xl font-black text-white leading-none">
+                          {credits?.cards_generated_today ?? 0}
+                        </p>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#d4c4b0]/60 mt-0.5 leading-tight flex items-center gap-1">
+                          <Calendar className="w-2.5 h-2.5 md:hidden" />
+                          Today
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="hidden md:block w-px h-9 bg-[#8b6834]/40 shrink-0" />
+
+                    {/* API */}
+                    <div className="flex items-center gap-1.5 md:gap-3 px-3 md:px-0">
+                      <div className={`hidden md:flex w-9 h-9 items-center justify-center shrink-0 ${
+                        apiKeyData?.apiKey ? "bg-emerald-900/50 text-emerald-300" : "bg-[#8b6834]/25 text-[#d4c4b0]/40"
+                      }`}>
+                        <Key className="w-4 h-4" />
+                      </div>
+                      <div>
+                        {apiKeyData?.apiKey ? (
+                          <>
+                            <p className="text-2xl md:text-3xl font-black text-white leading-none">
+                              {apiKeyData.usage ?? 0}
+                              <span className="text-xs font-bold text-[#d4c4b0]/50">/{apiKeyData.limit ?? 20}</span>
+                            </p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-emerald-400/70 mt-0.5 leading-tight flex items-center gap-1">
+                              <Key className="w-2.5 h-2.5 md:hidden" />
+                              API
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-base font-black text-[#d4c4b0]/40 uppercase tracking-tight leading-none">
+                              —
+                            </p>
+                            <p className="text-[9px] font-bold uppercase tracking-widest text-[#d4c4b0]/40 mt-0.5 leading-tight flex items-center gap-1">
+                              <Key className="w-2.5 h-2.5 md:hidden" />
+                              API
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -270,8 +366,8 @@ export default function Dashboard() {
             {/* Featured Tools Grid */}
             <section className="mb-14">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold text-[#2c2419] flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-none bg-[#8b6834]/10 flex items-center justify-center text-[#8b6834]">
+                <h2 className="text-2xl font-bold tracking-tight text-[#2c2419] flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-none bg-white border border-[#d4c4b0]/40 flex items-center justify-center text-[#5d4e37]">
                     <Zap className="w-5 h-5" />
                   </div>
                   Popular Actions
@@ -354,7 +450,7 @@ export default function Dashboard() {
             {/* Other Card Types */}
             <section className="mb-10">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-xl font-bold text-[#2c2419] flex items-center gap-3">
+                <h2 className="text-xl tracking-tight font-bold text-[#2c2419] flex items-center gap-3">
                   <div className="w-10 h-10 rounded-none bg-white border border-[#d4c4b0]/40 flex items-center justify-center text-[#5d4e37]">
                     <Layers className="w-5 h-5" />
                   </div>

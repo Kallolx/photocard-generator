@@ -142,14 +142,14 @@ export default function UsersPage() {
           <div className="w-12 h-12 border-2 border-[#d4c4b0] border-t-[#8b6834] animate-spin rounded-full"></div>
         </div>
       ) : users.length === 0 ? (
-        <div className="bg-white border border-[#d4c4b0]/40 p-16 text-center shadow-[8px_8px_0px_0px_rgba(44,36,25,0.05)]">
+        <div className="bg-white border border-[#d4c4b0]/40 p-16 text-center">
           <p className="text-[10px] font-black uppercase tracking-widest text-[#a08d74]/50">
             No matching search records found
           </p>
         </div>
       ) : (
         <>
-          <div className="bg-white border border-[#d4c4b0]/60 shadow-[8px_8px_0px_0px_rgba(44,36,25,0.05)] overflow-x-auto">
+          <div className="bg-white border border-[#d4c4b0]/60 overflow-x-auto">
             <table className="w-full min-w-[800px]">
               <thead className="bg-[#f5f0e8]/50 text-[#5d4e37] text-[10px] uppercase font-black tracking-widest text-left">
                 <tr>
@@ -232,7 +232,7 @@ export default function UsersPage() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="px-6 py-2 border border-[#d4c4b0]/60 bg-white text-[10px] font-black uppercase tracking-widest text-[#5d4e37] disabled:opacity-20 disabled:cursor-not-allowed hover:bg-[#f5f0e8] transition-all active:translate-x-[1px] active:translate-y-[1px]"
+                className="px-6 py-2 border border-[#d4c4b0]/60 bg-white text-[10px] font-black uppercase tracking-widest text-[#5d4e37] disabled:opacity-20 disabled:cursor-not-allowed hover:bg-[#f5f0e8] transition-all"
               >
                 Previous
               </button>
@@ -244,7 +244,7 @@ export default function UsersPage() {
                   setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="px-6 py-2 border border-[#d4c4b0]/60 bg-white text-[10px] font-black uppercase tracking-widest text-[#5d4e37] disabled:opacity-20 disabled:cursor-not-allowed hover:bg-[#f5f0e8] transition-all active:translate-x-[1px] active:translate-y-[1px]"
+                className="px-6 py-2 border border-[#d4c4b0]/60 bg-white text-[10px] font-black uppercase tracking-widest text-[#5d4e37] disabled:opacity-20 disabled:cursor-not-allowed hover:bg-[#f5f0e8] transition-all"
               >
                 Next
               </button>
