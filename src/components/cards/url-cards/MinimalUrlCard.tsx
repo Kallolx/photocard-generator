@@ -1,14 +1,19 @@
 "use client";
 
-import { PhotocardData, BackgroundOptions, CardFontStyles, VisibilitySettings } from "@/types";
+import {
+  PhotocardData,
+  BackgroundOptions,
+  CardFontStyles,
+  VisibilitySettings,
+} from "@/types";
 import QRCode from "qrcode";
 import { useEffect, useState, useRef } from "react";
 import { getProxiedImageUrl } from "@/utils/imageProxy";
 import { Globe, EyeOff, RotateCcw, Upload } from "lucide-react";
-import { 
-  DndContext, 
-  useDraggable, 
-  useDroppable, 
+import {
+  DndContext,
+  useDraggable,
+  useDroppable,
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
@@ -71,20 +76,26 @@ function FloatingMenu({
 }
 
 // Draggable element that can be swapped with click handler
-function DraggableSwappable({ 
-  id, 
-  disabled, 
+function DraggableSwappable({
+  id,
+  disabled,
   children,
   isDragMode,
   onClick,
-}: { 
-  id: string; 
-  disabled: boolean; 
+}: {
+  id: string;
+  disabled: boolean;
   children: React.ReactNode;
   isDragMode: boolean;
   onClick?: (e: any) => void;
 }) {
-  const { attributes, listeners, setNodeRef: setDragRef, transform, isDragging } = useDraggable({
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setDragRef,
+    transform,
+    isDragging,
+  } = useDraggable({
     id,
     disabled,
   });
@@ -102,8 +113,8 @@ function DraggableSwappable({
 
   const style = {
     opacity: isDragging ? 0.3 : 1,
-    transform: isOver && !isDragging ? 'scale(1.05)' : 'scale(1)',
-    transition: 'all 0.2s ease',
+    transform: isOver && !isDragging ? "scale(1.05)" : "scale(1)",
+    transition: "all 0.2s ease",
   };
 
   const handleClick = (e: React.MouseEvent) => {
@@ -115,19 +126,23 @@ function DraggableSwappable({
   };
 
   return (
-    <div 
-      ref={setRefs} 
+    <div
+      ref={setRefs}
       style={style}
-      className={`relative ${isDragMode && !disabled ? 'ring-2 ring-blue-500 ring-opacity-50 rounded p-1' : ''} ${isOver && !isDragging ? 'ring-4 ring-green-500 ring-opacity-70' : ''}`}
+      className={`relative ${isDragMode && !disabled ? "ring-2 ring-blue-500 ring-opacity-50 rounded p-1" : ""} ${isOver && !isDragging ? "ring-4 ring-green-500 ring-opacity-70" : ""}`}
     >
-      <div {...listeners} {...attributes} style={{ cursor: disabled ? 'default' : 'move' }}>
+      <div
+        {...listeners}
+        {...attributes}
+        style={{ cursor: disabled ? "default" : "move" }}
+      >
         {children}
       </div>
       {isDragMode && !disabled && (
         <button
           onClick={handleClick}
           className="absolute -top-2 -right-2 w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors z-10"
-          style={{ fontSize: '12px' }}
+          style={{ fontSize: "12px" }}
         >
           ⋮
         </button>
@@ -152,10 +167,10 @@ interface MinimalUrlCardProps {
   isLogoFavicon?: boolean;
   isDragMode?: boolean;
   elementLayout?: {
-    topLeft: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
-    topRight: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
-    bottomLeft: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
-    bottomRight: 'favicon' | 'dateWeek' | 'qrCode' | 'cta';
+    topLeft: "favicon" | "dateWeek" | "qrCode" | "cta";
+    topRight: "favicon" | "dateWeek" | "qrCode" | "cta";
+    bottomLeft: "favicon" | "dateWeek" | "qrCode" | "cta";
+    bottomRight: "favicon" | "dateWeek" | "qrCode" | "cta";
   };
   onLayoutChange?: (layout: any) => void;
   onVisibilityChange?: (settings: any) => void;
@@ -165,13 +180,17 @@ interface MinimalUrlCardProps {
 }
 
 // Helper function to get text shadow based on preset
-function getTextShadow(preset: string, angle: number, textColor: string): string {
+function getTextShadow(
+  preset: string,
+  angle: number,
+  textColor: string,
+): string {
   if (preset === "none") return "none";
-  
+
   const angleRad = (angle * Math.PI) / 180;
   const offsetX = Math.cos(angleRad);
   const offsetY = Math.sin(angleRad);
-  
+
   switch (preset) {
     case "soft":
       return `${offsetX * 2}px ${offsetY * 2}px 4px rgba(0, 0, 0, 0.3)`;
@@ -189,17 +208,19 @@ function getTextShadow(preset: string, angle: number, textColor: string): string
 // Helper function to generate text stroke using text-shadow
 function getTextStroke(width: number, color: string): string {
   if (!width || width === 0) return "none";
-  
+
   const shadows: string[] = [];
   const steps = 8;
-  
+
   for (let i = 0; i < steps; i++) {
     const angle = (i * 2 * Math.PI) / steps;
     const offsetX = Math.cos(angle) * width;
     const offsetY = Math.sin(angle) * width;
-    shadows.push(`${offsetX.toFixed(2)}px ${offsetY.toFixed(2)}px 0px ${color}`);
+    shadows.push(
+      `${offsetX.toFixed(2)}px ${offsetY.toFixed(2)}px 0px ${color}`,
+    );
   }
-  
+
   return shadows.join(", ");
 }
 
@@ -221,15 +242,15 @@ export default function MinimalUrlCard({
     showLogo: true,
     showQrCode: true,
     showTitle: true,
-    showAdBanner:false, 
+    showAdBanner: false,
   },
   isLogoFavicon = false,
   isDragMode = false,
   elementLayout = {
-    topLeft: 'dateWeek',
-    topRight: 'favicon',
-    bottomLeft: 'qrCode',
-    bottomRight: 'cta',
+    topLeft: "dateWeek",
+    topRight: "favicon",
+    bottomLeft: "qrCode",
+    bottomRight: "cta",
   },
   onLayoutChange,
   onVisibilityChange,
@@ -239,7 +260,10 @@ export default function MinimalUrlCard({
 }: MinimalUrlCardProps) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [selectedElement, setSelectedElement] = useState<{ id: string; position: { x: number; y: number } } | null>(null);
+  const [selectedElement, setSelectedElement] = useState<{
+    id: string;
+    position: { x: number; y: number };
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
 
@@ -252,8 +276,8 @@ export default function MinimalUrlCard({
     };
 
     if (selectedElement) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [selectedElement]);
 
@@ -274,20 +298,20 @@ export default function MinimalUrlCard({
   const handleHideElement = () => {
     if (!selectedElement || !onVisibilityChange) return;
     const elementId = selectedElement.id;
-    
+
     const newSettings = { ...visibilitySettings };
-    
-    if (elementId === 'favicon') {
+
+    if (elementId === "favicon") {
       newSettings.showLogo = !newSettings.showLogo;
-    } else if (elementId === 'dateWeek') {
+    } else if (elementId === "dateWeek") {
       newSettings.showWeek = !newSettings.showWeek;
       newSettings.showDate = !newSettings.showDate;
-    } else if (elementId === 'qrCode') {
+    } else if (elementId === "qrCode") {
       newSettings.showQrCode = !newSettings.showQrCode;
-    } else if (elementId === 'cta') {
+    } else if (elementId === "cta") {
       newSettings.showTitle = !newSettings.showTitle;
     }
-    
+
     onVisibilityChange(newSettings);
     setSelectedElement(null);
   };
@@ -295,14 +319,14 @@ export default function MinimalUrlCard({
   // Reset element to default position
   const handleClearElement = () => {
     if (!selectedElement || !onLayoutChange) return;
-    
+
     const defaultLayout = {
-      topLeft: 'dateWeek' as const,
-      topRight: 'favicon' as const,
-      bottomLeft: 'qrCode' as const,
-      bottomRight: 'cta' as const,
+      topLeft: "dateWeek" as const,
+      topRight: "favicon" as const,
+      bottomLeft: "qrCode" as const,
+      bottomRight: "cta" as const,
     };
-    
+
     onLayoutChange(defaultLayout);
     setSelectedElement(null);
   };
@@ -311,9 +335,9 @@ export default function MinimalUrlCard({
   const handleUploadElement = () => {
     if (!selectedElement) return;
     const elementId = selectedElement.id;
-    
+
     // Allow upload for favicon
-    if (elementId === 'favicon' && onFaviconUpload) {
+    if (elementId === "favicon" && onFaviconUpload) {
       faviconInputRef.current?.click();
     }
     setSelectedElement(null);
@@ -328,28 +352,28 @@ export default function MinimalUrlCard({
   // Handle drag end - swap positions
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     setActiveId(null);
-    
+
     if (!over || active.id === over.id) return;
-    
+
     const activeId = active.id as string;
     const overId = over.id as string;
-    
+
     const newLayout = { ...elementLayout };
-    
+
     let activeSlot: keyof typeof elementLayout | null = null;
     let overSlot: keyof typeof elementLayout | null = null;
-    
+
     Object.entries(elementLayout).forEach(([slot, element]) => {
       if (element === activeId) activeSlot = slot as keyof typeof elementLayout;
       if (element === overId) overSlot = slot as keyof typeof elementLayout;
     });
-    
+
     if (activeSlot && overSlot) {
       newLayout[activeSlot] = elementLayout[overSlot];
       newLayout[overSlot] = elementLayout[activeSlot];
-      
+
       if (onLayoutChange) {
         onLayoutChange(newLayout);
       }
@@ -368,9 +392,9 @@ export default function MinimalUrlCard({
   const getSiteDomain = () => {
     try {
       const url = new URL(data.url);
-      return url.hostname.toLowerCase().replace('www.', '');
+      return url.hostname.toLowerCase().replace("www.", "");
     } catch {
-      return data.siteName?.toLowerCase() || 'example.com';
+      return data.siteName?.toLowerCase() || "example.com";
     }
   };
 
@@ -402,16 +426,17 @@ export default function MinimalUrlCard({
 
   // Get gradient for image blend - converts background color to rgba
   const getImageBlendGradient = () => {
-    const baseColor = background.type === 'gradient' 
-      ? (background.gradientFrom || background.color)
-      : background.color;
-    
+    const baseColor =
+      background.type === "gradient"
+        ? background.gradientFrom || background.color
+        : background.color;
+
     // Convert hex to RGB
-    const hex = baseColor.replace('#', '');
+    const hex = baseColor.replace("#", "");
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
-    
+
     return `linear-gradient(to bottom, rgba(${r}, ${g}, ${b}, 0) 0%, rgba(${r}, ${g}, ${b}, 1) 100%)`;
   };
 
@@ -419,52 +444,24 @@ export default function MinimalUrlCard({
   const getPatternStyle = () => {
     if (!background?.pattern || background.pattern === "none") return {};
 
-    const color = background.patternColor || "#000000";
-    const opacity = background.patternOpacity || 0.1;
-
-    let backgroundImage = "";
+    const opacity = background.patternOpacity || 0.3;
+    const scale = background.patternScale || 1.0;
 
     switch (background.pattern) {
-      case "dots":
-        backgroundImage = `radial-gradient(${color} 1px, transparent 1px)`;
+      case "p1":
         return {
-          backgroundImage,
-          backgroundSize: "20px 20px",
+          backgroundImage: "url(/patterns/p1.png)",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
           opacity,
         };
-      case "lines":
-        backgroundImage = `repeating-linear-gradient(45deg, ${color}, ${color} 1px, transparent 1px, transparent 10px)`;
+      case "p2":
         return {
-          backgroundImage,
-          opacity,
-        };
-      case "grid":
-        backgroundImage = `linear-gradient(${color} 1px, transparent 1px), linear-gradient(90deg, ${color} 1px, transparent 1px)`;
-        return {
-          backgroundImage,
-          backgroundSize: "20px 20px",
-          opacity,
-        };
-      case "checks":
-        backgroundImage = `repeating-linear-gradient(45deg, ${color} 25%, transparent 25%, transparent 75%, ${color} 75%, ${color}), repeating-linear-gradient(45deg, ${color} 25%, #00000000 25%, #00000000 75%, ${color} 75%, ${color})`;
-        return {
-          backgroundImage,
-          backgroundSize: "20px 20px",
-          backgroundPosition: "0 0, 10px 10px",
-          opacity,
-        };
-      case "curves":
-        backgroundImage = `repeating-radial-gradient(circle at 0 0, transparent 0, ${color} 1px, transparent 2px, transparent 4px)`;
-        return {
-          backgroundImage,
-          backgroundSize: "16px 16px",
-          opacity,
-        };
-      case "abstract":
-        backgroundImage = `radial-gradient(circle at 50% 50%, ${color} 2px, transparent 2.5px), radial-gradient(circle at 0% 0%, ${color} 2px, transparent 2.5px)`;
-        return {
-          backgroundImage,
-          backgroundSize: "40px 40px",
+          backgroundImage: "url(/patterns/p2.png)",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
           opacity,
         };
       case "custom":
@@ -472,6 +469,7 @@ export default function MinimalUrlCard({
           return {
             backgroundImage: `url(${background.patternImage})`,
             backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             opacity,
           };
@@ -482,80 +480,102 @@ export default function MinimalUrlCard({
     }
   };
 
+  const getCardDate = () => {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
+    const lang = fontStyles?.weekDateLanguage === "english" ? "en-US" : "bn-BD";
+    return now.toLocaleDateString(lang, options);
+  };
+
+  const getWeekday = () => {
+    if (fontStyles?.weekDateLanguage === "english") {
+      return new Date().toLocaleDateString("en-US", { weekday: "long" });
+    }
+    const days = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
+    return days[new Date().getDay()];
+  };
+
   // Render element based on type
-  const renderElement = (elementType: 'favicon' | 'dateWeek' | 'qrCode' | 'cta') => {
+  const renderElement = (
+    elementType: "favicon" | "dateWeek" | "qrCode" | "cta",
+  ) => {
     switch (elementType) {
-      case 'dateWeek':
-        if (!visibilitySettings.showWeek && !visibilitySettings.showDate) return null;
+      case "dateWeek":
+        if (!visibilitySettings.showWeek && !visibilitySettings.showDate)
+          return null;
         return (
-          <DraggableSwappable 
-            id="dateWeek" 
-            disabled={!isDragMode} 
+          <DraggableSwappable
+            id="dateWeek"
+            disabled={!isDragMode}
             isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('dateWeek', e)}
+            onClick={(e) => handleElementClick("dateWeek", e)}
           >
             <div className="inline-flex items-center z-[2] relative">
-              <div 
+              <div
                 className="relative px-4 py-1 backdrop-blur-sm"
                 style={{
-                  background: 'rgba(0, 0, 0, 0.4)',
+                  background: "rgba(0, 0, 0, 0.4)",
                 }}
               >
                 {/* Top border with gap */}
-                <div 
+                <div
                   className="absolute left-0 right-2 h-[2px] bg-white"
                   style={{
-                    top: '-4px',
-                    borderRadius: '2px',
+                    top: "-4px",
+                    borderRadius: "2px",
                   }}
                 />
-                
+
                 {/* Bottom border with gap */}
-                <div 
+                <div
                   className="absolute left-0 right-2 h-[2px] bg-white"
                   style={{
-                    bottom: '-4px',
-                    borderRadius: '2px',
+                    bottom: "-4px",
+                    borderRadius: "2px",
                   }}
                 />
 
                 {/* Week and Date - Single Row */}
                 <div
-                  className="font-noto-bengali font-bold text-left whitespace-nowrap"
+                  className="font-bold text-left whitespace-nowrap"
                   style={{
-                    fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
+                    fontFamily:
+                      fontStyles?.week.fontFamily || "Noto Serif Bengali",
                     fontSize: fontStyles?.week.fontSize || "14px",
                     fontWeight: fontStyles?.week.fontWeight || "700",
                     color: fontStyles?.week.color || "#FFFFFF",
                     letterSpacing: fontStyles?.week.letterSpacing || "0px",
                   }}
                 >
-                  {visibilitySettings.showWeek && data.weekName}
-                  {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
-                  {visibilitySettings.showDate && data.date}
+                  {visibilitySettings.showWeek && getWeekday()}
+                  {visibilitySettings.showWeek &&
+                    visibilitySettings.showDate &&
+                    " | "}
+                  {visibilitySettings.showDate && getCardDate()}
                 </div>
               </div>
             </div>
           </DraggableSwappable>
         );
-      
-      case 'favicon':
+
+      case "favicon":
         if (!visibilitySettings.showLogo) return null;
         return (
-          <DraggableSwappable 
-            id="favicon" 
-            disabled={!isDragMode} 
+          <DraggableSwappable
+            id="favicon"
+            disabled={!isDragMode}
             isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('favicon', e)}
+            onClick={(e) => handleElementClick("favicon", e)}
           >
             <div className="w-12 h-12 bg-gray-100 shadow-lg rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
-              {(data.favicon || data.logo) ? (
+              {data.favicon || data.logo ? (
                 <img
                   src={getProxiedImageUrl(data.favicon || data.logo)}
                   alt="Favicon"
                   className="w-full h-full object-contain border-2 border-white rounded-full"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/placeholder-logo.png";
+                    (e.target as HTMLImageElement).src =
+                      "/placeholder-logo.png";
                   }}
                 />
               ) : (
@@ -576,45 +596,41 @@ export default function MinimalUrlCard({
             </div>
           </DraggableSwappable>
         );
-      
-      case 'qrCode':
+
+      case "qrCode":
         if (!visibilitySettings.showQrCode || !qrCodeUrl) return null;
         return (
-          <DraggableSwappable 
-            id="qrCode" 
-            disabled={!isDragMode} 
+          <DraggableSwappable
+            id="qrCode"
+            disabled={!isDragMode}
             isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('qrCode', e)}
+            onClick={(e) => handleElementClick("qrCode", e)}
           >
             <div className="w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0">
-              <img
-                src={qrCodeUrl}
-                alt="QR Code"
-                className="w-full h-full"
-              />
+              <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
             </div>
           </DraggableSwappable>
         );
-      
-      case 'cta':
+
+      case "cta":
         return (
-          <DraggableSwappable 
-            id="cta" 
-            disabled={!isDragMode} 
+          <DraggableSwappable
+            id="cta"
+            disabled={!isDragMode}
             isDragMode={isDragMode}
-            onClick={(e) => handleElementClick('cta', e)}
+            onClick={(e) => handleElementClick("cta", e)}
           >
             <div className="bg-white border border-gray-300 py-0.5 px-3 text-center rounded-sm">
-                <p className="font-noto-bengali text-xs font-bold text-gray-900">
-                  বিস্তারিত{" "}
-                  <span style={{ color: getHighlightColor() }}>
-                    কমেন্টের লিংকে
-                  </span>
-                </p>
-              </div>
+              <p className="font-noto-bengali text-xs font-bold text-gray-900">
+                বিস্তারিত{" "}
+                <span style={{ color: getHighlightColor() }}>
+                  কমেন্টের লিংকে
+                </span>
+              </p>
+            </div>
           </DraggableSwappable>
         );
-      
+
       default:
         return null;
     }
@@ -624,130 +640,62 @@ export default function MinimalUrlCard({
     if (!activeId) return null;
 
     switch (activeId) {
-      case 'dateWeek':
+      case "dateWeek":
         return (
           <div className="inline-flex items-center z-[2] relative">
-            <div 
+            <div
               className="relative px-4 py-1 backdrop-blur-sm"
               style={{
-                background: 'rgba(0, 0, 0, 0.4)',
+                background: "rgba(0, 0, 0, 0.4)",
               }}
             >
-              <div 
+              <div
                 className="absolute left-0 right-2 h-[2px] bg-white"
                 style={{
-                  top: '-4px',
-                  borderRadius: '2px',
-                }}
-              />
-              <div 
-                className="absolute left-0 right-2 h-[2px] bg-white"
-                style={{
-                  bottom: '-4px',
-                  borderRadius: '2px',
+                  top: "-4px",
+                  borderRadius: "2px",
                 }}
               />
               <div
-                className="font-noto-bengali font-bold text-left whitespace-nowrap"
+                className="absolute left-0 right-2 h-[2px] bg-white"
                 style={{
-                  fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
+                  bottom: "-4px",
+                  borderRadius: "2px",
+                }}
+              />
+              <div
+                className="font-bold text-left whitespace-nowrap"
+                style={{
+                  fontFamily:
+                    fontStyles?.week.fontFamily || "Noto Serif Bengali",
                   fontSize: fontStyles?.week.fontSize || "14px",
                   fontWeight: fontStyles?.week.fontWeight || "700",
                   color: fontStyles?.week.color || "#FFFFFF",
                   letterSpacing: fontStyles?.week.letterSpacing || "0px",
                 }}
               >
-                {visibilitySettings.showWeek && data.weekName}
-                {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
-                {visibilitySettings.showDate && data.date}
+                {visibilitySettings.showWeek && getWeekday()}
+                {visibilitySettings.showWeek &&
+                  visibilitySettings.showDate &&
+                  " | "}
+                {visibilitySettings.showDate && getCardDate()}
               </div>
             </div>
           </div>
         );
-      
-      case 'favicon':
+
+      case "favicon":
         return (
           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
-            {(data.favicon || data.logo) ? (
+            {data.favicon || data.logo ? (
               <img
                 src={getProxiedImageUrl(data.favicon || data.logo)}
                 alt="Favicon"
                 className="w-full h-full object-contain border-2 border-white rounded-full"
               />
             ) : (
-              <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            )}
-          </div>
-        );
-      
-      case 'qrCode':
-        return (
-          <div className="w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0">
-            <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
-          </div>
-        );
-      
-      case 'cta':
-        return (
-          <div className="bg-white border border-gray-300 py-0.5 px-3 text-center max-w-[230px] rounded-sm">
-            <p className="font-noto-bengali text-md font-bold text-gray-900">
-              বিস্তারিত{" "}
-              <span style={{ color: getHighlightColor() }}>
-                কমেন্টের লিংকে
-              </span>
-            </p>
-          </div>
-        );
-      
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <DndContext
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-    <div
-      id={id}
-      className={
-        fullSize
-          ? "w-[448px] max-w-[448px] mx-auto overflow-hidden shadow-xl relative"
-          : "w-full max-w-md mx-auto overflow-hidden shadow-xl relative"
-      }
-      style={getBackgroundStyle()}
-    >
-      {/* Pattern Overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0"
-        style={getPatternStyle()}
-      />
-
-      {/* Top Image Section - Full width, no padding */}
-      <div className="relative w-full h-[240px] overflow-hidden">
-        {/* Main Image */}
-        <div
-          className="w-full h-full"
-          style={{
-            border: `${frameBorderThickness}px solid ${frameBorderColor}`,
-          }}
-        >
-          {data.image ? (
-            <img
-              src={getProxiedImageUrl(data.image)}
-              alt="Article image"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
-              }}
-            />
-          ) : (
-            <div className="w-full h-full bg-white flex flex-col items-center justify-center gap-2">
               <svg
-                className="w-12 h-12 text-gray-300"
+                className="w-6 h-6 text-gray-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -759,73 +707,71 @@ export default function MinimalUrlCard({
                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
-              <span className="text-gray-400 text-sm font-inter">No Image</span>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        );
 
-        {/* Gradient Overlay - Bottom half of image blends to background */}
-        <div 
-          className="absolute left-0 right-0 bottom-0 h-[140px] pointer-events-none z-[1]"
-          style={{
-            background: getImageBlendGradient()
-          }}
+      case "qrCode":
+        return (
+          <div className="w-14 h-14 bg-white rounded-lg p-1 flex-shrink-0">
+            <img src={qrCodeUrl} alt="QR Code" className="w-full h-full" />
+          </div>
+        );
+
+      case "cta":
+        return (
+          <div className="bg-white border border-gray-300 py-0.5 px-3 text-center max-w-[230px] rounded-sm">
+            <p className="font-noto-bengali text-md font-bold text-gray-900">
+              বিস্তারিত{" "}
+              <span style={{ color: getHighlightColor() }}>কমেন্টের লিংকে</span>
+            </p>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <div
+        id={id}
+        className={
+          fullSize
+            ? "w-[448px] max-w-[448px] mx-auto overflow-hidden shadow-xl relative"
+            : "w-full max-w-md mx-auto overflow-hidden shadow-xl relative"
+        }
+        style={getBackgroundStyle()}
+      >
+        {/* Pattern Overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={getPatternStyle()}
         />
 
-        {/* Overlay Content - Week/Date and Favicon */}
-        <div className="absolute inset-0 flex justify-between items-start pt-6 pr-4 z-[2]">
-          {/* Top Left Slot */}
-          {renderElement(elementLayout.topLeft)}
-          
-          {/* Top Right Slot */}
-          {renderElement(elementLayout.topRight)}
-        </div>
-      </div>
-
-      {/* Logo Section with Complex Shape - Overlapping image and text sections */}
-      {visibilitySettings.showLogo && (
-        <div className="relative -mt-10 z-20 flex justify-center">
-          <div className="relative w-[240px] h-[54px]">
-            {/* Complex SVG Shape Background */}
-            <svg 
-              viewBox="0 0 449 100" 
-              className="absolute inset-0 w-full h-full"
-              preserveAspectRatio="none"
-              style={{
-                filter: 'drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))',
-              }}
-            >
-              {/* Main parallelogram */}
-              <path 
-                d="M448 15H48.186L0 83H403.721L448 15Z" 
-                fill="#FFFFFF"
+        {/* Top Image Section - Full width, no padding */}
+        <div className="relative w-full h-[240px] overflow-hidden">
+          {/* Main Image */}
+          <div
+            className="w-full h-full"
+            style={{
+              border: `${frameBorderThickness}px solid ${frameBorderColor}`,
+            }}
+          >
+            {data.image ? (
+              <img
+                src={getProxiedImageUrl(data.image)}
+                alt="Article image"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
+                }}
               />
-              {/* Top accent */}
-              <path 
-                d="M35.2299 0L0 49H15.6578L43.0588 10.3158H234.866L244 0H35.2299Z" 
-                fill="#FFFFFF"
-              />
-              {/* Bottom accent */}
-              <path 
-                d="M413.914 100L449 50H433.406L406.118 89.4737H215.096L206 100H413.914Z" 
-                fill="#FFFFFF"
-              />
-            </svg>
-
-            {/* Logo Image or Placeholder - Centered */}
-            <div className="absolute inset-0 flex items-center justify-center p-3">
-              {data.logo ? (
-                <img
-                  src={getProxiedImageUrl(data.logo)}
-                  alt="Logo"
-                  className="max-w-[120px] max-h-[40px] object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/placeholder-logo.png";
-                  }}
-                />
-              ) : (
+            ) : (
+              <div className="w-full h-full bg-white flex flex-col items-center justify-center gap-2">
                 <svg
-                  className="w-5 h-5 text-gray-300"
+                  className="w-12 h-12 text-gray-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -837,177 +783,264 @@ export default function MinimalUrlCard({
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-              )}
-            </div>
+                <span className="text-gray-400 text-sm font-inter">
+                  No Image
+                </span>
+              </div>
+            )}
           </div>
-        </div>
-      )}
 
-      {/* Bottom Content Section with Fade Effect */}
-      <div 
-        className="px-6 pt-6 pb-4 relative z-10"
-        style={{
-          background: `linear-gradient(to bottom, transparent 0%, ${background.type === 'gradient' ? background.gradientFrom || background.color : background.color} 20%, ${background.type === 'gradient' ? background.gradientTo || background.color : background.color} 100%)`
-        }}
-      >
-
-        {/* Title */}
-        {visibilitySettings.showTitle && (
-          <h2
-            className="text-white font-noto-bengali text-center leading-tight mb-4 px-2 py-1"
+          {/* Gradient Overlay - Bottom half of image blends to background */}
+          <div
+            className="absolute left-0 right-0 bottom-0 h-[140px] pointer-events-none z-[1]"
             style={{
-              fontFamily: fontStyles?.headline.fontFamily || "Noto Sans Bengali",
-              fontSize: fontStyles?.headline.fontSize || "24px",
-              fontWeight: fontStyles?.headline.fontWeight || "700",
-              color: fontStyles?.headline.color || "#FFFFFF",
-              textAlign: fontStyles?.headline.textAlign || "center",
-              letterSpacing: fontStyles?.headline.letterSpacing || "0px",
-              textShadow: (() => {
-                const textColor = fontStyles?.headline.color || "#FFFFFF";
-                const shadow = getTextShadow(
-                  fontStyles?.headline.textShadow?.preset || "none",
-                  fontStyles?.headline.textShadow?.angle || 135,
-                  textColor
-                );
-                const stroke = getTextStroke(
-                  fontStyles?.headline.textStroke?.width || 0,
-                  fontStyles?.headline.textStroke?.color || "#000000"
-                );
-                
-                // Combine both effects
-                if (shadow !== "none" && stroke !== "none") {
-                  return `${stroke}, ${shadow}`;
-                } else if (stroke !== "none") {
-                  return stroke;
-                } else {
-                  return shadow;
-                }
-              })(),
-            } as React.CSSProperties}
-          >
-            {data.title}
-          </h2>
-        )}
-
-        {/* Footer Row - QR Code and Site Info */}
-        <div className="flex justify-between items-end mt-0 gap-3">
-          {/* Bottom Left Slot */}
-          {renderElement(elementLayout.bottomLeft)}
-
-          {/* Site Info - Right */}
-          <div className="flex-1 flex flex-col items-end gap-2">
-            {/* Site Name with Globe Icon */}
-            <div className="flex items-center gap-1">
-              <Globe className="w-4 h-4 text-white opacity-80" />
-              <span className="text-white text-[10px] font-inter opacity-90">
-                {getSiteDomain()}
-              </span>
-            </div>
-
-            {/* Bottom Right Slot */}
-            {renderElement(elementLayout.bottomRight)}
-          </div>
-        </div>
-      </div>
-
-      {/* Ad Banner - Full width at bottom, OUTSIDE the padding */}
-      {visibilitySettings?.showAdBanner && adBannerImage && (
-        <div className="w-full relative z-10 overflow-hidden" style={{ height: "60px" }}>
-          <img
-            src={adBannerImage}
-            alt="Advertisement"
-            className="absolute top-1/2 left-1/2 pointer-events-none"
-            style={{
-              transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${adBannerZoom / 100})`,
-              transformOrigin: 'center center',
-              maxWidth: 'none',
-              maxHeight: 'none',
-              width: 'auto',
-              height: 'auto',
-              minWidth: '100%',
-              minHeight: '100%'
+              background: getImageBlendGradient(),
             }}
           />
+
+          {/* Overlay Content - Week/Date and Favicon */}
+          <div className="absolute inset-0 flex justify-between items-start pt-6 pr-4 z-[2]">
+            {/* Top Left Slot */}
+            {renderElement(elementLayout.topLeft)}
+
+            {/* Top Right Slot */}
+            {renderElement(elementLayout.topRight)}
+          </div>
         </div>
-      )}
-      {visibilitySettings?.showAdBanner && !adBannerImage && !isGenerating && (
+
+        {/* Logo Section with Complex Shape - Overlapping image and text sections */}
+        {visibilitySettings.showLogo && (
+          <div className="relative -mt-10 z-20 flex justify-center">
+            <div className="relative w-[240px] h-[54px]">
+              {/* Complex SVG Shape Background */}
+              <svg
+                viewBox="0 0 449 100"
+                className="absolute inset-0 w-full h-full"
+                preserveAspectRatio="none"
+                style={{
+                  filter: "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))",
+                }}
+              >
+                {/* Main parallelogram */}
+                <path d="M448 15H48.186L0 83H403.721L448 15Z" fill="#FFFFFF" />
+                {/* Top accent */}
+                <path
+                  d="M35.2299 0L0 49H15.6578L43.0588 10.3158H234.866L244 0H35.2299Z"
+                  fill="#FFFFFF"
+                />
+                {/* Bottom accent */}
+                <path
+                  d="M413.914 100L449 50H433.406L406.118 89.4737H215.096L206 100H413.914Z"
+                  fill="#FFFFFF"
+                />
+              </svg>
+
+              {/* Logo Image or Placeholder - Centered */}
+              <div className="absolute inset-0 flex items-center justify-center p-3">
+                {data.logo ? (
+                  <img
+                    src={getProxiedImageUrl(data.logo)}
+                    alt="Logo"
+                    className="max-w-[120px] max-h-[40px] object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "/placeholder-logo.png";
+                    }}
+                  />
+                ) : (
+                  <svg
+                    className="w-5 h-5 text-gray-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bottom Content Section with Fade Effect */}
         <div
-          className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
-          style={{ height: "80px" }}
+          className="px-6 pt-6 pb-4 relative z-10"
+          style={{
+            background: `linear-gradient(to bottom, transparent 0%, ${background.type === "gradient" ? background.gradientFrom || background.color : background.color} 20%, ${background.type === "gradient" ? background.gradientTo || background.color : background.color} 100%)`,
+          }}
         >
-          <span className="text-[#5d4e37] text-xs font-inter">
-            Ad Banner Area (80px height)
-          </span>
+          {/* Title */}
+          {visibilitySettings.showTitle && (
+            <h2
+              className="text-white text-center leading-tight mb-4 px-2 py-1"
+              style={
+                {
+                  fontFamily:
+                    fontStyles?.headline.fontFamily || "Noto Serif Bengali",
+                  fontSize: fontStyles?.headline.fontSize || "24px",
+                  fontWeight: fontStyles?.headline.fontWeight || "700",
+                  color: fontStyles?.headline.color || "#FFFFFF",
+                  textAlign: fontStyles?.headline.textAlign || "center",
+                  letterSpacing: fontStyles?.headline.letterSpacing || "0px",
+                  textShadow: (() => {
+                    const textColor = fontStyles?.headline.color || "#FFFFFF";
+                    const shadow = getTextShadow(
+                      fontStyles?.headline.textShadow?.preset || "none",
+                      fontStyles?.headline.textShadow?.angle || 135,
+                      textColor,
+                    );
+                    const stroke = getTextStroke(
+                      fontStyles?.headline.textStroke?.width || 0,
+                      fontStyles?.headline.textStroke?.color || "#000000",
+                    );
+
+                    // Combine both effects
+                    if (shadow !== "none" && stroke !== "none") {
+                      return `${stroke}, ${shadow}`;
+                    } else if (stroke !== "none") {
+                      return stroke;
+                    } else {
+                      return shadow;
+                    }
+                  })(),
+                } as React.CSSProperties
+              }
+            >
+              {data.title}
+            </h2>
+          )}
+
+          {/* Footer Row - QR Code and Site Info */}
+          <div className="flex justify-between items-end mt-0 gap-3">
+            {/* Bottom Left Slot */}
+            {renderElement(elementLayout.bottomLeft)}
+
+            {/* Site Info - Right */}
+            <div className="flex-1 flex flex-col items-end gap-2">
+              {/* Site Name with Globe Icon */}
+              <div className="flex items-center gap-1">
+                <Globe className="w-4 h-4 text-white opacity-80" />
+                <span className="text-white text-[10px] font-inter opacity-90">
+                  {getSiteDomain()}
+                </span>
+              </div>
+
+              {/* Bottom Right Slot */}
+              {renderElement(elementLayout.bottomRight)}
+            </div>
+          </div>
+        </div>
+
+        {/* Ad Banner - Full width at bottom, OUTSIDE the padding */}
+        {visibilitySettings?.showAdBanner && adBannerImage && (
+          <div
+            className="w-full relative z-10 overflow-hidden"
+            style={{ height: "60px" }}
+          >
+            <img
+              src={adBannerImage}
+              alt="Advertisement"
+              className="absolute top-1/2 left-1/2 pointer-events-none"
+              style={{
+                transform: `translate(-50%, -50%) translate(${adBannerPosition?.x || 0}px, ${adBannerPosition?.y || 0}px) scale(${adBannerZoom / 100})`,
+                transformOrigin: "center center",
+                maxWidth: "none",
+                maxHeight: "none",
+                width: "auto",
+                height: "auto",
+                minWidth: "100%",
+                minHeight: "100%",
+              }}
+            />
+          </div>
+        )}
+        {visibilitySettings?.showAdBanner &&
+          !adBannerImage &&
+          !isGenerating && (
+            <div
+              className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
+              style={{ height: "80px" }}
+            >
+              <span className="text-[#5d4e37] text-xs font-inter">
+                Ad Banner Area (80px height)
+              </span>
+            </div>
+          )}
+      </div>
+
+      {/* Drag Overlay - shows the element being dragged */}
+      <DragOverlay dropAnimation={null}>
+        {activeId ? (
+          <div style={{ cursor: "grabbing", opacity: 0.9 }}>
+            {renderDragOverlay()}
+          </div>
+        ) : null}
+      </DragOverlay>
+
+      {/* Floating Menu for selected element */}
+      {selectedElement && isDragMode && (
+        <FloatingMenu
+          elementId={selectedElement.id}
+          elementType={selectedElement.id.replace(/\d+$/, "")}
+          onHide={handleHideElement}
+          onClear={handleClearElement}
+          onUpload={
+            selectedElement.id === "favicon" ? handleUploadElement : undefined
+          }
+          position={selectedElement.position}
+          isVisible={true}
+        />
+      )}
+
+      {/* Restore Defaults Button - shown when drag mode is active */}
+      {isDragMode && onRestoreDefaults && (
+        <div className="w-full flex justify-center mt-4">
+          <button
+            onClick={onRestoreDefaults}
+            className="bg-[#2c2419] text-[#faf8f5] py-2 px-4 text-sm font-medium font-inter hover:bg-[#8b6834] focus:ring-2 focus:ring-[#8b6834] focus:ring-offset-2 transition-colors flex items-center justify-center gap-2"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Restore Defaults
+          </button>
         </div>
       )}
-    </div>
-    
-    {/* Drag Overlay - shows the element being dragged */}
-    <DragOverlay dropAnimation={null}>
-      {activeId ? (
-        <div style={{ cursor: 'grabbing', opacity: 0.9 }}>
-          {renderDragOverlay()}
-        </div>
-      ) : null}
-    </DragOverlay>
 
-    {/* Floating Menu for selected element */}
-    {selectedElement && isDragMode && (
-      <FloatingMenu
-        elementId={selectedElement.id}
-        elementType={selectedElement.id.replace(/\d+$/, '')}
-        onHide={handleHideElement}
-        onClear={handleClearElement}
-        onUpload={selectedElement.id === 'favicon' ? handleUploadElement : undefined}
-        position={selectedElement.position}
-        isVisible={true}
+      {/* Hidden file input for logo upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file && onLogoUpload) {
+            onLogoUpload(file);
+          }
+          // Reset input value so the same file can be selected again
+          e.target.value = "";
+        }}
       />
-    )}
 
-    {/* Restore Defaults Button - shown when drag mode is active */}
-    {isDragMode && onRestoreDefaults && (
-      <div className="w-full flex justify-center mt-4">
-        <button
-          onClick={onRestoreDefaults}
-          className="bg-[#2c2419] text-[#faf8f5] py-2 px-4 text-sm font-medium font-inter hover:bg-[#8b6834] focus:ring-2 focus:ring-[#8b6834] focus:ring-offset-2 transition-colors flex items-center justify-center gap-2"
-        >
-          <RotateCcw className="w-4 h-4" />
-          Restore Defaults
-        </button>
-      </div>
-    )}
-
-    {/* Hidden file input for logo upload */}
-    <input
-      ref={fileInputRef}
-      type="file"
-      accept="image/*"
-      className="hidden"
-      onChange={(e) => {
-        const file = e.target.files?.[0];
-        if (file && onLogoUpload) {
-          onLogoUpload(file);
-        }
-        // Reset input value so the same file can be selected again
-        e.target.value = '';
-      }}
-    />
-
-    {/* Hidden file input for favicon upload */}
-    <input
-      ref={faviconInputRef}
-      type="file"
-      accept="image/*"
-      className="hidden"
-      onChange={(e) => {
-        const file = e.target.files?.[0];
-        if (file && onFaviconUpload) {
-          onFaviconUpload(file);
-        }
-        // Reset input value so the same file can be selected again
-        e.target.value = '';
-      }}
-    />
+      {/* Hidden file input for favicon upload */}
+      <input
+        ref={faviconInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file && onFaviconUpload) {
+            onFaviconUpload(file);
+          }
+          // Reset input value so the same file can be selected again
+          e.target.value = "";
+        }}
+      />
     </DndContext>
   );
 }

@@ -19,6 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "@/components/UpgradeModal";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import DownloadControls from "@/components/DownloadControls";
+import { isBengali } from "@/utils/fontUtils";
 
 export default function PollPage() {
   const [logo, setLogo] = useState<string>("");
@@ -80,7 +81,7 @@ export default function PollPage() {
   // Font styles state
   const [fontStyles, setFontStyles] = useState<CardFontStyles>({
     week: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "14px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -88,7 +89,7 @@ export default function PollPage() {
       letterSpacing: "0px",
     },
     date: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "14px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -96,7 +97,7 @@ export default function PollPage() {
       letterSpacing: "0px",
     },
     headline: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "24px",
       fontWeight: "700",
       color: "#FFFFFF",
@@ -113,7 +114,7 @@ export default function PollPage() {
     },
     // Poll-specific fonts
     pollTitle: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "28px",
       fontWeight: "700",
       color: "#FFFFFF",
@@ -129,7 +130,7 @@ export default function PollPage() {
       },
     },
     pollOptions: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "20px",
       fontWeight: "600",
       color: "#000000",
@@ -145,7 +146,7 @@ export default function PollPage() {
       },
     },
     footer: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "12px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -369,78 +370,12 @@ export default function PollPage() {
     });
 
     setFontStyles({
-      week: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "14px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
-      date: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "14px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
-      headline: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "24px",
-        fontWeight: "700",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-        textShadow: {
-          preset: "none",
-          angle: 135,
-        },
-        textStroke: {
-          width: 0,
-          color: "#000000",
-        },
-      },
-      pollTitle: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "28px",
-        fontWeight: "700",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-        textShadow: {
-          preset: "soft",
-          angle: 135,
-        },
-        textStroke: {
-          width: 0,
-          color: "#000000",
-        },
-      },
-      pollOptions: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "20px",
-        fontWeight: "600",
-        color: "#000000",
-        textAlign: "center",
-        letterSpacing: "0px",
-        textShadow: {
-          preset: "none",
-          angle: 135,
-        },
-        textStroke: {
-          width: 0,
-          color: "#000000",
-        },
-      },
-      footer: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "12px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
+      week: { fontFamily: "Noto Serif Bengali", fontSize: "14px", fontWeight: "500", color: "#FFFFFF", textAlign: "center", letterSpacing: "0px" },
+      date: { fontFamily: "Noto Serif Bengali", fontSize: "14px", fontWeight: "500", color: "#FFFFFF", textAlign: "center", letterSpacing: "0px" },
+      headline: { fontFamily: "Noto Serif Bengali", fontSize: "24px", fontWeight: "700", color: "#FFFFFF", textAlign: "center", letterSpacing: "0px", textShadow: { preset: "none", angle: 135 }, textStroke: { width: 0, color: "#000000" } },
+      pollTitle: { fontFamily: "Noto Serif Bengali", fontSize: "28px", fontWeight: "700", color: "#FFFFFF", textAlign: "center", letterSpacing: "0px", textShadow: { preset: "soft", angle: 135 }, textStroke: { width: 0, color: "#000000" } },
+      pollOptions: { fontFamily: "Noto Serif Bengali", fontSize: "20px", fontWeight: "600", color: "#000000", textAlign: "center", letterSpacing: "0px", textShadow: { preset: "none", angle: 135 }, textStroke: { width: 0, color: "#000000" } },
+      footer: { fontFamily: "Noto Serif Bengali", fontSize: "12px", fontWeight: "500", color: "#FFFFFF", textAlign: "center", letterSpacing: "0px" },
     });
 
     setFrameBorderColor("#FFFFFF");
@@ -1073,6 +1008,7 @@ export default function PollPage() {
                 visibilitySettings={visibilitySettings}
                 onVisibilityChange={handleVisibilityChange}
                 cardType="poll"
+                contentLanguage={pollTitle && !isBengali(pollTitle) ? "english" : "bangla"}
               />
             </div>
           </div>

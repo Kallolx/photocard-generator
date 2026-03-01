@@ -28,6 +28,7 @@ export interface BackgroundOptions {
   patternColor?: string;
   patternOpacity?: number;
   patternImage?: string | null;
+  patternScale?: number;
 }
 
 export interface MultiplePhotocardData {
@@ -59,6 +60,7 @@ export interface CardFontStyles {
   date: FontStyles;
   headline: FontStyles;
   footer: FontStyles;
+  weekDateLanguage?: "bangla" | "english";
   // Comment card specific fonts
   commentText?: FontStyles;
   personName?: FontStyles;

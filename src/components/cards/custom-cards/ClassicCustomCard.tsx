@@ -405,7 +405,7 @@ export default function ClassicCustomCard({
     const elementId = selectedElement.id;
 
     // Only allow upload for logo
-    if (elementId === 'logo' && onLogoUpload) {
+    if (elementId === "logo" && onLogoUpload) {
       fileInputRef.current?.click();
     }
     setSelectedElement(null);
@@ -487,15 +487,16 @@ export default function ClassicCustomCard({
           <div
             className="text-white font-noto-bengali tracking-wide text-center shadow-2xl px-3 py-2 bg-black bg-opacity-50 rounded"
             style={{
+              fontFamily: fontStyles?.headline.fontFamily || "Noto Serif Bengali",
               fontSize: fontStyles?.week.fontSize || "18px",
               fontWeight: fontStyles?.week.fontWeight || "500",
             }}
           >
-            {visibilitySettings.showWeek && getBengaliWeekday()}
+            {visibilitySettings.showWeek && getWeekday()}
             {visibilitySettings.showWeek &&
               visibilitySettings.showDate &&
               " | "}
-            {visibilitySettings.showDate && getBengaliDate()}
+            {visibilitySettings.showDate && getCardDate()}
           </div>
         );
       case "socialMedia":
@@ -596,16 +597,17 @@ export default function ClassicCustomCard({
             <div
               className="text-white font-noto-bengali tracking-wide text-center"
               style={{
+                fontFamily: fontStyles?.headline.fontFamily || "Noto Serif Bengali",
                 fontSize: fontStyles?.week.fontSize || "18px",
                 fontWeight: fontStyles?.week.fontWeight || "500",
                 color: fontStyles?.week.color || "#FFFFFF",
               }}
             >
-              {visibilitySettings.showWeek && getBengaliWeekday()}
+              {visibilitySettings.showWeek && getWeekday()}
               {visibilitySettings.showWeek &&
                 visibilitySettings.showDate &&
                 " | "}
-              {visibilitySettings.showDate && getBengaliDate()}
+              {visibilitySettings.showDate && getCardDate()}
             </div>
           </DraggableSwappable>
         );
@@ -745,7 +747,34 @@ export default function ClassicCustomCard({
     return now.toLocaleDateString("bn-BD", options);
   };
 
+  const getCardDate = () => {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    const lang = fontStyles?.weekDateLanguage === "english" ? "en-US" : "bn-BD";
+    return now.toLocaleDateString(lang, options);
+  };
+
   const getBengaliWeekday = () => {
+    const days = [
+      "রবিবার",
+      "সোমবার",
+      "মঙ্গলবার",
+      "বুধবার",
+      "বৃহস্পতিবার",
+      "শুক্রবার",
+      "শনিবার",
+    ];
+    return days[new Date().getDay()];
+  };
+
+  const getWeekday = () => {
+    if (fontStyles?.weekDateLanguage === "english") {
+      return new Date().toLocaleDateString("en-US", { weekday: "long" });
+    }
     const days = [
       "রবিবার",
       "সোমবার",
@@ -808,52 +837,24 @@ export default function ClassicCustomCard({
   const getPatternStyle = () => {
     if (!background?.pattern || background.pattern === "none") return {};
 
-    const color = background.patternColor || "#000000";
-    const opacity = background.patternOpacity || 0.1;
-
-    let backgroundImage = "";
+    const opacity = background.patternOpacity || 0.3;
+    const scale = background.patternScale || 1.0;
 
     switch (background.pattern) {
-      case "dots":
-        backgroundImage = `radial-gradient(${color} 1px, transparent 1px)`;
+      case "p1":
         return {
-          backgroundImage,
-          backgroundSize: "20px 20px",
+          backgroundImage: "url(/patterns/p1.png)",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
           opacity,
         };
-      case "lines":
-        backgroundImage = `repeating-linear-gradient(45deg, ${color}, ${color} 1px, transparent 1px, transparent 10px)`;
+      case "p2":
         return {
-          backgroundImage,
-          opacity,
-        };
-      case "grid":
-        backgroundImage = `linear-gradient(${color} 1px, transparent 1px), linear-gradient(90deg, ${color} 1px, transparent 1px)`;
-        return {
-          backgroundImage,
-          backgroundSize: "20px 20px",
-          opacity,
-        };
-      case "checks":
-        backgroundImage = `repeating-linear-gradient(45deg, ${color} 25%, transparent 25%, transparent 75%, ${color} 75%, ${color}), repeating-linear-gradient(45deg, ${color} 25%, #00000000 25%, #00000000 75%, ${color} 75%, ${color})`;
-        return {
-          backgroundImage,
-          backgroundSize: "20px 20px",
-          backgroundPosition: "0 0, 10px 10px",
-          opacity,
-        };
-      case "curves":
-        backgroundImage = `repeating-radial-gradient(circle at 0 0, transparent 0, ${color} 1px, transparent 2px, transparent 4px)`;
-        return {
-          backgroundImage,
-          backgroundSize: "16px 16px",
-          opacity,
-        };
-      case "abstract":
-        backgroundImage = `radial-gradient(circle at 50% 50%, ${color} 2px, transparent 2.5px), radial-gradient(circle at 0% 0%, ${color} 2px, transparent 2.5px)`;
-        return {
-          backgroundImage,
-          backgroundSize: "40px 40px",
+          backgroundImage: "url(/patterns/p2.png)",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
           opacity,
         };
       case "custom":
@@ -861,6 +862,7 @@ export default function ClassicCustomCard({
           return {
             backgroundImage: `url(${background.patternImage})`,
             backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             opacity,
           };
@@ -948,7 +950,7 @@ export default function ClassicCustomCard({
               style={
                 {
                   fontFamily:
-                    fontStyles?.headline.fontFamily || "Noto Sans Bengali",
+                    fontStyles?.headline.fontFamily || "Noto Serif Bengali",
                   fontSize: fontStyles?.headline.fontSize || "24px",
                   fontWeight: fontStyles?.headline.fontWeight || "700",
                   color: fontStyles?.headline.color || "#FFFFFF",

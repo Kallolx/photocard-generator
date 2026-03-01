@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Link2, User, Grid3X3, Lock } from 'lucide-react';
+import { Link2, User, Grid3X3, Lock, ChevronUp, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import UpgradeModal from './UpgradeModal';
 
@@ -43,6 +43,7 @@ export default function UrlComponent({
   const [url, setUrl] = useState('');
   const [urls, setUrls] = useState<string[]>(['']);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { user, features } = useAuth();
   
   const handleSingleSubmit = () => {
@@ -116,15 +117,26 @@ export default function UrlComponent({
       </div>
 
       {/* URL Input Section */}
-      <div className="bg-[#f5f0e8] p-6 border-2 border-[#d4c4b0]">
-        <div className="flex items-center gap-2 mb-4">
+      <div className="bg-[#f5f0e8] border-2 border-[#d4c4b0]">
+        {/* Header — always visible, click to collapse */}
+        <div
+          className="flex items-center gap-2 p-4 cursor-pointer select-none"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+        >
           <div className="p-2 bg-[#8b6834]">
             <Link2 className="w-4 h-4 text-white" />
           </div>
-          <h2 className="text-base md:text-lg font-lora font-bold text-[#2c2419]">
+          <h2 className="text-base md:text-lg font-lora font-bold text-[#2c2419] flex-1">
             {mode === 'single' ? 'Article URL' : 'Multiple URLs'}
           </h2>
+          {isCollapsed
+            ? <ChevronDown className="w-4 h-4 text-[#8b6834]" />
+            : <ChevronUp className="w-4 h-4 text-[#8b6834]" />}
         </div>
+
+        {/* Collapsible body */}
+        {!isCollapsed && (
+          <div className="px-6 pb-6">
         
         {mode === 'single' ? (
           <>
@@ -246,7 +258,9 @@ export default function UrlComponent({
             )}
           </>
         )}
-      </div>
+            </div>
+          )}
+        </div>
 
       <UpgradeModal
         isOpen={showUpgradeModal}

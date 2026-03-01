@@ -18,6 +18,7 @@ import { Upload, Edit } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "@/components/UpgradeModal";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { isBengali } from "@/utils/fontUtils";
 import DownloadControls from "@/components/DownloadControls";
 
 export default function CommentPage() {
@@ -84,7 +85,7 @@ export default function CommentPage() {
   // Font styles state
   const [fontStyles, setFontStyles] = useState<CardFontStyles>({
     week: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "14px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -92,7 +93,7 @@ export default function CommentPage() {
       letterSpacing: "0px",
     },
     date: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "14px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -100,7 +101,7 @@ export default function CommentPage() {
       letterSpacing: "0px",
     },
     headline: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "24px",
       fontWeight: "700",
       color: "#FFFFFF",
@@ -117,7 +118,7 @@ export default function CommentPage() {
     },
     // Comment-specific fonts
     commentText: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "28px",
       fontWeight: "600",
       color: "#FFFFFF",
@@ -133,7 +134,7 @@ export default function CommentPage() {
       },
     },
     personName: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "20px",
       fontWeight: "700",
       color: "#FFFFFF",
@@ -149,7 +150,7 @@ export default function CommentPage() {
       },
     },
     personRole: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "16px",
       fontWeight: "400",
       color: "#FFFFFF",
@@ -165,7 +166,7 @@ export default function CommentPage() {
       },
     },
     footer: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "12px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -305,94 +306,13 @@ export default function CommentPage() {
     });
 
     setFontStyles({
-      week: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "14px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
-      date: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "14px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
-      headline: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "24px",
-        fontWeight: "700",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-        textShadow: {
-          preset: "none",
-          angle: 135,
-        },
-        textStroke: {
-          width: 0,
-          color: "#000000",
-        },
-      },
-      commentText: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "28px",
-        fontWeight: "600",
-        color: "#FFFFFF",
-        textAlign: "left",
-        letterSpacing: "0px",
-        textShadow: {
-          preset: "soft",
-          angle: 135,
-        },
-        textStroke: {
-          width: 0,
-          color: "#000000",
-        },
-      },
-      personName: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "20px",
-        fontWeight: "700",
-        color: "#FFFFFF",
-        textAlign: "left",
-        letterSpacing: "0px",
-        textShadow: {
-          preset: "soft",
-          angle: 135,
-        },
-        textStroke: {
-          width: 0,
-          color: "#000000",
-        },
-      },
-      personRole: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "16px",
-        fontWeight: "400",
-        color: "#FFFFFF",
-        textAlign: "left",
-        letterSpacing: "0px",
-        textShadow: {
-          preset: "none",
-          angle: 135,
-        },
-        textStroke: {
-          width: 0,
-          color: "#000000",
-        },
-      },
-      footer: {
-        fontFamily: "Noto Sans Bengali",
-        fontSize: "12px",
-        fontWeight: "500",
-        color: "#FFFFFF",
-        textAlign: "center",
-        letterSpacing: "0px",
-      },
+      week: { fontFamily: "Noto Serif Bengali", fontSize: "14px", fontWeight: "500", color: "#FFFFFF", textAlign: "center", letterSpacing: "0px" },
+      date: { fontFamily: "Noto Serif Bengali", fontSize: "14px", fontWeight: "500", color: "#FFFFFF", textAlign: "center", letterSpacing: "0px" },
+      headline: { fontFamily: "Noto Serif Bengali", fontSize: "24px", fontWeight: "700", color: "#FFFFFF", textAlign: "center", letterSpacing: "0px", textShadow: { preset: "none", angle: 135 }, textStroke: { width: 0, color: "#000000" } },
+      commentText: { fontFamily: "Noto Serif Bengali", fontSize: "28px", fontWeight: "600", color: "#FFFFFF", textAlign: "left", letterSpacing: "0px", textShadow: { preset: "soft", angle: 135 }, textStroke: { width: 0, color: "#000000" } },
+      personName: { fontFamily: "Noto Serif Bengali", fontSize: "20px", fontWeight: "700", color: "#FFFFFF", textAlign: "left", letterSpacing: "0px", textShadow: { preset: "soft", angle: 135 }, textStroke: { width: 0, color: "#000000" } },
+      personRole: { fontFamily: "Noto Serif Bengali", fontSize: "16px", fontWeight: "400", color: "#FFFFFF", textAlign: "left", letterSpacing: "0px", textShadow: { preset: "none", angle: 135 }, textStroke: { width: 0, color: "#000000" } },
+      footer: { fontFamily: "Noto Serif Bengali", fontSize: "12px", fontWeight: "500", color: "#FFFFFF", textAlign: "center", letterSpacing: "0px" },
     });
 
     setFrameBorderColor("#FFFFFF");
@@ -874,6 +794,7 @@ export default function CommentPage() {
                 visibilitySettings={visibilitySettings}
                 onVisibilityChange={handleVisibilityChange}
                 cardType="comment"
+                contentLanguage={commentText && !isBengali(commentText) ? "english" : "bangla"}
               />
             </div>
           </div>

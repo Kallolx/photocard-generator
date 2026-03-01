@@ -24,6 +24,7 @@ import { Upload, Edit, Lock, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "@/components/UpgradeModal";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { isBengali } from "@/utils/fontUtils";
 
 export default function CustomPage() {
   const [logo, setLogo] = useState<string>("");
@@ -128,7 +129,7 @@ export default function CustomPage() {
   // Font styles state - same as URL page
   const [fontStyles, setFontStyles] = useState<CardFontStyles>({
     week: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "18px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -136,7 +137,7 @@ export default function CustomPage() {
       letterSpacing: "0px",
     },
     date: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "18px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -144,7 +145,7 @@ export default function CustomPage() {
       letterSpacing: "0px",
     },
     headline: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "24px",
       fontWeight: "700",
       color: "#FFFFFF",
@@ -160,8 +161,8 @@ export default function CustomPage() {
       },
     },
     footer: {
-      fontFamily: "Noto Sans Bengali",
-      fontSize: "12px", // Default size
+      fontFamily: "Noto Serif Bengali",
+      fontSize: "12px",
       fontWeight: "500",
       color: "#FFFFFF",
       textAlign: "left",
@@ -380,7 +381,7 @@ export default function CustomPage() {
     if (theme === "vertical") {
       setFontStyles({
         week: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "12px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -388,7 +389,7 @@ export default function CustomPage() {
           letterSpacing: "0px",
         },
         date: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "12px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -396,23 +397,17 @@ export default function CustomPage() {
           letterSpacing: "0px",
         },
         headline: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "25px",
           fontWeight: "700",
           color: "#FFFFFF",
           textAlign: "center",
           letterSpacing: "0px",
-          textShadow: {
-            preset: "none",
-            angle: 135,
-          },
-          textStroke: {
-            width: 0,
-            color: "#000000",
-          },
+          textShadow: { preset: "none", angle: 135 },
+          textStroke: { width: 0, color: "#000000" },
         },
         footer: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "12px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -423,7 +418,7 @@ export default function CustomPage() {
     } else {
       setFontStyles({
         week: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "18px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -431,7 +426,7 @@ export default function CustomPage() {
           letterSpacing: "0px",
         },
         date: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "18px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -439,23 +434,17 @@ export default function CustomPage() {
           letterSpacing: "0px",
         },
         headline: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "24px",
           fontWeight: "700",
           color: "#FFFFFF",
           textAlign: "center",
           letterSpacing: "0px",
-          textShadow: {
-            preset: "none",
-            angle: 135,
-          },
-          textStroke: {
-            width: 0,
-            color: "#000000",
-          },
+          textShadow: { preset: "none", angle: 135 },
+          textStroke: { width: 0, color: "#000000" },
         },
         footer: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "12px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -1177,6 +1166,7 @@ export default function CustomPage() {
                 }
                 fontStyles={fontStyles}
                 onFontStylesChange={setFontStyles}
+                contentLanguage={title && !isBengali(title) ? "english" : "bangla"}
               />
             </div>
           </div>

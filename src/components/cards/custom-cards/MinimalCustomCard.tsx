@@ -353,49 +353,26 @@ export default function MinimalCustomCard({
   const renderPattern = () => {
     if (!background.pattern || background.pattern === "none") return null;
 
-    const patternColor = background.patternColor || "#ffffff";
-    const patternOpacity = (background.patternOpacity ?? 10) / 100;
+    const patternOpacity = background.patternOpacity || 0.3;
+    const patternScale = background.patternScale || 1.0;
 
-    // If custom pattern image is provided
-    if (background.pattern === "custom" && background.patternImage) {
-      return (
-        <div
-          className="absolute inset-0 z-[1]"
-          style={{
-            backgroundImage: `url(${background.patternImage})`,
-            backgroundRepeat: "repeat",
-            backgroundSize: "200px 200px",
-            opacity: patternOpacity,
-          }}
-        />
-      );
+    let url = "";
+    if (background.pattern === "p1") url = "/patterns/p1.png";
+    else if (background.pattern === "p2") url = "/patterns/p2.png";
+    else if (background.pattern === "custom" && background.patternImage) {
+      url = background.patternImage;
     }
 
-    // Predefined patterns
-    const patterns: Record<string, string> = {
-      dots: `radial-gradient(circle, ${patternColor} 1px, transparent 1px)`,
-      lines: `repeating-linear-gradient(45deg, ${patternColor}, ${patternColor} 1px, transparent 1px, transparent 10px)`,
-      grid: `linear-gradient(${patternColor} 1px, transparent 1px), linear-gradient(90deg, ${patternColor} 1px, transparent 1px)`,
-      checks: `repeating-conic-gradient(${patternColor} 0% 25%, transparent 0% 50%)`,
-      curves: `radial-gradient(circle at 20% 50%, transparent 20%, ${patternColor} 21%, transparent 22%)`,
-      abstract: `conic-gradient(from 45deg at 10% 50%, ${patternColor} 0deg, transparent 60deg, transparent 300deg, ${patternColor} 360deg)`,
-    };
-
-    const patternStyle = patterns[background.pattern];
-    if (!patternStyle) return null;
-
-    let backgroundSize = "20px 20px";
-    if (background.pattern === "grid") backgroundSize = "20px 20px, 20px 20px";
-    if (background.pattern === "checks") backgroundSize = "40px 40px";
-    if (background.pattern === "curves") backgroundSize = "60px 60px";
-    if (background.pattern === "abstract") backgroundSize = "80px 80px";
+    if (!url) return null;
 
     return (
       <div
         className="absolute inset-0 z-[1]"
         style={{
-          backgroundImage: patternStyle,
-          backgroundSize: backgroundSize,
+          backgroundImage: `url(${url})`,
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
           opacity: patternOpacity,
         }}
       />
@@ -534,7 +511,7 @@ export default function MinimalCustomCard({
                   className="font-noto-bengali font-bold text-left whitespace-nowrap"
                   style={{
                     fontFamily:
-                      fontStyles?.week.fontFamily || "Noto Sans Bengali",
+                      fontStyles?.headline.fontFamily || "Noto Serif Bengali",
                     fontSize: fontStyles?.week.fontSize || "14px",
                     fontWeight: fontStyles?.week.fontWeight || "700",
                     color: fontStyles?.week.color || "#FFFFFF",
@@ -766,7 +743,7 @@ export default function MinimalCustomCard({
                 className="font-noto-bengali font-bold text-left whitespace-nowrap"
                 style={{
                   fontFamily:
-                    fontStyles?.week.fontFamily || "Noto Sans Bengali",
+                    fontStyles?.headline.fontFamily || "Noto Serif Bengali",
                   fontSize: fontStyles?.week.fontSize || "14px",
                   fontWeight: fontStyles?.week.fontWeight || "700",
                   color: fontStyles?.week.color || "#FFFFFF",
@@ -977,7 +954,7 @@ export default function MinimalCustomCard({
               style={
                 {
                   fontFamily:
-                    fontStyles?.headline.fontFamily || "Noto Sans Bengali",
+                    fontStyles?.headline.fontFamily || "Noto Serif Bengali",
                   fontSize: fontStyles?.headline.fontSize || "24px",
                   fontWeight: fontStyles?.headline.fontWeight || "700",
                   color: fontStyles?.headline.color || "#FFFFFF",

@@ -169,7 +169,7 @@ const getBengaliDate = () => {
   const now = new Date();
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
-    month: "long", 
+    month: "long",
     day: "numeric",
   };
   return now.toLocaleDateString("bn-BD", options);
@@ -178,7 +178,7 @@ const getBengaliDate = () => {
 const getBengaliWeekday = () => {
   const days = [
     "রবিবার",
-    "সোমবার", 
+    "সোমবার",
     "মঙ্গলবার",
     "বুধবার",
     "বৃহস্পতিবার",
@@ -228,6 +228,33 @@ export default function Modern2UrlCard({
   const [selectedElement, setSelectedElement] = useState<{ id: string; position: { x: number; y: number } } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
+
+  const getCardDate = () => {
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    const lang = fontStyles?.weekDateLanguage === "english" ? "en-US" : "bn-BD";
+    return now.toLocaleDateString(lang, options);
+  };
+
+  const getWeekday = () => {
+    if (fontStyles?.weekDateLanguage === "english") {
+      return new Date().toLocaleDateString("en-US", { weekday: "long" });
+    }
+    const days = [
+      "রবিবার",
+      "সোমবার",
+      "মঙ্গলবার",
+      "বুধবার",
+      "বৃহস্পতিবার",
+      "শুক্রবার",
+      "শনিবার",
+    ];
+    return days[new Date().getDay()];
+  };
 
   // Click outside handler to close floating menu
   useEffect(() => {
@@ -399,63 +426,37 @@ export default function Modern2UrlCard({
   const getPatternStyle = () => {
     if (!background?.pattern || background.pattern === "none") return {};
 
-    const color = background.patternColor || "#000000";
-    const opacity = background.patternOpacity || 0.1;
-
-    let backgroundImage = "";
+    const opacity = background.patternOpacity || 0.3;
+    const scale = background.patternScale || 1.0;
 
     switch (background.pattern) {
-      case "dots":
-        backgroundImage = `radial-gradient(${color} 1px, transparent 1px)`;
+      case "p1":
         return {
-          backgroundImage,
-          backgroundSize: "20px 20px",
+          backgroundImage: "url(/patterns/p1.png)",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
           opacity,
         };
-      case "lines":
-        backgroundImage = `repeating-linear-gradient(45deg, ${color}, ${color} 1px, transparent 1px, transparent 10px)`;
+      case "p2":
         return {
-          backgroundImage,
-          opacity,
-        };
-      case "grid":
-        backgroundImage = `linear-gradient(${color} 1px, transparent 1px), linear-gradient(90deg, ${color} 1px, transparent 1px)`;
-        return {
-          backgroundImage,
-          backgroundSize: "20px 20px",
-          opacity,
-        };
-      case "checks":
-        backgroundImage = `repeating-linear-gradient(45deg, ${color} 25%, transparent 25%, transparent 75%, ${color} 75%, ${color}), repeating-linear-gradient(45deg, ${color} 25%, #00000000 25%, #00000000 75%, ${color} 75%, ${color})`;
-        return {
-          backgroundImage,
-          backgroundSize: "20px 20px",
-          backgroundPosition: "0 0, 10px 10px",
-          opacity,
-        };
-      case "curves":
-        backgroundImage = `repeating-radial-gradient(circle at 0 0, transparent 0, ${color} 1px, transparent 2px, transparent 4px)`;
-        return {
-          backgroundImage,
-          backgroundSize: "16px 16px",
-          opacity,
-        };
-      case "abstract":
-        backgroundImage = `radial-gradient(circle at 50% 50%, ${color} 2px, transparent 2.5px), radial-gradient(circle at 0% 0%, ${color} 2px, transparent 2.5px)`;
-        return {
-          backgroundImage,
-          backgroundSize: "40px 40px",
+          backgroundImage: "url(/patterns/p2.png)",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
           opacity,
         };
       case "custom":
-        return background.patternImage
-          ? {
-              backgroundImage: `url(${background.patternImage})`,
-              backgroundSize: "cover",
-              backgroundRepeat: "repeat",
-              opacity,
-            }
-          : {};
+        if (background.patternImage) {
+          return {
+            backgroundImage: `url(${background.patternImage})`,
+            backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            opacity,
+          };
+        }
+        return {};
       default:
         return {};
     }
@@ -526,18 +527,18 @@ export default function Modern2UrlCard({
             onClick={(e) => handleElementClick('dateWeek', e)}
           >
             <div
-              className="text-white font-noto-bengali tracking-wide px-3 py-1 rounded shadow-lg"
+ className="text-white tracking-wide px-3 py-1 rounded shadow-lg"
               style={{
                 ...getBackgroundStyle(),
-                fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
+                fontFamily: fontStyles?.week.fontFamily || "Noto Serif Bengali",
                 fontSize: fontStyles?.week.fontSize || "14px",
                 fontWeight: fontStyles?.week.fontWeight || "500",
                 color: fontStyles?.week.color || "#FFFFFF",
               }}
             >
-              {visibilitySettings.showWeek && getBengaliWeekday()}
+              {visibilitySettings.showWeek && getWeekday()}
               {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
-              {visibilitySettings.showDate && getBengaliDate()}
+              {visibilitySettings.showDate && getCardDate()}
             </div>
           </DraggableSwappable>
         );
@@ -656,16 +657,16 @@ export default function Modern2UrlCard({
         );
       case 'dateWeek':
         return (
-          <div className="text-white font-noto-bengali tracking-wide px-3 py-1 rounded shadow-lg" style={{
+ <div className="text-white tracking-wide px-3 py-1 rounded shadow-lg" style={{
             ...getBackgroundStyle(),
-            fontFamily: fontStyles?.week.fontFamily || "Noto Sans Bengali",
+            fontFamily: fontStyles?.week.fontFamily || "Noto Serif Bengali",
             fontSize: fontStyles?.week.fontSize || "14px",
             fontWeight: fontStyles?.week.fontWeight || "500",
             color: fontStyles?.week.color || "#FFFFFF",
           }}>
-            {visibilitySettings.showWeek && getBengaliWeekday()}
+            {visibilitySettings.showWeek && getWeekday()}
             {visibilitySettings.showWeek && visibilitySettings.showDate && " | "}
-            {visibilitySettings.showDate && getBengaliDate()}
+            {visibilitySettings.showDate && getCardDate()}
           </div>
         );
       case 'qrCode':
@@ -780,9 +781,9 @@ export default function Modern2UrlCard({
         {/* Title */}
         {visibilitySettings.showTitle && (
           <h2
-            className="text-white font-noto-bengali text-center leading-tight mb-4 px-2 py-1 mt-6"
+ className="text-white text-center leading-tight mb-4 px-2 py-1 mt-6"
             style={{
-              fontFamily: fontStyles?.headline.fontFamily || "Noto Sans Bengali",
+              fontFamily: fontStyles?.headline.fontFamily || "Noto Serif Bengali",
               fontSize: fontStyles?.headline.fontSize || "24px",
               fontWeight: fontStyles?.headline.fontWeight || "700",
               color: fontStyles?.headline.color || "#FFFFFF",

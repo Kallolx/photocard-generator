@@ -24,11 +24,14 @@ import UpgradeModal from "@/components/UpgradeModal";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import ClassicUrlCard from "@/components/cards/url-cards/ClassicUrlCard";
+import DuoUrlCard from "@/components/cards/url-cards/DuoUrlCard";
+import OverlayUrlCard from "@/components/cards/url-cards/OverlayUrlCard";
 import DownloadControls from "@/components/DownloadControls";
 import { toPng } from "html-to-image";
 import JSZip from "jszip";
 import { createRoot } from "react-dom/client"; // For off-screen rendering
 import EditingToolbar from "@/components/EditingToolbar";
+import { isBengali } from "@/utils/fontUtils";
 
 export default function Home() {
   const { user, canGenerateCard, refreshCredits } = useAuth();
@@ -142,7 +145,7 @@ export default function Home() {
   // Font styles state
   const [fontStyles, setFontStyles] = useState<CardFontStyles>({
     week: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "18px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -150,7 +153,7 @@ export default function Home() {
       letterSpacing: "0px",
     },
     date: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "18px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -158,7 +161,7 @@ export default function Home() {
       letterSpacing: "0px",
     },
     headline: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "24px",
       fontWeight: "700",
       color: "#FFFFFF",
@@ -166,7 +169,7 @@ export default function Home() {
       letterSpacing: "0px",
     },
     footer: {
-      fontFamily: "Noto Sans Bengali",
+      fontFamily: "Noto Serif Bengali",
       fontSize: "12px",
       fontWeight: "500",
       color: "#FFFFFF",
@@ -212,6 +215,14 @@ export default function Home() {
       setCurrentTitle(photocardData.title);
       setCurrentImage(photocardData.image);
       setCurrentLogo(photocardData.logo);
+      const isEnglish = photocardData.title && !isBengali(photocardData.title);
+      setFontStyles((prev) => ({
+        ...prev,
+        headline: {
+          ...prev.headline,
+          fontFamily: isEnglish ? "Playfair Display" : "Noto Serif Bengali",
+        },
+      }));
     } else {
       setCurrentTitle(mockData.title);
       setCurrentImage(mockData.image);
@@ -261,6 +272,36 @@ export default function Home() {
           color: "#000000",
         },
       }));
+    } else if (theme === "duo") {
+      // Duo card: combined date+week label on blush header — dark gray, not full black
+      setFontStyles((prev) => ({
+        ...prev,
+        week: {
+          ...prev.week,
+          fontSize: "16px",
+          fontWeight: "600",
+          color: "#374151",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "16px",
+          fontWeight: "600",
+          color: "#374151",
+        },
+        headline: {
+          ...prev.headline,
+          fontSize: "28px",
+          color: "#FFFFFF",
+        },
+      }));
+    } else if (theme === "overlay") {
+      setFontStyles((prev) => ({
+        ...prev,
+        week: { ...prev.week, fontSize: "16px", fontWeight: "600", color: "#ffffff" },
+        date: { ...prev.date, fontSize: "16px", fontWeight: "600", color: "#ffffff" },
+        headline: { ...prev.headline, fontSize: "28px", color: "#FFFFFF" },
+      }));
+      setBackground({ type: "solid", color: "#E53E3E" });
     } else {
       // Reset to default for other themes
       setFontStyles((prev) => ({
@@ -283,10 +324,18 @@ export default function Home() {
       }));
     }
 
-    // Set frame border thickness based on theme
+    // Set frame border color and thickness based on theme
     if (theme === "magazine") {
+      setFrameBorderColor("#dc2626");
       setFrameBorderThickness(5);
+    } else if (theme === "duo") {
+      setFrameBorderColor("#dc2626");
+      setFrameBorderThickness(4);
+    } else if (theme === "classic") {
+      setFrameBorderColor("#ffffff");
+      setFrameBorderThickness(4);
     } else {
+      setFrameBorderColor("#dc2626");
       setFrameBorderThickness(0);
     }
   }, [theme]);
@@ -489,7 +538,7 @@ export default function Home() {
     if (theme === "vertical") {
       setFontStyles({
         week: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "12px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -497,7 +546,7 @@ export default function Home() {
           letterSpacing: "0px",
         },
         date: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "12px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -505,7 +554,7 @@ export default function Home() {
           letterSpacing: "0px",
         },
         headline: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "25px",
           fontWeight: "700",
           color: "#FFFFFF",
@@ -513,7 +562,7 @@ export default function Home() {
           letterSpacing: "0px",
         },
         footer: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "12px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -524,7 +573,7 @@ export default function Home() {
     } else if (theme === "magazine") {
       setFontStyles({
         week: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "14px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -532,7 +581,7 @@ export default function Home() {
           letterSpacing: "0px",
         },
         date: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "14px",
           fontWeight: "400",
           color: "#FFFFFF",
@@ -540,7 +589,7 @@ export default function Home() {
           letterSpacing: "0px",
         },
         headline: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "24px",
           fontWeight: "700",
           color: "#FFFFFF",
@@ -548,7 +597,7 @@ export default function Home() {
           letterSpacing: "0px",
         },
         footer: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "12px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -556,10 +605,81 @@ export default function Home() {
           letterSpacing: "0px",
         },
       });
+    } else if (theme === "duo") {
+      setFontStyles({
+        week: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "16px",
+          fontWeight: "600",
+          color: "#374151",
+          textAlign: "right",
+          letterSpacing: "0px",
+        },
+        date: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "16px",
+          fontWeight: "600",
+          color: "#374151",
+          textAlign: "right",
+          letterSpacing: "0px",
+        },
+        headline: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "28px",
+          fontWeight: "700",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+        footer: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
+      });
+    } else if (theme === "overlay") {
+      setFontStyles({
+        week: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "16px",
+          fontWeight: "600",
+          color: "#ffffff",
+          textAlign: "right",
+          letterSpacing: "0px",
+        },
+        date: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "16px",
+          fontWeight: "600",
+          color: "#ffffff",
+          textAlign: "right",
+          letterSpacing: "0px",
+        },
+        headline: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "28px",
+          fontWeight: "700",
+          color: "#FFFFFF",
+          textAlign: "center",
+          letterSpacing: "0px",
+        },
+        footer: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
+      });
+      setBackground({ type: "solid", color: "#E53E3E" });
     } else {
       setFontStyles({
         week: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "18px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -567,7 +687,7 @@ export default function Home() {
           letterSpacing: "0px",
         },
         date: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "18px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -575,7 +695,7 @@ export default function Home() {
           letterSpacing: "0px",
         },
         headline: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "24px",
           fontWeight: "700",
           color: "#FFFFFF",
@@ -583,7 +703,7 @@ export default function Home() {
           letterSpacing: "0px",
         },
         footer: {
-          fontFamily: "Noto Sans Bengali",
+          fontFamily: "Noto Serif Bengali",
           fontSize: "12px",
           fontWeight: "500",
           color: "#FFFFFF",
@@ -593,11 +713,18 @@ export default function Home() {
       });
     }
 
-    // Reset frame border
-    setFrameBorderColor("#dc2626");
+    // Reset frame border color and thickness per theme
     if (theme === "magazine") {
+      setFrameBorderColor("#dc2626");
       setFrameBorderThickness(5);
+    } else if (theme === "duo") {
+      setFrameBorderColor("#dc2626");
+      setFrameBorderThickness(4);
+    } else if (theme === "classic") {
+      setFrameBorderColor("#ffffff");
+      setFrameBorderThickness(4);
     } else {
+      setFrameBorderColor("#dc2626");
       setFrameBorderThickness(0);
     }
 
@@ -679,6 +806,10 @@ export default function Home() {
           />
         ) : theme === "magazine" ? (
           <MagazineUrlCard {...commonProps} />
+        ) : theme === "duo" ? (
+          <DuoUrlCard {...commonProps} />
+        ) : theme === "overlay" ? (
+          <OverlayUrlCard {...commonProps} />
         ) : (
           <ClassicUrlCard
             {...commonProps}
@@ -980,6 +1111,37 @@ export default function Home() {
                 isLogoFavicon={isLogoFavicon}
               />,
             );
+          } else if (theme === "duo") {
+            root.render(
+              <DuoUrlCard
+                data={item.data}
+                isGenerating={true}
+                id={`temp-card-${i}`}
+                fullSize={true}
+                frameBorderColor={frameBorderColor}
+                frameBorderThickness={frameBorderThickness}
+                adBannerImage={adBannerImage}
+                adBannerZoom={adBannerZoom}
+                fontStyles={fontStyles}
+                visibilitySettings={visibilitySettings}
+                isLogoFavicon={isLogoFavicon}
+              />,
+            );
+          } else if (theme === "overlay") {
+            root.render(
+              <OverlayUrlCard
+                data={item.data}
+                isGenerating={true}
+                id={`temp-card-${i}`}
+                fullSize={true}
+                frameBorderColor={frameBorderColor}
+                adBannerImage={adBannerImage}
+                adBannerZoom={adBannerZoom}
+                fontStyles={fontStyles}
+                visibilitySettings={visibilitySettings}
+                isLogoFavicon={isLogoFavicon}
+              />,
+            );
           } else {
             root.render(
               <ClassicUrlCard
@@ -1177,6 +1339,11 @@ export default function Home() {
                 visibilitySettings={visibilitySettings}
                 onVisibilityChange={(newSettings) =>
                   setVisibilitySettings(newSettings as VisibilitySettings)
+                }
+                contentLanguage={
+                  photocardData?.title && !isBengali(photocardData.title)
+                    ? "english"
+                    : "bangla"
                 }
               />
             </div>

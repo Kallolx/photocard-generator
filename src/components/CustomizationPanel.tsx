@@ -38,16 +38,23 @@ interface CustomizationPanelProps {
   onThemeChange?: (theme: string) => void;
   fontStyles?: CardFontStyles;
   onFontStylesChange?: (fontStyles: CardFontStyles) => void;
-  visibilitySettings?: VisibilitySettings | CommentCardVisibilitySettings | PollCardVisibilitySettings;
+  visibilitySettings?:
+    | VisibilitySettings
+    | CommentCardVisibilitySettings
+    | PollCardVisibilitySettings;
   onVisibilityChange?: (
-    visibilitySettings: VisibilitySettings | CommentCardVisibilitySettings | PollCardVisibilitySettings,
+    visibilitySettings:
+      | VisibilitySettings
+      | CommentCardVisibilitySettings
+      | PollCardVisibilitySettings,
   ) => void;
   cardType?: "url" | "custom" | "comment" | "poll";
+  contentLanguage?: "bangla" | "english";
 }
 
 const SOLID_COLORS = [
   { color: "#E53E3E", name: "Soft Red" },
-  { color: "#E9E9E9", name: "Muted Gray" },
+  { color: "#c70001", name: "Muted Gray" },
   { color: "#DD6B20", name: "Warm Orange" },
 ];
 
@@ -58,13 +65,11 @@ const GRADIENTS = [
 ];
 
 const FRAME_COLORS = [
-  { color: "#dc2626", name: "Soft Red" },
+  { color: "#E53E3E", name: "Saddle Brown" },
   { color: "#FFFFFF", name: "Pure White" },
   { color: "#000000", name: "Black" },
   { color: "#3B82F6", name: "Clean Blue" },
 ];
-
-
 
 type Tab =
   | "Background"
@@ -78,13 +83,21 @@ type Tab =
 
 const PATTERNS = [
   { id: "none", name: "None" },
-  { id: "dots", name: "Dots" },
-  { id: "abstract", name: "Abstract" },
-  { id: "lines", name: "Lines" },
-  { id: "grid", name: "Grid" },
-  { id: "checks", name: "Checks" },
-  { id: "curves", name: "Curves" },
+  { id: "p1", name: "Pattern 1" },
+  { id: "p2", name: "Pattern 2" },
   { id: "custom", name: "Upload" },
+];
+
+const BANGLA_FONTS = [
+  { id: "Noto Serif Bengali", name: "Noto Serif" },
+  { id: "Hind Siliguri", name: "Hind Siliguri" },
+  { id: "Tiro Bangla", name: "Tiro Bangla" },
+];
+
+const ENGLISH_FONTS = [
+  { id: "Playfair Display", name: "Playfair" },
+  { id: "Oswald", name: "Oswald" },
+  { id: "Merriweather", name: "Merriweather" },
 ];
 
 export default function CustomizationPanel({
@@ -106,6 +119,7 @@ export default function CustomizationPanel({
   visibilitySettings,
   onVisibilityChange,
   cardType = "url",
+  contentLanguage = "bangla",
 }: CustomizationPanelProps) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("Background");
@@ -130,19 +144,9 @@ export default function CustomizationPanel({
   const [tempSolidColor, setTempSolidColor] = useState("#000000");
   const [tempGradientFrom, setTempGradientFrom] = useState("#000000");
   const [tempGradientTo, setTempGradientTo] = useState("#FFFFFF");
-  const [editingColorIndex, setEditingColorIndex] = useState<number | null>(null);
-
-  // Custom pattern colors state
-  const [customPatternColors, setCustomPatternColors] = useState<string[]>([]);
-  const [showPatternColorPicker, setShowPatternColorPicker] = useState(false);
-  const [tempPatternColor, setTempPatternColor] = useState("#000000");
-  const [editingPatternColorIndex, setEditingPatternColorIndex] = useState<number | null>(null);
-
-  const PATTERN_PRESET_COLORS = [
-    { color: "#FFFFFF", name: "White" },
-    { color: "#000000", name: "Black" },
-    { color: "#9CA3AF", name: "Gray" },
-  ];
+  const [editingColorIndex, setEditingColorIndex] = useState<number | null>(
+    null,
+  );
 
   // Frame color picker state
   const [showFrameColorPicker, setShowFrameColorPicker] = useState(false);
@@ -196,7 +200,19 @@ export default function CustomizationPanel({
       locked: false,
       thumbnail: "/themes/cus-1.png",
     },
-        {
+    {
+      id: "duo",
+      name: "Duo",
+      locked: false,
+      thumbnail: "/themes/cus-7.png",
+    },
+    {
+      id: "overlay",
+      name: "Overlay",
+      locked: false,
+      thumbnail: "/themes/cus-8.png",
+    },
+    {
       id: "magazine",
       name: "Magazine",
       locked: false, // Free for all users
@@ -247,9 +263,11 @@ export default function CustomizationPanel({
   ];
 
   const activeThemes =
-    cardType === "comment" ? COMMENT_THEMES_WITH_LOCK : 
-    cardType === "poll" ? POLL_THEMES_WITH_LOCK : 
-    THEMES_WITH_LOCK;
+    cardType === "comment"
+      ? COMMENT_THEMES_WITH_LOCK
+      : cardType === "poll"
+        ? POLL_THEMES_WITH_LOCK
+        : THEMES_WITH_LOCK;
 
   const handleThemeChange = (themeId: string, isLocked: boolean) => {
     if (isLocked) {
@@ -361,6 +379,16 @@ export default function CustomizationPanel({
                     <Lock className="w-3 h-3" />
                   )}
                 </span>
+                {tab === "Pattern" && (
+                  <span className="absolute top-1 right-1 px-1 py-[1px] bg-gradient-to-br from-[#10b981] to-[#059669] text-white text-[7px] leading-none font-black rounded shadow-sm border border-white/40">
+                    NEW
+                  </span>
+                )}
+                {tab === "Fonts" && (
+                  <span className="absolute top-1 right-1 px-1 py-[1px] bg-gradient-to-br from-[#10b981] to-[#059669] text-white text-[7px] leading-none font-black rounded shadow-sm border border-white/40">
+                    NEW
+                  </span>
+                )}
                 {activeTab === tab && (
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#8b6834]" />
                 )}
@@ -375,248 +403,313 @@ export default function CustomizationPanel({
         {/* Background Tab */}
         {activeTab === "Background" && (
           <>
-            {/* Solid Colors Section */}
-            <div>
-              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
-                Solid Colors{" "}
-                <span className="text-xs text-[#5d4e37]">
-                  ({SOLID_COLORS.length + customSolidColors.length}/5 colors)
-                </span>
-              </h3>
-              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                {/* Preset Colors */}
-                {SOLID_COLORS.map((item, index) => {
-                  const isLocked = isFreeUser && index > 0;
-                  return (
+            {/* Magazine card: background palette is fixed — show locked state */}
+            {theme === "magazine" && (
+              <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
+                <Lock className="w-8 h-8 text-[#8b6834]" />
+                <p className="text-sm font-semibold text-[#2c2419] font-inter">
+                  Background Locked
+                </p>
+                <p className="text-xs text-[#5d4e37] font-inter leading-relaxed max-w-[210px]">
+                  The Magazine card uses a fixed two-tone colour palette.
+                  Background colours cannot be changed for this theme.
+                </p>
+              </div>
+            )}
+            {/* Normal background controls — hidden for Magazine */}
+            <div className={theme === "magazine" ? "hidden" : ""}>
+              {/* Solid Colors Section */}
+              <div>
+                <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                  Solid Colors{" "}
+                  <span className="text-xs text-[#5d4e37]">
+                    ({SOLID_COLORS.length + customSolidColors.length}/5 colors)
+                  </span>
+                </h3>
+                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                  {/* Preset Colors */}
+                  {SOLID_COLORS.map((item, index) => {
+                    const isLocked = isFreeUser && index > 0;
+                    return (
+                      <button
+                        key={item.color}
+                        onClick={() => {
+                          if (isLocked) {
+                            setUpgradeFeature("Premium Colors");
+                            setShowUpgradeModal(true);
+                            return;
+                          }
+                          onBackgroundChange({
+                            type: "solid",
+                            color: item.color,
+                          });
+                        }}
+                        className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
+                          background.type === "solid" &&
+                          background.color === item.color
+                            ? "border-[#8b6834] shadow-md"
+                            : "border-[#d4c4b0] hover:scale-95"
+                        } ${gettingLockedCheck(isLocked)}`}
+                        style={{ backgroundColor: item.color }}
+                        title={item.name}
+                      >
+                        {isLocked && (
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <Lock className="w-4 h-4 text-white drop-shadow-md" />
+                          </div>
+                        )}
+                        {background.type === "solid" &&
+                          background.color === item.color && (
+                            <div className="absolute bottom-0 left-0 right-0 bg-[#8b6834] text-[#faf8f5] text-[10px] font-inter text-center py-0.5">
+                              selected
+                            </div>
+                          )}
+                      </button>
+                    );
+                  })}
+
+                  {/* Custom Colors */}
+                  {customSolidColors.map((color, index) => (
                     <button
-                      key={item.color}
+                      key={`custom-${color}`}
                       onClick={() => {
-                        if (isLocked) {
-                          setUpgradeFeature("Premium Colors");
-                          setShowUpgradeModal(true);
-                          return;
-                        }
                         onBackgroundChange({
                           type: "solid",
-                          color: item.color,
+                          color: color,
                         });
                       }}
-                      className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
+                      className={`relative w-14 h-14 border-2 transition-all overflow-visible flex-shrink-0 group ${
                         background.type === "solid" &&
-                        background.color === item.color
+                        background.color === color
                           ? "border-[#8b6834] shadow-md"
                           : "border-[#d4c4b0] hover:scale-95"
-                      } ${gettingLockedCheck(isLocked)}`}
-                      style={{ backgroundColor: item.color }}
-                      title={item.name}
+                      }`}
+                      style={{ backgroundColor: color }}
                     >
-                      {isLocked && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                          <Lock className="w-4 h-4 text-white drop-shadow-md" />
-                        </div>
-                      )}
                       {background.type === "solid" &&
-                        background.color === item.color && (
+                        background.color === color && (
                           <div className="absolute bottom-0 left-0 right-0 bg-[#8b6834] text-[#faf8f5] text-[10px] font-inter text-center py-0.5">
                             selected
                           </div>
                         )}
-                    </button>
-                  );
-                })}
-
-                {/* Custom Colors */}
-                {customSolidColors.map((color, index) => (
-                  <button
-                    key={`custom-${color}`}
-                    onClick={() => {
-                      onBackgroundChange({
-                        type: "solid",
-                        color: color,
-                      });
-                    }}
-                    className={`relative w-14 h-14 border-2 transition-all overflow-visible flex-shrink-0 group ${
-                      background.type === "solid" && background.color === color
-                        ? "border-[#8b6834] shadow-md"
-                        : "border-[#d4c4b0] hover:scale-95"
-                    }`}
-                    style={{ backgroundColor: color }}
-                  >
-                    {background.type === "solid" &&
-                      background.color === color && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-[#8b6834] text-[#faf8f5] text-[10px] font-inter text-center py-0.5">
-                          selected
-                        </div>
-                      )}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingColorIndex(index);
-                        setTempSolidColor(color);
-                        setShowSolidColorPicker(true);
-                      }}
-                      className="absolute top-1 left-1 w-4 h-4 bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10 text-[10px]"
-                      title="Edit color"
-                    >
-                      ✎
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCustomSolidColors((prev) =>
-                          prev.filter((_, i) => i !== index),
-                        );
-                      }}
-                      className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10"
-                      title="Remove color"
-                    >
-                      <X className="w-2.5 h-2.5" />
-                    </button>
-                  </button>
-                ))}
-
-                {/* Add Custom Color Button */}
-                {customSolidColors.length < 2 && (
-                  <button
-                    onClick={() => {
-                      if (isFreeUser) {
-                        setUpgradeFeature("Custom Colors");
-                        setShowUpgradeModal(true);
-                        return;
-                      }
-                      setEditingColorIndex(null);
-                      setTempSolidColor("#000000");
-                      setShowSolidColorPicker(!showSolidColorPicker);
-                    }}
-                    className={`relative w-14 h-14 flex-shrink-0 border-2 border-dashed transition-all overflow-hidden flex items-center justify-center ${
-                      isFreeUser
-                        ? "border-[#d4c4b0] bg-[#faf8f5]"
-                        : "border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8]"
-                    }`}
-                    title={
-                      isFreeUser
-                        ? "Upgrade to add custom colors"
-                        : "Add custom color"
-                    }
-                  >
-                    {isFreeUser ? (
-                      <Lock className="w-5 h-5 text-[#5d4e37]" />
-                    ) : (
-                      <Plus className="w-5 h-5 text-[#8b6834]" />
-                    )}
-                  </button>
-                )}
-              </div>
-
-              {/* Color Picker Modal for Solid */}
-              {showSolidColorPicker && (
-                <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-sm font-medium text-[#2c2419] font-inter">
-                      {editingColorIndex !== null ? 'Edit Custom Color' : 'Pick a custom color'}
-                    </label>
-                    <button
-                      onClick={() => {
-                        setShowSolidColorPicker(false);
-                        setEditingColorIndex(null);
-                      }}
-                      className="text-[#5d4e37] hover:text-[#2c2419]"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div className="flex gap-3">
-                    <input
-                      type="color"
-                      value={tempSolidColor}
-                      onChange={(e) => setTempSolidColor(e.target.value)}
-                      className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
-                    />
-                    <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
-                      <input
-                        type="text"
-                        value={tempSolidColor.toUpperCase()}
-                        onChange={(e) => {
-                          let value = e.target.value.toUpperCase();
-                          // Always start with #
-                          if (!value.startsWith("#")) {
-                            value = "#" + value.replace(/[^0-9A-F]/g, "");
-                          } else {
-                            value =
-                              "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
-                          }
-                          value = value.slice(0, 7);
-                          setTempSolidColor(value);
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingColorIndex(index);
+                          setTempSolidColor(color);
+                          setShowSolidColorPicker(true);
                         }}
-                        onBlur={(e) => {
-                          const value = e.target.value;
-                          if (
-                            value.length !== 7 ||
-                            !/^#[0-9A-F]{6}$/i.test(value)
-                          ) {
-                            setTempSolidColor("#000000");
-                          }
-                        }}
-                        placeholder="#000000"
-                        className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
-                        maxLength={7}
-                      />
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      if (tempSolidColor.length === 7) {
-                        if (editingColorIndex !== null) {
-                          // Edit existing color
+                        className="absolute top-1 left-1 w-4 h-4 bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10 text-[10px]"
+                        title="Edit color"
+                      >
+                        ✎
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setCustomSolidColors((prev) =>
-                            prev.map((c, i) => (i === editingColorIndex ? tempSolidColor : c))
+                            prev.filter((_, i) => i !== index),
                           );
-                        } else if (customSolidColors.length < 2 && !customSolidColors.includes(tempSolidColor)) {
-                          // Add new color
-                          setCustomSolidColors((prev) => [
-                            ...prev,
-                            tempSolidColor,
-                          ]);
-                        }
-                        onBackgroundChange({
-                          type: "solid",
-                          color: tempSolidColor,
-                        });
-                        setShowSolidColorPicker(false);
-                        setTempSolidColor("#000000");
-                        setEditingColorIndex(null);
-                      }
-                    }}
-                    className="w-full mt-3 py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
-                    disabled={tempSolidColor.length !== 7}
-                  >
-                    {editingColorIndex !== null ? 'Update Color' : 'Add Color'}
-                  </button>
-                </div>
-              )}
-            </div>
+                        }}
+                        className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10"
+                        title="Remove color"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
+                    </button>
+                  ))}
 
-            {/* Gradients Section */}
-            <div>
-              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
-                Gradients{" "}
-                <span className="text-xs text-[#5d4e37]">
-                  ({GRADIENTS.length + customGradients.length}/5 gradients)
-                </span>
-              </h3>
-              <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                {/* Preset Gradients */}
-                {GRADIENTS.map((grad, index) => {
-                  const isLocked = isFreeUser;
-                  return (
+                  {/* Add Custom Color Button */}
+                  {customSolidColors.length < 2 && (
                     <button
-                      key={index}
                       onClick={() => {
-                        if (isLocked) {
-                          setUpgradeFeature("Gradients");
+                        if (isFreeUser) {
+                          setUpgradeFeature("Custom Colors");
                           setShowUpgradeModal(true);
                           return;
                         }
+                        setEditingColorIndex(null);
+                        setTempSolidColor("#000000");
+                        setShowSolidColorPicker(!showSolidColorPicker);
+                      }}
+                      className={`relative w-14 h-14 flex-shrink-0 border-2 border-dashed transition-all overflow-hidden flex items-center justify-center ${
+                        isFreeUser
+                          ? "border-[#d4c4b0] bg-[#faf8f5]"
+                          : "border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8]"
+                      }`}
+                      title={
+                        isFreeUser
+                          ? "Upgrade to add custom colors"
+                          : "Add custom color"
+                      }
+                    >
+                      {isFreeUser ? (
+                        <Lock className="w-5 h-5 text-[#5d4e37]" />
+                      ) : (
+                        <Plus className="w-5 h-5 text-[#8b6834]" />
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Color Picker Modal for Solid */}
+                {showSolidColorPicker && (
+                  <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-sm font-medium text-[#2c2419] font-inter">
+                        {editingColorIndex !== null
+                          ? "Edit Custom Color"
+                          : "Pick a custom color"}
+                      </label>
+                      <button
+                        onClick={() => {
+                          setShowSolidColorPicker(false);
+                          setEditingColorIndex(null);
+                        }}
+                        className="text-[#5d4e37] hover:text-[#2c2419]"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="flex gap-3">
+                      <input
+                        type="color"
+                        value={tempSolidColor}
+                        onChange={(e) => setTempSolidColor(e.target.value)}
+                        className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                      />
+                      <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                        <input
+                          type="text"
+                          value={tempSolidColor.toUpperCase()}
+                          onChange={(e) => {
+                            let value = e.target.value.toUpperCase();
+                            // Always start with #
+                            if (!value.startsWith("#")) {
+                              value = "#" + value.replace(/[^0-9A-F]/g, "");
+                            } else {
+                              value =
+                                "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
+                            }
+                            value = value.slice(0, 7);
+                            setTempSolidColor(value);
+                          }}
+                          onBlur={(e) => {
+                            const value = e.target.value;
+                            if (
+                              value.length !== 7 ||
+                              !/^#[0-9A-F]{6}$/i.test(value)
+                            ) {
+                              setTempSolidColor("#000000");
+                            }
+                          }}
+                          placeholder="#000000"
+                          className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                          maxLength={7}
+                        />
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (tempSolidColor.length === 7) {
+                          if (editingColorIndex !== null) {
+                            // Edit existing color
+                            setCustomSolidColors((prev) =>
+                              prev.map((c, i) =>
+                                i === editingColorIndex ? tempSolidColor : c,
+                              ),
+                            );
+                          } else if (
+                            customSolidColors.length < 2 &&
+                            !customSolidColors.includes(tempSolidColor)
+                          ) {
+                            // Add new color
+                            setCustomSolidColors((prev) => [
+                              ...prev,
+                              tempSolidColor,
+                            ]);
+                          }
+                          onBackgroundChange({
+                            type: "solid",
+                            color: tempSolidColor,
+                          });
+                          setShowSolidColorPicker(false);
+                          setTempSolidColor("#000000");
+                          setEditingColorIndex(null);
+                        }
+                      }}
+                      className="w-full mt-3 py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
+                      disabled={tempSolidColor.length !== 7}
+                    >
+                      {editingColorIndex !== null
+                        ? "Update Color"
+                        : "Add Color"}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Gradients Section */}
+              <div>
+                <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                  Gradients{" "}
+                  <span className="text-xs text-[#5d4e37]">
+                    ({GRADIENTS.length + customGradients.length}/5 gradients)
+                  </span>
+                </h3>
+                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                  {/* Preset Gradients */}
+                  {GRADIENTS.map((grad, index) => {
+                    const isLocked = isFreeUser;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          if (isLocked) {
+                            setUpgradeFeature("Gradients");
+                            setShowUpgradeModal(true);
+                            return;
+                          }
+                          onBackgroundChange({
+                            type: "gradient",
+                            color: "",
+                            gradientFrom: grad.from,
+                            gradientTo: grad.to,
+                          });
+                        }}
+                        className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
+                          background.type === "gradient" &&
+                          background.gradientFrom === grad.from &&
+                          background.gradientTo === grad.to
+                            ? "border-[#8b6834] shadow-md"
+                            : "border-[#d4c4b0] hover:scale-95"
+                        } ${gettingLockedCheck(isLocked)}`}
+                        style={{
+                          backgroundImage: `linear-gradient(135deg, ${grad.from}, ${grad.to})`,
+                        }}
+                        title={grad.name}
+                      >
+                        {isLocked && (
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                            <Lock className="w-4 h-4 text-white drop-shadow-md" />
+                          </div>
+                        )}
+                        {background.type === "gradient" &&
+                          background.gradientFrom === grad.from &&
+                          background.gradientTo === grad.to && (
+                            <div className="absolute bottom-0 left-0 right-0 bg-[#2c2419]/70 text-[#faf8f5] text-[10px] font-inter text-center py-1">
+                              selected
+                            </div>
+                          )}
+                      </button>
+                    );
+                  })}
+
+                  {/* Custom Gradients */}
+                  {customGradients.map((grad, index) => (
+                    <button
+                      key={`custom-grad-${index}`}
+                      onClick={() => {
                         onBackgroundChange({
                           type: "gradient",
                           color: "",
@@ -624,23 +717,17 @@ export default function CustomizationPanel({
                           gradientTo: grad.to,
                         });
                       }}
-                      className={`relative w-14 h-14 flex-shrink-0 border-2 transition-all overflow-hidden ${
+                      className={`relative w-14 h-14 border-2 transition-all overflow-visible flex-shrink-0 group ${
                         background.type === "gradient" &&
                         background.gradientFrom === grad.from &&
                         background.gradientTo === grad.to
                           ? "border-[#8b6834] shadow-md"
                           : "border-[#d4c4b0] hover:scale-95"
-                      } ${gettingLockedCheck(isLocked)}`}
+                      }`}
                       style={{
                         backgroundImage: `linear-gradient(135deg, ${grad.from}, ${grad.to})`,
                       }}
-                      title={grad.name}
                     >
-                      {isLocked && (
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                          <Lock className="w-4 h-4 text-white drop-shadow-md" />
-                        </div>
-                      )}
                       {background.type === "gradient" &&
                         background.gradientFrom === grad.from &&
                         background.gradientTo === grad.to && (
@@ -648,631 +735,435 @@ export default function CustomizationPanel({
                             selected
                           </div>
                         )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCustomGradients((prev) =>
+                            prev.filter((_, i) => i !== index),
+                          );
+                        }}
+                        className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10"
+                        title="Remove gradient"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
                     </button>
-                  );
-                })}
+                  ))}
 
-                {/* Custom Gradients */}
-                {customGradients.map((grad, index) => (
-                  <button
-                    key={`custom-grad-${index}`}
-                    onClick={() => {
-                      onBackgroundChange({
-                        type: "gradient",
-                        color: "",
-                        gradientFrom: grad.from,
-                        gradientTo: grad.to,
-                      });
-                    }}
-                    className={`relative w-14 h-14 border-2 transition-all overflow-visible flex-shrink-0 group ${
-                      background.type === "gradient" &&
-                      background.gradientFrom === grad.from &&
-                      background.gradientTo === grad.to
-                        ? "border-[#8b6834] shadow-md"
-                        : "border-[#d4c4b0] hover:scale-95"
-                    }`}
-                    style={{
-                      backgroundImage: `linear-gradient(135deg, ${grad.from}, ${grad.to})`,
-                    }}
-                  >
-                    {background.type === "gradient" &&
-                      background.gradientFrom === grad.from &&
-                      background.gradientTo === grad.to && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-[#2c2419]/70 text-[#faf8f5] text-[10px] font-inter text-center py-1">
-                          selected
-                        </div>
-                      )}
+                  {/* Add Custom Gradient Button */}
+                  {customGradients.length < 2 && (
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCustomGradients((prev) =>
-                          prev.filter((_, i) => i !== index),
-                        );
+                      onClick={() => {
+                        if (isFreeUser) {
+                          setUpgradeFeature("Custom Gradients");
+                          setShowUpgradeModal(true);
+                          return;
+                        }
+                        setShowGradientColorPicker(!showGradientColorPicker);
                       }}
-                      className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center transition-colors shadow-sm opacity-0 group-hover:opacity-100 z-10"
-                      title="Remove gradient"
-                    >
-                      <X className="w-2.5 h-2.5" />
-                    </button>
-                  </button>
-                ))}
-
-                {/* Add Custom Gradient Button */}
-                {customGradients.length < 2 && (
-                  <button
-                    onClick={() => {
-                      if (isFreeUser) {
-                        setUpgradeFeature("Custom Gradients");
-                        setShowUpgradeModal(true);
-                        return;
+                      className={`relative w-14 h-14 flex-shrink-0 border-2 border-dashed transition-all overflow-hidden flex items-center justify-center ${
+                        isFreeUser
+                          ? "border-[#d4c4b0] bg-[#faf8f5]"
+                          : "border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8]"
+                      }`}
+                      title={
+                        isFreeUser
+                          ? "Upgrade to add custom gradients"
+                          : "Add custom gradient"
                       }
-                      setShowGradientColorPicker(!showGradientColorPicker);
-                    }}
-                    className={`relative w-14 h-14 flex-shrink-0 border-2 border-dashed transition-all overflow-hidden flex items-center justify-center ${
-                      isFreeUser
-                        ? "border-[#d4c4b0] bg-[#faf8f5]"
-                        : "border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8]"
-                    }`}
-                    title={
-                      isFreeUser
-                        ? "Upgrade to add custom gradients"
-                        : "Add custom gradient"
-                    }
-                  >
-                    {isFreeUser ? (
-                      <Lock className="w-5 h-5 text-[#5d4e37]" />
-                    ) : (
-                      <Plus className="w-5 h-5 text-[#8b6834]" />
-                    )}
-                  </button>
+                    >
+                      {isFreeUser ? (
+                        <Lock className="w-5 h-5 text-[#5d4e37]" />
+                      ) : (
+                        <Plus className="w-5 h-5 text-[#8b6834]" />
+                      )}
+                    </button>
+                  )}
+                </div>
+
+                {/* Gradient Picker Modal */}
+                {showGradientColorPicker && (
+                  <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
+                    <div className="flex items-center justify-between mb-3">
+                      <label className="text-sm font-medium text-[#2c2419] font-inter">
+                        Create custom gradient
+                      </label>
+                      <button
+                        onClick={() => setShowGradientColorPicker(false)}
+                        className="text-[#5d4e37] hover:text-[#2c2419]"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    {/* From Color */}
+                    <div className="mb-3">
+                      <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
+                        From Color
+                      </label>
+                      <div className="flex gap-3">
+                        <input
+                          type="color"
+                          value={tempGradientFrom}
+                          onChange={(e) => setTempGradientFrom(e.target.value)}
+                          className="h-10 w-16 border-2 border-[#d4c4b0] cursor-pointer"
+                        />
+                        <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-3 py-2 flex items-center">
+                          <input
+                            type="text"
+                            value={tempGradientFrom.toUpperCase()}
+                            onChange={(e) => {
+                              let value = e.target.value.toUpperCase();
+                              if (!value.startsWith("#")) {
+                                value = "#" + value.replace(/[^0-9A-F]/g, "");
+                              } else {
+                                value =
+                                  "#" +
+                                  value.slice(1).replace(/[^0-9A-F]/g, "");
+                              }
+                              value = value.slice(0, 7);
+                              setTempGradientFrom(value);
+                            }}
+                            onBlur={(e) => {
+                              const value = e.target.value;
+                              if (
+                                value.length !== 7 ||
+                                !/^#[0-9A-F]{6}$/i.test(value)
+                              ) {
+                                setTempGradientFrom("#000000");
+                              }
+                            }}
+                            placeholder="#000000"
+                            className="w-full text-sm font-mono text-[#2c2419] bg-transparent outline-none"
+                            maxLength={7}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* To Color */}
+                    <div className="mb-3">
+                      <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
+                        To Color
+                      </label>
+                      <div className="flex gap-3">
+                        <input
+                          type="color"
+                          value={tempGradientTo}
+                          onChange={(e) => setTempGradientTo(e.target.value)}
+                          className="h-10 w-16 border-2 border-[#d4c4b0] cursor-pointer"
+                        />
+                        <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-3 py-2 flex items-center">
+                          <input
+                            type="text"
+                            value={tempGradientTo.toUpperCase()}
+                            onChange={(e) => {
+                              let value = e.target.value.toUpperCase();
+                              if (!value.startsWith("#")) {
+                                value = "#" + value.replace(/[^0-9A-F]/g, "");
+                              } else {
+                                value =
+                                  "#" +
+                                  value.slice(1).replace(/[^0-9A-F]/g, "");
+                              }
+                              value = value.slice(0, 7);
+                              setTempGradientTo(value);
+                            }}
+                            onBlur={(e) => {
+                              const value = e.target.value;
+                              if (
+                                value.length !== 7 ||
+                                !/^#[0-9A-F]{6}$/i.test(value)
+                              ) {
+                                setTempGradientTo("#FFFFFF");
+                              }
+                            }}
+                            placeholder="#FFFFFF"
+                            className="w-full text-sm font-mono text-[#2c2419] bg-transparent outline-none"
+                            maxLength={7}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Preview */}
+                    <div className="mb-3">
+                      <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
+                        Preview
+                      </label>
+                      <div
+                        className="w-full h-16 border-2 border-[#d4c4b0]"
+                        style={{
+                          backgroundImage: `linear-gradient(135deg, ${tempGradientFrom}, ${tempGradientTo})`,
+                        }}
+                      />
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        if (
+                          tempGradientFrom.length === 7 &&
+                          tempGradientTo.length === 7
+                        ) {
+                          const newGrad = {
+                            from: tempGradientFrom,
+                            to: tempGradientTo,
+                          };
+                          const exists = customGradients.some(
+                            (g) =>
+                              g.from === newGrad.from && g.to === newGrad.to,
+                          );
+                          if (!exists) {
+                            setCustomGradients((prev) => [...prev, newGrad]);
+                            onBackgroundChange({
+                              type: "gradient",
+                              color: "",
+                              gradientFrom: tempGradientFrom,
+                              gradientTo: tempGradientTo,
+                            });
+                            setShowGradientColorPicker(false);
+                            setTempGradientFrom("#000000");
+                            setTempGradientTo("#FFFFFF");
+                          }
+                        }
+                      }}
+                      className="w-full py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
+                      disabled={
+                        tempGradientFrom.length !== 7 ||
+                        tempGradientTo.length !== 7
+                      }
+                    >
+                      Add Gradient
+                    </button>
+                  </div>
                 )}
               </div>
-
-              {/* Gradient Picker Modal */}
-              {showGradientColorPicker && (
-                <div className="mt-3 bg-[#faf8f5] border-2 border-[#8b6834] p-4 shadow-md">
-                  <div className="flex items-center justify-between mb-3">
-                    <label className="text-sm font-medium text-[#2c2419] font-inter">
-                      Create custom gradient
-                    </label>
-                    <button
-                      onClick={() => setShowGradientColorPicker(false)}
-                      className="text-[#5d4e37] hover:text-[#2c2419]"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  {/* From Color */}
-                  <div className="mb-3">
-                    <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
-                      From Color
-                    </label>
-                    <div className="flex gap-3">
-                      <input
-                        type="color"
-                        value={tempGradientFrom}
-                        onChange={(e) => setTempGradientFrom(e.target.value)}
-                        className="h-10 w-16 border-2 border-[#d4c4b0] cursor-pointer"
-                      />
-                      <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-3 py-2 flex items-center">
-                        <input
-                          type="text"
-                          value={tempGradientFrom.toUpperCase()}
-                          onChange={(e) => {
-                            let value = e.target.value.toUpperCase();
-                            if (!value.startsWith("#")) {
-                              value = "#" + value.replace(/[^0-9A-F]/g, "");
-                            } else {
-                              value =
-                                "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
-                            }
-                            value = value.slice(0, 7);
-                            setTempGradientFrom(value);
-                          }}
-                          onBlur={(e) => {
-                            const value = e.target.value;
-                            if (
-                              value.length !== 7 ||
-                              !/^#[0-9A-F]{6}$/i.test(value)
-                            ) {
-                              setTempGradientFrom("#000000");
-                            }
-                          }}
-                          placeholder="#000000"
-                          className="w-full text-sm font-mono text-[#2c2419] bg-transparent outline-none"
-                          maxLength={7}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* To Color */}
-                  <div className="mb-3">
-                    <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
-                      To Color
-                    </label>
-                    <div className="flex gap-3">
-                      <input
-                        type="color"
-                        value={tempGradientTo}
-                        onChange={(e) => setTempGradientTo(e.target.value)}
-                        className="h-10 w-16 border-2 border-[#d4c4b0] cursor-pointer"
-                      />
-                      <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-3 py-2 flex items-center">
-                        <input
-                          type="text"
-                          value={tempGradientTo.toUpperCase()}
-                          onChange={(e) => {
-                            let value = e.target.value.toUpperCase();
-                            if (!value.startsWith("#")) {
-                              value = "#" + value.replace(/[^0-9A-F]/g, "");
-                            } else {
-                              value =
-                                "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
-                            }
-                            value = value.slice(0, 7);
-                            setTempGradientTo(value);
-                          }}
-                          onBlur={(e) => {
-                            const value = e.target.value;
-                            if (
-                              value.length !== 7 ||
-                              !/^#[0-9A-F]{6}$/i.test(value)
-                            ) {
-                              setTempGradientTo("#FFFFFF");
-                            }
-                          }}
-                          placeholder="#FFFFFF"
-                          className="w-full text-sm font-mono text-[#2c2419] bg-transparent outline-none"
-                          maxLength={7}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Preview */}
-                  <div className="mb-3">
-                    <label className="text-xs font-medium text-[#5d4e37] mb-1 block">
-                      Preview
-                    </label>
-                    <div
-                      className="w-full h-16 border-2 border-[#d4c4b0]"
-                      style={{
-                        backgroundImage: `linear-gradient(135deg, ${tempGradientFrom}, ${tempGradientTo})`,
-                      }}
-                    />
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      if (
-                        tempGradientFrom.length === 7 &&
-                        tempGradientTo.length === 7
-                      ) {
-                        const newGrad = {
-                          from: tempGradientFrom,
-                          to: tempGradientTo,
-                        };
-                        const exists = customGradients.some(
-                          (g) => g.from === newGrad.from && g.to === newGrad.to,
-                        );
-                        if (!exists) {
-                          setCustomGradients((prev) => [...prev, newGrad]);
-                          onBackgroundChange({
-                            type: "gradient",
-                            color: "",
-                            gradientFrom: tempGradientFrom,
-                            gradientTo: tempGradientTo,
-                          });
-                          setShowGradientColorPicker(false);
-                          setTempGradientFrom("#000000");
-                          setTempGradientTo("#FFFFFF");
-                        }
-                      }
-                    }}
-                    className="w-full py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
-                    disabled={
-                      tempGradientFrom.length !== 7 ||
-                      tempGradientTo.length !== 7
-                    }
-                  >
-                    Add Gradient
-                  </button>
-                </div>
-              )}
-            </div>
+            </div>{" "}
+            {/* end: normal bg controls wrapper */}
           </>
         )}
 
         {/* Pattern Tab */}
         {activeTab === "Pattern" && (
           <div className="space-y-6">
-            {/* Pattern Selection */}
-            <div>
-              <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
-                Select Pattern
-              </h3>
-              <div className="grid grid-cols-4 gap-3">
-                {PATTERNS.map((pattern) => {
-                  const isLocked =
-                    isFreeUser &&
-                    ["lines", "grid", "checks", "curves", "custom"].includes(
-                      pattern.id,
-                    );
-                  const isActive = background.pattern === pattern.id;
-
-                  return (
-                    <button
-                      key={pattern.id}
-                      onClick={() => {
-                        if (isLocked) {
-                          setUpgradeFeature("Premium Patterns");
-                          setShowUpgradeModal(true);
-                          return;
-                        }
-                        onBackgroundChange({
-                          ...background,
-                          pattern: pattern.id,
-                        });
-                      }}
-                      className={`aspect-square flex flex-col items-center justify-center p-2 border-2 transition-all overflow-hidden relative ${
-                        isActive
-                          ? "border-[#8b6834] bg-[#e8dcc8]"
-                          : "border-[#d4c4b0] bg-[#faf8f5] hover:border-[#8b6834]"
-                      } ${gettingLockedCheck(isLocked)}`}
-                    >
-                      {/* Visual Preview */}
-                      <div className="w-full h-full mb-1 border border-black/5 overflow-hidden bg-white/50 relative">
-                        {pattern.id === "none" && (
-                          <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
-                            None
-                          </div>
-                        )}
-                        {pattern.id === "custom" && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <Upload className="w-4 h-4 text-[#5d4e37]" />
-                          </div>
-                        )}
-
-                        {/* CSS Previews for Patterns */}
-                        {pattern.id === "dots" && (
-                          <div
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage:
-                                "radial-gradient(#8b6834 1px, transparent 1px)",
-                              backgroundSize: "8px 8px",
-                            }}
-                          />
-                        )}
-                        {pattern.id === "lines" && (
-                          <div
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage:
-                                "repeating-linear-gradient(45deg, #8b6834, #8b6834 1px, transparent 1px, transparent 6px)",
-                            }}
-                          />
-                        )}
-                        {pattern.id === "grid" && (
-                          <div
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage:
-                                "linear-gradient(#8b6834 1px, transparent 1px), linear-gradient(90deg, #8b6834 1px, transparent 1px)",
-                              backgroundSize: "8px 8px",
-                            }}
-                          />
-                        )}
-                        {pattern.id === "checks" && (
-                          <div
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage:
-                                "repeating-linear-gradient(45deg, #8b6834 25%, transparent 25%, transparent 75%, #8b6834 75%, #8b6834), repeating-linear-gradient(45deg, #8b6834 25%, transparent 25%, transparent 75%, #8b6834 75%, #8b6834)",
-                              backgroundSize: "10px 10px",
-                              backgroundPosition: "0 0, 5px 5px",
-                              opacity: 0.5,
-                            }}
-                          />
-                        )}
-                        {pattern.id === "curves" && (
-                          <div
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage:
-                                "repeating-radial-gradient(circle at 0 0, transparent 0, #8b6834 1px, transparent 2px, transparent 4px)",
-                              backgroundSize: "16px 16px",
-                              opacity: 0.6,
-                            }}
-                          />
-                        )}
-                        {pattern.id === "abstract" && (
-                          <div
-                            className="absolute inset-0"
-                            style={{
-                              backgroundImage:
-                                "radial-gradient(circle at 50% 50%, #8b6834 2px, transparent 2.5px), radial-gradient(circle at 0% 0%, #8b6834 2px, transparent 2.5px)",
-                              backgroundSize: "16px 16px",
-                              opacity: 0.6,
-                            }}
-                          />
-                        )}
-
-                        {/* Lock Overlay for restricted patterns */}
-                        {isLocked && (
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
-                            <Lock className="w-5 h-5 text-white drop-shadow-md" />
-                          </div>
-                        )}
-                      </div>
-
-                      <span
-                        className={`text-[10px] font-medium leading-tight ${isActive ? "text-[#2c2419]" : "text-[#5d4e37]"}`}
-                      >
-                        {pattern.name}
-                      </span>
-                    </button>
-                  );
-                })}
+            {theme === "magazine" ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-8 h-8 text-[#8b6834]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+                  />
+                </svg>
+                <p className="text-sm font-semibold text-[#2c2419] font-inter">
+                  Pattern Locked
+                </p>
+                <p className="text-xs text-[#5d4e37] font-inter leading-relaxed max-w-[200px]">
+                  The Magazine card uses a fixed built-in pattern. You cannot
+                  change it.
+                </p>
               </div>
-            </div>
-
-            {/* Custom File Upload Input */}
-            {background.pattern === "custom" && (
-              <div className="bg-[#e8dcc8] p-4 border border-[#d4c4b0]">
-                <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-2">
-                  Upload Pattern Image
+            ) : theme === "duo" ? (
+              <div>
+                <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                  Pattern Opacity
                 </h3>
-                <label className="block border-2 border-dashed border-[#8b6834]/50 bg-[#faf8f5] hover:bg-white transition-colors cursor-pointer p-6 text-center">
+                <div className="flex items-center gap-4">
                   <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          onBackgroundChange({
-                            ...background,
-                            patternImage: reader.result as string,
-                          });
-                        };
-                        reader.readAsDataURL(file);
-                      }
+                    type="range"
+                    min="0.05"
+                    max="0.8"
+                    step="0.05"
+                    value={background.patternOpacity || 0.35}
+                    onChange={(e) =>
+                      onBackgroundChange({
+                        ...background,
+                        patternOpacity: parseFloat(e.target.value),
+                      })
+                    }
+                    className="flex-1 h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((background.patternOpacity || 0.35) - 0.05) / 0.75) * 100}%, #e8dcc8 ${(((background.patternOpacity || 0.35) - 0.05) / 0.75) * 100}%, #e8dcc8 100%)`,
                     }}
                   />
-                  <Upload className="w-5 h-5 mx-auto mb-2 text-[#8b6834]" />
-                  <p className="text-xs text-[#5d4e37] font-medium">
-                    Click to upload image
-                  </p>
-                  <p className="text-[10px] text-[#5d4e37]/70 mt-1">
-                    Supports PNG, JPG (will be used as overlay)
-                  </p>
-                </label>
-                {background.patternImage && (
-                  <div className="mt-2 text-xs text-green-700 flex items-center gap-1 font-medium">
-                    <div className="w-2 h-2 bg-green-500" /> Image loaded
-                    successfully
+                  <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
+                    {Math.round((background.patternOpacity || 0.35) * 100)}%
                   </div>
-                )}
+                </div>
               </div>
-            )}
+            ) : (
+              <div className="space-y-6">
+                {/* Pattern Selection */}
+                <div>
+                  <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                    {" "}
+                    Select Pattern
+                  </h3>
+                  <div className="grid grid-cols-4 gap-3">
+                    {PATTERNS.map((pattern) => {
+                      const isLocked =
+                        isFreeUser && ["custom"].includes(pattern.id);
+                      const isActive = background.pattern === pattern.id;
 
-            {/* Pattern Color & Opacity - Only show if pattern is selected and NOT custom/none */}
-            {background.pattern && background.pattern !== "none" && (
-              <>
-                {/* Pattern Color - Hidden for Custom */}
-                {background.pattern !== "custom" && (
-                  <div>
-                    <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
-                      Pattern Color
-                    </h3>
-                    
-                    {/* All Pattern Colors in One Row: Preset + Custom + Add Button */}
-                    <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-                      {/* Preset Pattern Colors */}
-                      {PATTERN_PRESET_COLORS.map((item) => (
+                      return (
                         <button
-                          key={item.color}
-                          onClick={() =>
+                          key={pattern.id}
+                          onClick={() => {
+                            if (isLocked) {
+                              setUpgradeFeature("Premium Patterns");
+                              setShowUpgradeModal(true);
+                              return;
+                            }
                             onBackgroundChange({
                               ...background,
-                              patternColor: item.color,
-                            })
-                          }
-                          className={`w-10 h-10 flex-shrink-0 border-2 transition-all ${
-                            background.patternColor === item.color
-                              ? "border-black"
-                              : "border-[#d4c4b0]"
-                          }`}
-                          style={{ backgroundColor: item.color }}
-                          title={item.name}
-                        />
-                      ))}
-
-                      {/* Custom Pattern Colors */}
-                      {customPatternColors.map((color, index) => (
-                        <div key={index} className="relative group">
-                          <button
-                            onClick={() =>
-                              onBackgroundChange({
-                                ...background,
-                                patternColor: color,
-                              })
-                            }
-                            className={`w-10 h-10 flex-shrink-0 border-2 transition-all ${
-                              background.patternColor === color
-                                ? "border-black"
-                                : "border-[#d4c4b0]"
-                            }`}
-                            style={{ backgroundColor: color }}
-                          />
-                          {/* Edit Button - Top Left */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingPatternColorIndex(index);
-                              setTempPatternColor(color);
-                              setShowPatternColorPicker(true);
-                            }}
-                            className="absolute -top-1 -left-1 w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-600 shadow-md"
-                            title="Edit color"
-                          >
-                            <Edit2 className="w-3 h-3" />
-                          </button>
-                          {/* Remove Button - Top Right */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCustomPatternColors((prev) =>
-                                prev.filter((_, i) => i !== index)
-                              );
-                            }}
-                            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 shadow-md"
-                            title="Remove color"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
-                      ))}
-
-                      {/* Add Custom Pattern Color Button - Inline */}
-                      {customPatternColors.length < 2 && (
-                        <button
-                          onClick={() => {
-                            setEditingPatternColorIndex(null);
-                            setTempPatternColor("#000000");
-                            setShowPatternColorPicker(true);
+                              pattern: pattern.id as any,
+                              patternOpacity: background.patternOpacity || 0.3,
+                            });
                           }}
-                          className="w-10 h-10 flex-shrink-0 border-2 border-dashed border-[#d4c4b0] hover:border-[#8b6834] bg-[#faf8f5] hover:bg-[#e8dcc8] transition-all flex items-center justify-center"
-                          title="Add custom pattern color"
+                          className={`aspect-square flex flex-col items-center justify-center p-2 border-2 transition-all overflow-hidden relative ${
+                            isActive
+                              ? "border-[#8b6834] bg-[#e8dcc8]"
+                              : "border-[#d4c4b0] bg-[#faf8f5] hover:border-[#8b6834]"
+                          } ${gettingLockedCheck(isLocked)}`}
                         >
-                          <Plus className="w-4 h-4 text-[#5d4e37]" />
-                        </button>
-                      )}
-                    </div>
+                          {/* Visual Preview */}
+                          <div className="w-full h-full mb-1 border border-black/5 overflow-hidden bg-white/50 relative">
+                            {pattern.id === "none" && (
+                              <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-xs">
+                                None
+                              </div>
+                            )}
+                            {pattern.id === "custom" && (
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Upload className="w-4 h-4 text-[#5d4e37]" />
+                              </div>
+                            )}
 
-                    {/* Pattern Color Picker Modal */}
-                    {showPatternColorPicker && (
-                      <div className="mt-4 p-4 border-2 border-[#d4c4b0] bg-[#faf8f5]">
-                        <div className="flex items-center justify-between mb-3">
-                          <label className="text-sm font-medium text-[#2c2419] font-inter">
-                            {editingPatternColorIndex !== null ? 'Edit Custom Pattern Color' : 'Pick a custom pattern color'}
-                          </label>
-                          <button
-                            onClick={() => {
-                              setShowPatternColorPicker(false);
-                              setEditingPatternColorIndex(null);
-                            }}
-                            className="text-[#5d4e37] hover:text-[#2c2419]"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                        <div className="flex gap-3">
-                          <input
-                            type="color"
-                            value={tempPatternColor}
-                            onChange={(e) => setTempPatternColor(e.target.value)}
-                            className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
-                          />
-                          <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
-                            <input
-                              type="text"
-                              value={tempPatternColor.toUpperCase()}
-                              onChange={(e) => {
-                                let value = e.target.value.toUpperCase();
-                                // Always start with #
-                                if (!value.startsWith("#")) {
-                                  value = "#" + value.replace(/[^0-9A-F]/g, "");
-                                } else {
-                                  value =
-                                    "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
-                                }
-                                value = value.slice(0, 7);
-                                setTempPatternColor(value);
-                              }}
-                              onBlur={(e) => {
-                                const value = e.target.value;
-                                if (
-                                  value.length !== 7 ||
-                                  !/^#[0-9A-F]{6}$/i.test(value)
-                                ) {
-                                  setTempPatternColor("#000000");
-                                }
-                              }}
-                              placeholder="#000000"
-                              className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
-                              maxLength={7}
-                            />
+                            {/* Image Previews for Patterns */}
+                            {pattern.id === "p1" && (
+                              <div
+                                className="absolute inset-0"
+                                style={{
+                                  backgroundImage: "url(/patterns/p1-t.png)",
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
+                                }}
+                              />
+                            )}
+                            {pattern.id === "p2" && (
+                              <div
+                                className="absolute inset-0"
+                                style={{
+                                  backgroundImage: "url(/patterns/p2-t.png)",
+                                  backgroundSize: "cover",
+                                  backgroundPosition: "center",
+                                }}
+                              />
+                            )}
+
+                            {/* Lock Overlay for restricted patterns */}
+                            {isLocked && (
+                              <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
+                                <Lock className="w-5 h-5 text-white drop-shadow-md" />
+                              </div>
+                            )}
                           </div>
-                        </div>
-                        <button
-                          onClick={() => {
-                            if (tempPatternColor.length === 7) {
-                              if (editingPatternColorIndex !== null) {
-                                // Edit existing pattern color
-                                setCustomPatternColors((prev) =>
-                                  prev.map((c, i) => (i === editingPatternColorIndex ? tempPatternColor : c))
-                                );
-                              } else if (customPatternColors.length < 2 && !customPatternColors.includes(tempPatternColor)) {
-                                // Add new pattern color
-                                setCustomPatternColors((prev) => [
-                                  ...prev,
-                                  tempPatternColor,
-                                ]);
-                              }
+
+                          <span
+                            className={`text-[10px] font-medium leading-tight ${isActive ? "text-[#2c2419]" : "text-[#5d4e37]"}`}
+                          >
+                            {pattern.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Custom File Upload Input */}
+                {background.pattern === "custom" && (
+                  <div className="bg-[#e8dcc8] p-4 border border-[#d4c4b0]">
+                    <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-2">
+                      Upload Pattern Image
+                    </h3>
+                    <label className="block border-2 border-dashed border-[#8b6834]/50 bg-[#faf8f5] hover:bg-white transition-colors cursor-pointer p-6 text-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
                               onBackgroundChange({
                                 ...background,
-                                patternColor: tempPatternColor,
+                                patternImage: reader.result as string,
                               });
-                              setShowPatternColorPicker(false);
-                              setTempPatternColor("#000000");
-                              setEditingPatternColorIndex(null);
-                            }
-                          }}
-                          className="w-full mt-3 py-2 bg-[#8b6834] text-[#faf8f5] font-inter font-semibold hover:bg-[#2c2419] transition-colors"
-                          disabled={tempPatternColor.length !== 7}
-                        >
-                          {editingPatternColorIndex !== null ? 'Update Color' : 'Add Color'}
-                        </button>
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                      />
+                      <Upload className="w-5 h-5 mx-auto mb-2 text-[#8b6834]" />
+                      <p className="text-xs text-[#5d4e37] font-medium">
+                        Click to upload image
+                      </p>
+                      <p className="text-[10px] text-[#5d4e37]/70 mt-1">
+                        Supports PNG, JPG (will be used as overlay)
+                      </p>
+                    </label>
+                    {background.patternImage && (
+                      <div className="mt-2 text-xs text-green-700 flex items-center gap-1 font-medium">
+                        <div className="w-2 h-2 bg-green-500" /> Image loaded
+                        successfully
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Opacity Slider - Available for Custom too */}
-                <div>
-                  <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
-                    Opacity
-                  </h3>
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="range"
-                      min="0.05"
-                      max="0.8"
-                      step="0.05"
-                      value={background.patternOpacity || 0.1}
-                      onChange={(e) =>
-                        onBackgroundChange({
-                          ...background,
-                          patternOpacity: parseFloat(e.target.value),
-                        })
-                      }
-                      className="flex-1 h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                      style={{
-                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((background.patternOpacity || 0.1) - 0.05) / 0.75) * 100}%, #e8dcc8 ${(((background.patternOpacity || 0.1) - 0.05) / 0.75) * 100}%, #e8dcc8 100%)`,
-                      }}
-                    />
-                    <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
-                      {Math.round((background.patternOpacity || 0.1) * 100)}%
+                {/* Pattern Color & Opacity - Only show if pattern is selected and NOT custom/none */}
+                {background.pattern && background.pattern !== "none" && (
+                  <>
+                    {/* Opacity Slider - Available for Custom too */}
+                    <div>
+                      <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                        Opacity
+                      </h3>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="0.05"
+                          max="0.8"
+                          step="0.05"
+                          value={background.patternOpacity || 0.3}
+                          onChange={(e) =>
+                            onBackgroundChange({
+                              ...background,
+                              patternOpacity: parseFloat(e.target.value),
+                            })
+                          }
+                          className="flex-1 h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                          style={{
+                            background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((background.patternOpacity || 0.3) - 0.05) / 0.75) * 100}%, #e8dcc8 ${(((background.patternOpacity || 0.3) - 0.05) / 0.75) * 100}%, #e8dcc8 100%)`,
+                          }}
+                        />
+                        <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
+                          {Math.round((background.patternOpacity || 0.3) * 100)}
+                          %
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </>
+                  </>
+                )}
+              </div>
             )}
           </div>
         )}
@@ -1304,6 +1195,20 @@ export default function CustomizationPanel({
                         </div>
                       )}
 
+                      {/* NEW badge for Duo theme */}
+                      {theme.id === "duo" && (
+                        <span className="absolute top-1.5 right-1.5 px-1.5 py-[2px] bg-red-600 text-white text-[8px] leading-none font-black rounded shadow-md border border-white/40 z-10">
+                          NEW
+                        </span>
+                      )}
+
+                      {/* NEW badge for Overlay theme */}
+                      {theme.id === "overlay" && (
+                        <span className="absolute top-1.5 right-1.5 px-1.5 py-[2px] bg-red-600 text-white text-[8px] leading-none font-black rounded shadow-md border border-white/40 z-10">
+                          NEW
+                        </span>
+                      )}
+
                       {/* Selected indicator at bottom inside the image area */}
                       {selectedTheme === theme.id && !theme.locked && (
                         <div className="absolute bottom-0 left-0 right-0 w-full bg-[#8b6834] py-0.5 text-center">
@@ -1328,81 +1233,73 @@ export default function CustomizationPanel({
         {/* Fonts Tab - Accordion Design */}
         {activeTab === "Fonts" && fontStyles && onFontStylesChange && (
           <div className="space-y-2">
-            {/* Instructions */}
-            <p className="text-xs text-[#5d4e37] font-inter mb-3">
-              Click on a section to customize its font properties
-            </p>
-
-            {/* Week & Date Accordion */}
-            <div className="border-2 border-[#d4c4b0] bg-white overflow-hidden">
+            {/* Week & Date */}
+            <div className="border border-[#d4c4b0] overflow-hidden">
               <button
                 onClick={() =>
                   setExpandedFontSection(
                     expandedFontSection === "weekDate" ? null : "weekDate",
                   )
                 }
-                className="w-full p-3 flex items-center justify-between hover:bg-[#faf8f5] transition-colors"
+                className="w-full px-3 py-2 flex items-center justify-between bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#8b6834] flex items-center justify-center">
-                    <svg
-                      className="w-4 h-4 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-sm font-semibold font-inter text-[#2c2419]">
-                      Week & Date
-                    </h3>
-                    {expandedFontSection !== "weekDate" && (
-                      <p className="text-xs text-[#5d4e37] font-inter flex items-center gap-2 mt-0.5">
-                        <span>{fontStyles.week.fontSize}</span>
-                        <span>•</span>
-                        <span>Weight {fontStyles.week.fontWeight}</span>
-                        <span
-                          className="w-3 h-3 border border-[#d4c4b0]"
-                          style={{ backgroundColor: fontStyles.week.color }}
-                        ></span>
-                      </p>
-                    )}
-                  </div>
+                <span className="text-xs font-bold text-[#2c2419] tracking-wide">
+                  WEEK & DATE
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-[#5d4e37]">
+                    {fontStyles.week.fontSize} ·{" "}
+                    {fontStyles.week.fontWeight === "700"
+                      ? "Bold"
+                      : fontStyles.week.fontWeight === "600"
+                        ? "Semi"
+                        : fontStyles.week.fontWeight === "500"
+                          ? "Med"
+                          : "Norm"}
+                  </span>
+                  <svg
+                    className={`w-3.5 h-3.5 text-[#8b6834] transition-transform ${expandedFontSection === "weekDate" ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </div>
-                <svg
-                  className={`w-5 h-5 text-[#8b6834] transition-transform ${expandedFontSection === "weekDate" ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
               </button>
 
               {expandedFontSection === "weekDate" && (
-                <div className="p-4 pt-0 space-y-4 border-t-2 border-[#f5f0e8]">
-                  {/* Font Size */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium text-[#2c2419] font-inter">
-                        Font Size
-                      </label>
-                      <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
-                        {fontStyles.week.fontSize}
-                      </span>
+                <div className="px-3 py-2.5 space-y-2 border-t border-[#f0ebe0]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Language
+                    </span>
+                    <div className="flex gap-1 flex-1">
+                      {(["bangla", "english"] as const).map((lang) => (
+                        <button
+                          key={lang}
+                          onClick={() =>
+                            onFontStylesChange({
+                              ...fontStyles,
+                              weekDateLanguage: lang,
+                            })
+                          }
+                          className={`flex-1 py-1 text-[10px] font-bold border transition-all ${(fontStyles.weekDateLanguage ?? "bangla") === lang ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
+                        >
+                          {lang === "bangla" ? "বাংলা" : "English"}
+                        </button>
+                      ))}
                     </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Size
+                    </span>
                     <input
                       type="range"
                       min="12"
@@ -1421,168 +1318,154 @@ export default function CustomizationPanel({
                           },
                         })
                       }
-                      className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                      className="flex-1 h-1 appearance-none cursor-pointer"
                       style={{
                         background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 ${((parseInt(fontStyles.week.fontSize) - 12) / 20) * 100}%, #e8dcc8 100%)`,
                       }}
                     />
+                    <span className="text-[10px] font-bold text-[#8b6834] w-9 text-right">
+                      {fontStyles.week.fontSize}
+                    </span>
                   </div>
-
-                  {/* Font Weight */}
-                  <div>
-                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                      Font Weight
-                    </label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {["400", "500", "600", "700"].map((weight) => (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Weight
+                    </span>
+                    <div className="flex gap-1 flex-1">
+                      {(
+                        [
+                          ["400", "Norm"],
+                          ["500", "Med"],
+                          ["600", "Semi"],
+                          ["700", "Bold"],
+                        ] as const
+                      ).map(([w, l]) => (
                         <button
-                          key={weight}
+                          key={w}
                           onClick={() =>
                             onFontStylesChange({
                               ...fontStyles,
-                              week: { ...fontStyles.week, fontWeight: weight },
-                              date: { ...fontStyles.date, fontWeight: weight },
+                              week: { ...fontStyles.week, fontWeight: w },
+                              date: { ...fontStyles.date, fontWeight: w },
                             })
                           }
-                          className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
-                            fontStyles.week.fontWeight === weight
-                              ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
-                              : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
-                          }`}
+                          className={`flex-1 py-1 text-[10px] font-bold border transition-all ${fontStyles.week.fontWeight === w ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
                         >
-                          {weight === "400"
-                            ? "Normal"
-                            : weight === "500"
-                              ? "Medium"
-                              : weight === "600"
-                                ? "Semi"
-                                : "Bold"}
+                          {l}
                         </button>
                       ))}
                     </div>
                   </div>
-
-                  {/* Color */}
-                  <div>
-                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                      Text Color
-                    </label>
-                    <div className="flex gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Color
+                    </span>
+                    <input
+                      type="color"
+                      value={fontStyles.week.color}
+                      onChange={(e) =>
+                        onFontStylesChange({
+                          ...fontStyles,
+                          week: { ...fontStyles.week, color: e.target.value },
+                          date: { ...fontStyles.date, color: e.target.value },
+                        })
+                      }
+                      className="h-7 w-9 border border-[#d4c4b0] cursor-pointer shrink-0"
+                    />
+                    <div className="flex-1 border border-[#d4c4b0] px-2 py-1">
                       <input
-                        type="color"
-                        value={fontStyles.week.color}
-                        onChange={(e) =>
-                          onFontStylesChange({
-                            ...fontStyles,
-                            week: { ...fontStyles.week, color: e.target.value },
-                            date: { ...fontStyles.date, color: e.target.value },
-                          })
-                        }
-                        className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                        type="text"
+                        value={fontStyles.week.color.toUpperCase()}
+                        maxLength={7}
+                        onChange={(e) => {
+                          let v = e.target.value.toUpperCase();
+                          if (!v.startsWith("#"))
+                            v = "#" + v.replace(/[^0-9A-F]/g, "");
+                          else v = "#" + v.slice(1).replace(/[^0-9A-F]/g, "");
+                          v = v.slice(0, 7);
+                          if (v.length === 7)
+                            onFontStylesChange({
+                              ...fontStyles,
+                              week: { ...fontStyles.week, color: v },
+                              date: { ...fontStyles.date, color: v },
+                            });
+                        }}
+                        className="w-full text-xs font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
                       />
-                      <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
-                        <input
-                          type="text"
-                          value={fontStyles.week.color.toUpperCase()}
-                          onChange={(e) => {
-                            let value = e.target.value.toUpperCase();
-                            if (!value.startsWith("#")) {
-                              value = "#" + value.replace(/[^0-9A-F]/g, "");
-                            } else {
-                              value =
-                                "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
-                            }
-                            value = value.slice(0, 7);
-
-                            if (value.length === 7) {
-                              onFontStylesChange({
-                                ...fontStyles,
-                                week: { ...fontStyles.week, color: value },
-                                date: { ...fontStyles.date, color: value },
-                              });
-                            }
-                          }}
-                          placeholder="#000000"
-                          className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
-                          maxLength={7}
-                        />
-                      </div>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Headline Accordion */}
-            <div className="border-2 border-[#d4c4b0] bg-white overflow-hidden">
+            {/* Headline */}
+            <div className="border border-[#d4c4b0] overflow-hidden">
               <button
                 onClick={() =>
                   setExpandedFontSection(
                     expandedFontSection === "headline" ? null : "headline",
                   )
                 }
-                className="w-full p-3 flex items-center justify-between hover:bg-[#faf8f5] transition-colors"
+                className="w-full px-3 py-2 flex items-center justify-between bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors"
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-[#8b6834] flex items-center justify-center">
-                    <svg
-                      className="w-4 h-4 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                      />
-                    </svg>
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-sm font-semibold font-inter text-[#2c2419]">
-                      Headline
-                    </h3>
-                    {expandedFontSection !== "headline" && (
-                      <p className="text-xs text-[#5d4e37] font-inter flex items-center gap-2 mt-0.5">
-                        <span>{fontStyles.headline.fontSize}</span>
-                        <span>•</span>
-                        <span>Weight {fontStyles.headline.fontWeight}</span>
-                        <span
-                          className="w-3 h-3 border border-[#d4c4b0]"
-                          style={{ backgroundColor: fontStyles.headline.color }}
-                        ></span>
-                      </p>
-                    )}
-                  </div>
+                <span className="text-xs font-bold text-[#2c2419] tracking-wide">
+                  HEADLINE
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-[#5d4e37]">
+                    {fontStyles.headline.fontSize} ·{" "}
+                    {fontStyles.headline.fontFamily.split(" ")[0]}
+                  </span>
+                  <svg
+                    className={`w-3.5 h-3.5 text-[#8b6834] transition-transform ${expandedFontSection === "headline" ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
                 </div>
-                <svg
-                  className={`w-5 h-5 text-[#8b6834] transition-transform ${expandedFontSection === "headline" ? "rotate-180" : ""}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
               </button>
 
               {expandedFontSection === "headline" && (
-                <div className="p-4 pt-0 space-y-4 border-t-2 border-[#f5f0e8]">
-                  {/* Font Size */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium text-[#2c2419] font-inter">
-                        Font Size
-                      </label>
-                      <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
-                        {fontStyles.headline.fontSize}
-                      </span>
+                <div className="px-3 py-2.5 space-y-2 border-t border-[#f0ebe0]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Font
+                    </span>
+                    <div className="flex gap-1 flex-1">
+                      {(contentLanguage === "english"
+                        ? ENGLISH_FONTS
+                        : BANGLA_FONTS
+                      ).map((font) => (
+                        <button
+                          key={font.id}
+                          onClick={() =>
+                            onFontStylesChange({
+                              ...fontStyles,
+                              headline: {
+                                ...fontStyles.headline,
+                                fontFamily: font.id,
+                              },
+                            })
+                          }
+                          className={`flex-1 py-1 px-0.5 text-[10px] font-bold border transition-all truncate ${fontStyles.headline.fontFamily === font.id ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
+                        >
+                          {font.name}
+                        </button>
+                      ))}
                     </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Size
+                    </span>
                     <input
                       type="range"
                       min="16"
@@ -1597,123 +1480,91 @@ export default function CustomizationPanel({
                           },
                         })
                       }
-                      className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                      className="flex-1 h-1 appearance-none cursor-pointer"
                       style={{
                         background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 100%)`,
                       }}
                     />
+                    <span className="text-[10px] font-bold text-[#8b6834] w-9 text-right">
+                      {fontStyles.headline.fontSize}
+                    </span>
                   </div>
-
-                  {/* Font Weight */}
-                  <div>
-                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                      Font Weight
-                    </label>
-                    <div className="grid grid-cols-5 gap-2">
-                      {["400", "500", "600", "700", "800"].map((weight) => (
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Weight
+                    </span>
+                    <div className="flex gap-1 flex-1">
+                      {(
+                        [
+                          ["400", "N"],
+                          ["500", "M"],
+                          ["600", "S"],
+                          ["700", "B"],
+                          ["800", "XB"],
+                        ] as const
+                      ).map(([w, l]) => (
                         <button
-                          key={weight}
+                          key={w}
                           onClick={() =>
                             onFontStylesChange({
                               ...fontStyles,
                               headline: {
                                 ...fontStyles.headline,
-                                fontWeight: weight,
+                                fontWeight: w,
                               },
                             })
                           }
-                          className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 ${
-                            fontStyles.headline.fontWeight === weight
-                              ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
-                              : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
-                          }`}
-                          style={{ fontWeight: weight }}
+                          className={`flex-1 py-1 text-[10px] font-bold border transition-all ${fontStyles.headline.fontWeight === w ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
                         >
-                          {weight === "400"
-                            ? "Light"
-                            : weight === "500"
-                              ? "Medium"
-                              : weight === "600"
-                                ? "Semi"
-                                : weight === "700"
-                                  ? "Bold"
-                                  : "XBold"}
+                          {l}
                         </button>
                       ))}
                     </div>
                   </div>
-
-                  {/* Color */}
-                  <div>
-                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                      Text Color
-                    </label>
-                    <div className="flex gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Color
+                    </span>
+                    <input
+                      type="color"
+                      value={fontStyles.headline.color}
+                      onChange={(e) =>
+                        onFontStylesChange({
+                          ...fontStyles,
+                          headline: {
+                            ...fontStyles.headline,
+                            color: e.target.value,
+                          },
+                        })
+                      }
+                      className="h-7 w-9 border border-[#d4c4b0] cursor-pointer shrink-0"
+                    />
+                    <div className="flex-1 border border-[#d4c4b0] px-2 py-1">
                       <input
-                        type="color"
-                        value={fontStyles.headline.color}
-                        onChange={(e) =>
-                          onFontStylesChange({
-                            ...fontStyles,
-                            headline: {
-                              ...fontStyles.headline,
-                              color: e.target.value,
-                            },
-                          })
-                        }
-                        className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                        type="text"
+                        value={fontStyles.headline.color.toUpperCase()}
+                        maxLength={7}
+                        onChange={(e) => {
+                          let v = e.target.value.toUpperCase();
+                          if (!v.startsWith("#"))
+                            v = "#" + v.replace(/[^0-9A-F]/g, "");
+                          else v = "#" + v.slice(1).replace(/[^0-9A-F]/g, "");
+                          v = v.slice(0, 7);
+                          if (v.length === 7)
+                            onFontStylesChange({
+                              ...fontStyles,
+                              headline: { ...fontStyles.headline, color: v },
+                            });
+                        }}
+                        className="w-full text-xs font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
                       />
-                      <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
-                        <input
-                          type="text"
-                          value={fontStyles.headline.color.toUpperCase()}
-                          onChange={(e) => {
-                            let value = e.target.value.toUpperCase();
-                            if (!value.startsWith("#")) {
-                              value = "#" + value.replace(/[^0-9A-F]/g, "");
-                            } else {
-                              value =
-                                "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
-                            }
-                            value = value.slice(0, 7);
-
-                            if (value.length === 7) {
-                              onFontStylesChange({
-                                ...fontStyles,
-                                headline: {
-                                  ...fontStyles.headline,
-                                  color: value,
-                                },
-                              });
-                            }
-                          }}
-                          placeholder="#000000"
-                          className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
-                          maxLength={7}
-                        />
-                      </div>
                     </div>
                   </div>
-
-                  {/* Text Align */}
-                  <div>
-                    <label className="text-sm font-medium text-[#2c2419] mb-2 flex items-center gap-1.5 font-inter">
-                      <svg
-                        className="w-3.5 h-3.5 text-[#8b6834]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 6h16M4 12h8m-8 6h16"
-                        />
-                      </svg>
-                      Text Alignment
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Align
+                    </span>
+                    <div className="flex gap-1">
                       {(["left", "center", "right"] as const).map((align) => (
                         <button
                           key={align}
@@ -1726,11 +1577,7 @@ export default function CustomizationPanel({
                               },
                             })
                           }
-                          className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 capitalize flex items-center justify-center gap-1 ${
-                            fontStyles.headline.textAlign === align
-                              ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
-                              : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
-                          }`}
+                          className={`w-7 h-7 flex items-center justify-center border transition-all ${fontStyles.headline.textAlign === align ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#5d4e37] hover:border-[#8b6834]"}`}
                         >
                           <svg
                             className="w-3 h-3"
@@ -1763,18 +1610,15 @@ export default function CustomizationPanel({
                               />
                             )}
                           </svg>
-                          {align}
                         </button>
                       ))}
                     </div>
                   </div>
-
-                  {/* Text Shadow */}
-                  <div>
-                    <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                      Text Shadow
-                    </label>
-                    <div className="grid grid-cols-5 gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                      Shadow
+                    </span>
+                    <div className="flex gap-1 flex-1">
                       {(
                         ["none", "soft", "hard", "glow", "outline"] as const
                       ).map((preset) => (
@@ -1794,14 +1638,11 @@ export default function CustomizationPanel({
                               },
                             })
                           }
-                          className={`py-2.5 text-xs font-semibold border-2 transition-all duration-200 capitalize ${
-                            (fontStyles.headline.textShadow?.preset ||
-                              "none") === preset
-                              ? "border-[#8b6834] bg-[#8b6834] text-[#faf8f5]"
-                              : "border-[#d4c4b0] bg-white text-[#2c2419] hover:border-[#8b6834] hover:bg-[#faf8f5]"
-                          }`}
+                          className={`flex-1 py-1 text-[10px] font-bold border transition-all capitalize ${(fontStyles.headline.textShadow?.preset || "none") === preset ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
                         >
-                          {preset}
+                          {preset === "outline"
+                            ? "Out"
+                            : preset.charAt(0).toUpperCase() + preset.slice(1)}
                         </button>
                       ))}
                     </div>
@@ -2869,7 +2710,8 @@ export default function CustomizationPanel({
                         onClick={() =>
                           onVisibilityChange({
                             ...visibilitySettings,
-                            showPollIcons: !(visibilitySettings as any).showPollIcons,
+                            showPollIcons: !(visibilitySettings as any)
+                              .showPollIcons,
                           })
                         }
                         className={`relative w-14 h-7 transition-colors border-2 ${
