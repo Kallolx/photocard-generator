@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Navbar from "@/components/Navbar";
-import { DotBackground } from "@/components/DotBackground";
-import { Upload, X, Download, Plus, Trash2, Grid3x3, LayoutGrid } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Upload, X, Download, Plus, Trash2, Grid3x3, LayoutGrid, Menu } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import DashboardSidebar from "@/components/DashboardSidebar";
+import UpgradeModal from "@/components/UpgradeModal";
+import CompactCreditDisplay from "@/components/CompactCreditDisplay";
 
 type Template = {
   id: string;
@@ -15,6 +17,11 @@ type Template = {
 };
 
 export default function CollagePage() {
+  const { user, logout } = useAuth();
+  const isFreeUser = user?.plan === "Free";
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -196,11 +203,40 @@ export default function CollagePage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-[#faf8f5] font-inter">
-        <Navbar />
-        <DotBackground />
+      <div className="h-screen bg-[#faf8f5] flex font-dm-sans selection:bg-[#8b6834] selection:text-white overflow-hidden">
+        <DashboardSidebar
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+          onUpgrade={(feature) => {
+            setUpgradeFeature(feature);
+            setShowUpgradeModal(true);
+          }}
+          user={user}
+          logout={logout}
+          isFreeUser={isFreeUser}
+        />
 
-        <main className="relative z-10 container mx-auto px-4 py-8 max-w-7xl">
+        <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
+          {/* Top Header */}
+          <header className="flex-shrink-0 h-20 lg:h-24 px-4 sm:px-6 lg:px-10 flex items-center justify-between border-b border-[#d4c4b0] bg-white z-30">
+            <div className="flex items-center gap-6 flex-1">
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="lg:hidden p-2.5 bg-[#f5f0e8] border border-[#d4c4b0] rounded-none text-[#5d4e37] hover:text-[#8b6834] transition-all"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <div className="hidden md:flex flex-col">
+                <h2 className="text-xl font-black text-[#2c2419] tracking-tight uppercase">
+                  Collage Maker
+                </h2>
+              </div>
+            </div>
+            <CompactCreditDisplay />
+          </header>
+
+          {/* Scrollable Main Content */}
+          <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-8 font-inter">
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-lora font-bold text-[#2c2419] mb-3">
@@ -358,8 +394,16 @@ export default function CollagePage() {
               </div>
             </div>
           </div>
-        </main>
+          </main>
+        </div>
       </div>
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        feature={upgradeFeature}
+        requiredPlan="Premium"
+      />
     </ProtectedRoute>
   );
 }
