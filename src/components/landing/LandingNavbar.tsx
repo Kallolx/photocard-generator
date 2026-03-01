@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 interface NavbarProps {
   lang: "en" | "bn";
@@ -13,29 +14,14 @@ export default function LandingNavbar({ lang, setLang, t }: NavbarProps) {
     <nav className="fixed top-0 w-full bg-white z-50 border-b-2 border-[#d4c4b0] shadow-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-none bg-[#8b6834] flex items-center justify-center shadow-none transition-colors group-hover:bg-[#2c2419]">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.5}
-                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                />
-              </svg>
-            </div>
-            <span
-              className={`font-black text-[#2c2419] tracking-tight uppercase group-hover:text-[#8b6834] transition-colors ${
-                lang === "bn" ? "text-3xl" : "text-2xl"
-              }`}
-            >
-              Socialcard
-            </span>
+          <Link href="/" className="flex items-center group">
+            <Image
+              src="/images/logo.png"
+              alt="PhotoCard logo"
+              width={140}
+              height={40}
+              className="object-contain h-14"
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -81,7 +67,7 @@ export default function LandingNavbar({ lang, setLang, t }: NavbarProps) {
             </button>
             <Link
               href="/auth/login"
-              className="px-6 py-2.5 rounded-none bg-[#8b6834] text-white font-black uppercase text-xs tracking-widest border-2 border-[#8b6834] hover:bg-[#2c2419] hover:border-[#2c2419] transition-all shadow-none"
+              className="px-6 py-3 rounded-none bg-[#8b6834] text-white font-black uppercase text-xs tracking-widest border-2 border-[#8b6834] hover:bg-[#2c2419] hover:border-[#2c2419] transition-all shadow-none"
             >
               {t.nav.getStarted}
             </Link>

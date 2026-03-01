@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -34,20 +35,16 @@ export default function AdminSidebar({
   return (
     <aside className="w-72 bg-white border-r border-[#d4c4b0]/40 flex flex-col h-full font-inter text-[#5d4e37]">
       {/* Brand Header */}
-      <div className="h-14 lg:h-16 flex items-center px-6 border-b border-[#d4c4b0]/40">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-[#8b6834] to-[#5d4e37] flex items-center justify-center text-white">
-            <LayoutDashboard className="w-4 h-4" />
-          </div>
-          <div>
-            <h1 className="text-sm font-bold text-[#2c2419] tracking-tight">
-              Socialcard
-            </h1>
-            <p className="text-[10px] font-medium tracking-widest text-[#8b6834] uppercase opacity-70">
-              Admin Panel
-            </p>
-          </div>
-        </div>
+      <div className="h-14 lg:h-16 flex items-center px-18 py-10 border-b border-[#d4c4b0]/40">
+        <Link href="/admin" className="inline-block">
+          <Image
+            src="/images/logo.png"
+            alt="PhotoCard logo"
+            width={160}
+            height={36}
+            className="object-contain"
+          />
+        </Link>
       </div>
 
       {/* Navigation */}

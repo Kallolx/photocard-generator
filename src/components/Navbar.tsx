@@ -3,8 +3,10 @@
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   ChevronDown,
+  ChevronLeft,
   User,
   Settings,
   LogOut,
@@ -21,11 +23,7 @@ import {
   Heart,
   Megaphone,
   Home,
-  Image,
-  Mail,
-  HelpCircle,
-  Shield,
-  Clock,
+  Image as ImageIcon,
   Quote,
   Package,
   Scissors,
@@ -133,7 +131,7 @@ export default function Navbar() {
           id: "thumbnail",
           label: "Thumbnail Card",
           href: "/thumbnail",
-          icon: <Image className="w-4 h-4" />,
+          icon: <ImageIcon className="w-4 h-4" />,
           locked: isFreeUser,
           description: "YouTube & video thumbnails",
         },
@@ -209,14 +207,23 @@ export default function Navbar() {
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <h1 className="text-lg md:text-2xl font-lora font-bold text-[#2c2419] tracking-tight">
-            <Link
-              href="/dashboard"
-              className="hover:text-[#8b6834] transition-colors"
-            >
-              Socialcard
-            </Link>
-          </h1>
+          <Link
+            href="/dashboard"
+            className="p-2 mr-2 text-[#5d4e37] hover:text-[#8b6834] rounded-none transition-colors"
+            aria-label="Back to dashboard"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </Link>
+
+          <Link href="/dashboard" className="inline-block">
+            <Image
+              src="/images/logo.png"
+              alt="PhotoCard logo"
+              width={160}
+              height={36}
+              className="object-contain h-11"
+            />
+          </Link>
         </div>
 
         {/* Navigation Links - Hidden on mobile */}

@@ -5,7 +5,7 @@ export const en = {
     features: "Features",
     pricing: "Pricing",
     about: "About",
-    getStarted: "Get Started",
+    getStarted: "Start FREE",
   },
   hero: {
     title: "Create News",

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Link as LinkIcon,
@@ -148,13 +149,14 @@ export default function DashboardSidebar({
       >
         {/* Sidebar Header (Logo) */}
         <div className="h-14 lg:h-16 flex items-center px-6 border-b border-[#d4c4b0]/30 shadow-sm relative">
-          <Link href="/dashboard" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-none bg-gradient-to-br from-[#8b6834] to-[#5d4e37] flex items-center justify-center text-white group-hover:shadow-none transition-shadow">
-              <LayoutDashboard className="w-5 h-5" />
-            </div>
-            <span className="text-xl font-lora font-bold text-[#2c2419] tracking-tight group-hover:text-[#8b6834] transition-colors">
-              Socialcard
-            </span>
+          <Link href="/dashboard" className="inline-block">
+            <Image
+              src="/images/logo.png"
+              alt="PhotoCard logo"
+              width={160}
+              height={36}
+              className="object-contain h-9"
+            />
           </Link>
           <button
             className="lg:hidden absolute right-4 p-2 text-[#5d4e37] hover:bg-[#f5f0e8] rounded-none transition-colors"
