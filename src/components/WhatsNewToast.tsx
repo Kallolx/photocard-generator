@@ -40,24 +40,24 @@ type Notification = CardNotification | UpdateNotification;
 
 const NOTIFICATIONS: Notification[] = [
   {
-    id: "card-duo-v1",
+    id: "card-comment-split-v1",
     type: "card",
     badge: "New Card",
-    title: "New Duo Card 🎉",
+    title: "New Split Comment Card 🎉",
     description:
-      "Split your headline & image side-by-side. Available on the URL Card page.",
-    thumbnail: "/themes/cus-7.png",
-    link: "/url",
+      "Two-tone yellow & blue layout with angled divider and speech-bubble name tag. Available on the Comment Card page.",
+    thumbnail: "/themes/com-3.png",
+    link: "/comment",
   },
   {
-    id: "card-overlay-v1",
+    id: "card-comment-grid-v1",
     type: "card",
     badge: "New Card",
-    title: "New Overlay Card 🎉",
+    title: "New Grid Comment Card 🎉",
     description:
-      "Your photo fills the frame, text floats on top. Available on the URL Card page.",
-    thumbnail: "/themes/cus-8.png",
-    link: "/url",
+      "Clean white grid background with bold left-aligned quote text. Available on the Comment Card page.",
+    thumbnail: "/themes/com-2.png",
+    link: "/comment",
   },
   {
     id: "update-march-2026",
