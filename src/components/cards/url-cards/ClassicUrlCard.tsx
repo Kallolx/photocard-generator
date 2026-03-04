@@ -17,7 +17,7 @@ import {
   DragOverlay,
   DragStartEvent,
 } from "@dnd-kit/core";
-import { EyeOff, RotateCcw, Upload, Globe, ArrowDown } from "lucide-react";
+import { EyeOff, RotateCcw, Upload } from "lucide-react";
 
 // Floating menu for element actions
 function FloatingMenu({
@@ -309,7 +309,7 @@ export default function ClassicUrlCard({
     showWeek: true,
     showDate: true,
     showLogo: true,
-    showQrCode: true,
+    showQrCode: false,
     showTitle: true,
     showAdBanner: true,
   },
@@ -514,19 +514,14 @@ export default function ClassicUrlCard({
         return (
           <div className="flex flex-col items-start gap-1">
             {(data.siteName || data.url) && (
-              <div className="flex items-center gap-1 text-white opacity-90">
-                <Globe className="w-3 h-3" />
-                <p className="font-inter text-[12px] font-medium tracking-wide">
-                  {getSiteDomain()}
-                </p>
-              </div>
+              <p className="text-white/90 text-[9px] font-medium tracking-wide">
+                {getSiteDomain()}
+              </p>
             )}
-            <div className="bg-white border border-gray-300 py-0.5 px-3 text-center rounded-sm shadow-2xl">
-              <p className="font-noto-bengali text-xs font-bold text-gray-900">
-                বিস্তারিত{" "}
-                <span style={{ color: getHighlightColor() }}>
-                  কমেন্টের লিংকে
-                </span>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
+              <p className="font-noto-bengali text-xs font-bold text-white">
+                বিস্তারিত কমেন্টের লিংকে
               </p>
             </div>
           </div>
@@ -537,6 +532,12 @@ export default function ClassicUrlCard({
   };
 
   // Render element based on type
+  // When the QR slot is hidden, the site name migrates to that left position
+  const siteNameOnLeft =
+    elementLayout.bottomLeft === "qrCode" &&
+    !visibilitySettings.showQrCode &&
+    !!(data.siteName || data.url);
+
   const renderElement = (
     elementType: "logo" | "dateWeek" | "qrCode" | "cta",
   ) => {
@@ -634,20 +635,15 @@ export default function ClassicUrlCard({
             onClick={(e) => handleElementClick("cta", e)}
           >
             <div className="flex flex-col items-end gap-1">
-              {(data.siteName || data.url) && (
-                <div className="flex items-center gap-1 text-white opacity-90">
-                  <Globe className="w-3 h-3" />
-                  <p className="font-dm-sans text-[10px] font-medium tracking-wide">
-                    {getSiteDomain()}
-                  </p>
-                </div>
+              {!siteNameOnLeft && (data.siteName || data.url) && (
+                <p className="text-white/90 text-[9px] font-medium tracking-wide">
+                  {getSiteDomain()}
+                </p>
               )}
-              <div className="bg-white border border-gray-300 py-0.5 px-3 text-center rounded-sm">
-                <p className="font-noto-bengali text-xs font-bold text-gray-900">
-                  বিস্তারিত{" "}
-                  <span style={{ color: getHighlightColor() }}>
-                    কমেন্টের লিংকে
-                  </span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
+                <p className="font-noto-bengali text-xs font-bold text-white">
+                  বিস্তারিত কমেন্টের লিংকে
                 </p>
               </div>
             </div>
@@ -802,7 +798,7 @@ export default function ClassicUrlCard({
         className={
           fullSize
             ? "w-[448px] max-w-[448px] mx-auto overflow-hidden shadow-xl relative"
-            : "w-full max-w-md mx-auto  overflow-hidden shadow-xl relative"
+            : "w-full max-w-md mx-auto overflow-hidden shadow-xl relative"
         }
         style={getBackgroundStyle()}
       >
@@ -812,9 +808,9 @@ export default function ClassicUrlCard({
           style={getPatternStyle()}
         />
 
-        <div className="px-6 pt-6 pb-4 relative z-10">
+        <div className="px-6 pt-5 pb-2 relative z-10">
           {/* Header - swappable positions for all elements */}
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-3">
             {/* Top Left Slot */}
             {renderElement(elementLayout.topLeft)}
 
@@ -824,7 +820,7 @@ export default function ClassicUrlCard({
 
           {/* Main image */}
           <div
-            className="bg-white rounded-tl-[70px] rounded-tr-lg rounded-bl-lg rounded-br-[70px] overflow-hidden mb-4 aspect-video"
+            className="bg-white rounded-tl-[70px] rounded-tr-lg rounded-bl-lg rounded-br-[70px] overflow-hidden mb-2 aspect-video"
             style={{
               border: `${frameBorderThickness}px solid ${frameBorderColor}`,
             }}
@@ -863,11 +859,11 @@ export default function ClassicUrlCard({
           {/* Title */}
           {visibilitySettings.showTitle && (
             <h2
-              className="text-white text-center leading-tight mb-2 px-2 py-1"
+              className={`text-white text-center leading-tight px-2 py-0.5 ${!visibilitySettings.showQrCode ? "mb-8" : "mb-2"}`}
               style={
                 {
                   fontFamily:
-                    fontStyles?.headline.fontFamily || "Noto Serif Bengali",
+                  fontStyles?.headline.fontFamily || "Noto Serif Bengali",
                   fontSize: fontStyles?.headline.fontSize || "24px",
                   fontWeight: fontStyles?.headline.fontWeight || "700",
                   color: fontStyles?.headline.color || "#FFFFFF",
@@ -902,9 +898,17 @@ export default function ClassicUrlCard({
           )}
 
           {/* Bottom section - swappable positions for all elements */}
-          <div className="flex items-center justify-between gap-4 mt-0">
+          <div className="flex items-center justify-between gap-4">
             {/* Bottom Left Slot */}
-            {renderElement(elementLayout.bottomLeft)}
+            {siteNameOnLeft ? (
+              <div className="flex items-center gap-1 text-white/90">
+                <p className="font-dm-sans text-[9px] font-medium tracking-wide">
+                  {getSiteDomain()}
+                </p>
+              </div>
+            ) : (
+              renderElement(elementLayout.bottomLeft)
+            )}
 
             {/* Bottom Right Slot */}
             <div className="ml-auto">

@@ -70,6 +70,9 @@ export default function Home() {
   const [background, setBackground] = useState<BackgroundOptions>({
     type: "solid",
     color: "#dc2626",
+    pattern: "p1",
+    patternOpacity: 0.3,
+    patternScale: 1.0,
   });
   const [frameBorderColor, setFrameBorderColor] = useState("#dc2626");
   const [frameBorderThickness, setFrameBorderThickness] = useState(0);
@@ -737,6 +740,9 @@ export default function Home() {
     setBackground({
       type: "solid",
       color: "#dc2626",
+      pattern: "p1",
+      patternOpacity: 0.3,
+      patternScale: 1.0,
     });
   };
 

@@ -9,7 +9,7 @@ import {
 import QRCode from "qrcode";
 import { useEffect, useState, useRef } from "react";
 import { getProxiedImageUrl } from "@/utils/imageProxy";
-import { Globe, EyeOff, RotateCcw, Upload } from "lucide-react";
+import { EyeOff, RotateCcw, Upload } from "lucide-react";
 import {
   DndContext,
   useDraggable,
@@ -240,7 +240,7 @@ export default function MinimalUrlCard({
     showWeek: true,
     showDate: true,
     showLogo: true,
-    showQrCode: true,
+    showQrCode: false,
     showTitle: true,
     showAdBanner: false,
   },
@@ -496,6 +496,11 @@ export default function MinimalUrlCard({
   };
 
   // Render element based on type
+  const siteNameOnLeft =
+    elementLayout.bottomLeft === "qrCode" &&
+    !visibilitySettings.showQrCode &&
+    !!(data.siteName || data.url);
+
   const renderElement = (
     elementType: "favicon" | "dateWeek" | "qrCode" | "cta",
   ) => {
@@ -620,13 +625,18 @@ export default function MinimalUrlCard({
             isDragMode={isDragMode}
             onClick={(e) => handleElementClick("cta", e)}
           >
-            <div className="bg-white border border-gray-300 py-0.5 px-3 text-center rounded-sm">
-              <p className="font-noto-bengali text-xs font-bold text-gray-900">
-                বিস্তারিত{" "}
-                <span style={{ color: getHighlightColor() }}>
-                  কমেন্টের লিংকে
-                </span>
-              </p>
+            <div className="flex flex-col items-end gap-1">
+              {!siteNameOnLeft && (data.siteName || data.url) && (
+                <p className="text-white/90 text-[9px] font-medium tracking-wide">
+                  {getSiteDomain()}
+                </p>
+              )}
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
+                <p className="font-noto-bengali text-xs font-bold text-white">
+                  বিস্তারিত কমেন্টের লিংকে
+                </p>
+              </div>
             </div>
           </DraggableSwappable>
         );
@@ -720,11 +730,18 @@ export default function MinimalUrlCard({
 
       case "cta":
         return (
-          <div className="bg-white border border-gray-300 py-0.5 px-3 text-center max-w-[230px] rounded-sm">
-            <p className="font-noto-bengali text-md font-bold text-gray-900">
-              বিস্তারিত{" "}
-              <span style={{ color: getHighlightColor() }}>কমেন্টের লিংকে</span>
-            </p>
+          <div className="flex flex-col items-start gap-1">
+            {(data.siteName || data.url) && (
+              <p className="text-white/90 text-[9px] font-medium tracking-wide">
+                {getSiteDomain()}
+              </p>
+            )}
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
+              <p className="font-noto-bengali text-xs font-bold text-white">
+                বিস্তারিত কমেন্টের লিংকে
+              </p>
+            </div>
           </div>
         );
 
@@ -915,22 +932,21 @@ export default function MinimalUrlCard({
             </h2>
           )}
 
-          {/* Footer Row - QR Code and Site Info */}
+          {/* Footer Row - QR Code and CTA */}
           <div className="flex justify-between items-end mt-0 gap-3">
             {/* Bottom Left Slot */}
-            {renderElement(elementLayout.bottomLeft)}
-
-            {/* Site Info - Right */}
-            <div className="flex-1 flex flex-col items-end gap-2">
-              {/* Site Name with Globe Icon */}
-              <div className="flex items-center gap-1">
-                <Globe className="w-4 h-4 text-white opacity-80" />
-                <span className="text-white text-[10px] font-inter opacity-90">
+            {siteNameOnLeft ? (
+              <div className="flex items-center gap-1 text-white/90">
+                <p className="font-dm-sans text-[9px] font-medium tracking-wide">
                   {getSiteDomain()}
-                </span>
+                </p>
               </div>
+            ) : (
+              renderElement(elementLayout.bottomLeft)
+            )}
 
-              {/* Bottom Right Slot */}
+            {/* Bottom Right Slot */}
+            <div className="ml-auto">
               {renderElement(elementLayout.bottomRight)}
             </div>
           </div>
