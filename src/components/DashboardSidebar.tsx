@@ -78,7 +78,7 @@ export default function DashboardSidebar({
         { id: "video", label: "Video Card", href: "/videocard", icon: <VideoIcon className="w-4 h-4" />, locked: isFreeUser },
         { id: "marketing", label: "Marketing Card", href: "/marketing", icon: <Megaphone className="w-4 h-4" />, locked: isFreeUser },
         { id: "realestate", label: "Real Estate Card", href: "/realestate", icon: <Home className="w-4 h-4" />, locked: isFreeUser },
-        { id: "thumbnail", label: "Thumbnail Card", href: "/thumbnail", icon: <ImageIcon className="w-4 h-4" />, locked: isFreeUser },
+        { id: "thumbnail", label: "NewsThumbnail", href: "/thumbnail", icon: <ImageIcon className="w-4 h-4" />, locked: isFreeUser },
       ],
     },
     {

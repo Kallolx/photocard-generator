@@ -129,7 +129,7 @@ export default function Navbar() {
         },
         {
           id: "thumbnail",
-          label: "Thumbnail Card",
+          label: "News Thumbnail",
           href: "/thumbnail",
           icon: <ImageIcon className="w-4 h-4" />,
           locked: isFreeUser,

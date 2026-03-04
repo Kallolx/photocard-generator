@@ -40,6 +40,16 @@ type Notification = CardNotification | UpdateNotification;
 
 const NOTIFICATIONS: Notification[] = [
   {
+    id: "card-thumbnail-v1",
+    type: "card",
+    badge: "New Tool",
+    title: "New Thumbnail Creator 🎉",
+    description:
+      "Design pro thumbnails with multi-image split layouts, drag-to-reorder, seam styling, logo upload & more. Try it now!",
+    thumbnail: "/images/yt.png",
+    link: "/thumbnail",
+  },
+  {
     id: "card-comment-split-v1",
     type: "card",
     badge: "New Card",
@@ -65,11 +75,10 @@ const NOTIFICATIONS: Notification[] = [
     badge: "Update",
     title: "What's new in March 2026 🎉",
     items: [
-      "Browse Newses from 🛜 RSS Feeds",
-      "Remix Newses & images With ai ✨",
+      "YouTube Thumbnail Creator 🖼️",
+      "Browse news from 🛜 RSS Feeds",
+      "Remix news & images with AI ✨",
       "AI content variations in Editor Toolbar",
-      "Fonts tab now has multiple fonts to select",
-      "Replaced CSS patterns with image patterns",
     ],
   },
 ];

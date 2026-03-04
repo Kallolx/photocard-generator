@@ -141,7 +141,7 @@ export default function Dashboard() {
     },
     {
       id: "thumbnail",
-      label: "Thumbnail Card",
+      label: "News Thumbnail",
       href: "/thumbnail",
       icon: <ImageIcon className="w-5 h-5" />,
       locked: isFreeUser,
