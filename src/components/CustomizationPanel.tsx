@@ -7,6 +7,9 @@ import {
   VisibilitySettings,
   CommentCardVisibilitySettings,
   PollCardVisibilitySettings,
+  FooterItem,
+  FooterItemType,
+  WatermarkSettings,
 } from "@/types";
 import {
   Plus,
@@ -50,6 +53,14 @@ interface CustomizationPanelProps {
   ) => void;
   cardType?: "url" | "custom" | "comment" | "poll";
   contentLanguage?: "bangla" | "english";
+  footerItems?: FooterItem[];
+  onFooterItemsChange?: (items: FooterItem[]) => void;
+  footerOpacity?: number;
+  onFooterOpacityChange?: (v: number) => void;
+  footerIconColor?: "white" | "colored";
+  onFooterIconColorChange?: (v: "white" | "colored") => void;
+  watermark?: WatermarkSettings;
+  onWatermarkChange?: (w: WatermarkSettings) => void;
 }
 
 const SOLID_COLORS = [
@@ -100,6 +111,119 @@ const ENGLISH_FONTS = [
   { id: "Merriweather", name: "Merriweather" },
 ];
 
+const FOOTER_PLATFORMS: { id: FooterItemType; icon: React.ReactNode }[] = [
+  { id: "facebook", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg> },
+  { id: "instagram", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg> },
+  { id: "youtube", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg> },
+  { id: "twitter", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg> },
+  { id: "tiktok", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.27 8.27 0 0 0 4.84 1.55V6.67a4.85 4.85 0 0 1-1.07.02z" /></svg> },
+  { id: "website", icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg> },
+  { id: "text", icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> },
+];
+
+function FooterItemsList({ footerItems, onFooterItemsChange }: { footerItems: FooterItem[]; onFooterItemsChange?: (items: FooterItem[]) => void }) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  return (
+    <div className="space-y-2">
+      {footerItems.map((item) =>
+        editingId === item.id ? (
+          <FooterItemForm
+            key={item.id}
+            initialType={item.type}
+            initialValue={item.value}
+            onAdd={(updated) => {
+              onFooterItemsChange?.(footerItems.map((i) => (i.id === item.id ? { ...updated, id: item.id } : i)));
+              setEditingId(null);
+            }}
+            onCancel={() => setEditingId(null)}
+          />
+        ) : (
+          <div key={item.id} className="flex items-center gap-2 border border-[#d4c4b0] bg-white px-3 py-2">
+            <span className="text-lg leading-none shrink-0">
+              {item.type === "facebook" && (<svg className="w-4 h-4 text-[#1877f2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>)}
+              {item.type === "instagram" && (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24"><defs><radialGradient id="ig1" cx="30%" cy="107%" r="1.5"><stop offset="0%" stopColor="#ffd676" /><stop offset="10%" stopColor="#f9a12e" /><stop offset="50%" stopColor="#e1306c" /><stop offset="90%" stopColor="#833ab4" /></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#ig1)" /><rect x="6.5" y="6.5" width="11" height="11" rx="3" stroke="#fff" strokeWidth="1.5" /><circle cx="12" cy="12" r="2.8" stroke="#fff" strokeWidth="1.5" /><circle cx="16.3" cy="7.7" r="0.8" fill="#fff" /></svg>)}
+              {item.type === "youtube" && (<svg className="w-4 h-4 text-[#ff0000]" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>)}
+              {item.type === "twitter" && (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>)}
+              {item.type === "tiktok" && (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.27 8.27 0 0 0 4.84 1.55V6.67a4.85 4.85 0 0 1-1.07.02z" /></svg>)}
+              {item.type === "website" && (<svg className="w-4 h-4 text-[#8b6834]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>)}
+              {item.type === "text" && (<span className="text-xs font-bold text-[#8b7055]">T</span>)}
+            </span>
+            <span className="flex-1 text-xs font-medium text-[#2c2419] truncate">{item.value}</span>
+            <button
+              onClick={() => setEditingId(item.id)}
+              className="shrink-0 text-[#8b6834] hover:text-[#6b4f28] transition-colors"
+              title="Edit"
+            >
+              <Edit2 className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => onFooterItemsChange?.(footerItems.filter((i) => i.id !== item.id))}
+              className="shrink-0 text-red-400 hover:text-red-600 transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )
+      )}
+    </div>
+  );
+}
+
+function FooterItemForm({ onAdd, onCancel, initialType, initialValue }: { onAdd: (item: FooterItem) => void; onCancel?: () => void; initialType?: FooterItemType; initialValue?: string }) {
+  const [type, setType] = useState<FooterItemType>(initialType ?? "facebook");
+  const [value, setValue] = useState(initialValue ?? "");
+
+  const placeholder =
+    type === "website" ? "www.example.com" : type === "text" ? "Any text..." : "@username";
+
+  return (
+    <div className="border border-dashed border-[#d4c4b0] p-3 space-y-2">
+      <p className="text-xs font-semibold text-[#2c2419]">Add Item</p>
+      {/* Platform icon buttons */}
+      <div className="flex gap-1.5 flex-wrap">
+        {FOOTER_PLATFORMS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => setType(p.id)}
+            title={p.id.charAt(0).toUpperCase() + p.id.slice(1)}
+            className={`p-2 w-9 h-9 flex items-center justify-center transition-all border ${
+              type === p.id
+                ? "bg-[#8b6834] text-white border-[#8b6834]"
+                : "bg-white text-[#5d4e37] border-[#d4c4b0] hover:bg-[#f5f0e8]"
+            }`}
+          >
+            {p.icon}
+          </button>
+        ))}
+      </div>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        placeholder={placeholder}
+        className="w-full text-xs border border-[#d4c4b0] bg-white text-[#2c2419] px-2 py-2 outline-none"
+      />
+      <button
+        onClick={() => {
+          if (!value.trim()) return;
+          onAdd({ id: Date.now().toString(), type, value: value.trim() });
+          setValue("");
+          onCancel?.();
+        }}
+        className="w-full flex items-center justify-center gap-1.5 py-2 bg-[#8b6834] text-white text-xs font-bold hover:bg-[#6b4f28] transition-colors"
+      >
+        <Plus className="w-3.5 h-3.5" /> {onCancel ? "Save" : "Add"}
+      </button>
+      {onCancel && (
+        <button onClick={onCancel} className="w-full py-1.5 text-xs text-[#8b7055] hover:text-[#2c2419] transition-colors">
+          Cancel
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function CustomizationPanel({
   background,
   onBackgroundChange,
@@ -120,6 +244,14 @@ export default function CustomizationPanel({
   onVisibilityChange,
   cardType = "url",
   contentLanguage = "bangla",
+  footerItems = [],
+  onFooterItemsChange,
+  footerOpacity = 100,
+  onFooterOpacityChange,
+  footerIconColor = "white",
+  onFooterIconColorChange,
+  watermark,
+  onWatermarkChange,
 }: CustomizationPanelProps) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("Theme");
@@ -219,12 +351,6 @@ export default function CustomizationPanel({
       thumbnail: "/themes/cus-6.png",
     },
     {
-      id: "minimal",
-      name: "Minimal",
-      locked: isFreeUser,
-      thumbnail: "/themes/cus-5.png",
-    },
-    {
       id: "modern",
       name: "Modern",
       locked: isFreeUser, // Lock Modern theme for Free users
@@ -235,6 +361,12 @@ export default function CustomizationPanel({
       name: "Modern 2",
       locked: isFreeUser, // Lock Modern 2 theme for Free users
       thumbnail: "/themes/cus-4.png",
+    },
+        {
+      id: "minimal",
+      name: "Minimal",
+      locked: isFreeUser,
+      thumbnail: "/themes/cus-5.png",
     },
     {
       id: "vertical",
@@ -1236,6 +1368,126 @@ export default function CustomizationPanel({
                     </div>
                   </>
                 )}
+              </div>
+            )}
+            {/* ── Brand Watermark ── */}
+            {cardType === "url" && (
+              <div className="space-y-4 border-t border-[#e8dcc8] pt-5">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-semibold text-[#2c2419] font-inter">Brand Watermark</h3>
+                  <button
+                    onClick={() => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0, enabled: true }), enabled: !(watermark?.enabled ?? true) })}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                      (watermark?.enabled ?? true) ? "bg-[#8b6834]" : "bg-[#d4c4b0]"
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                        (watermark?.enabled ?? true) ? "left-5" : "left-0.5"
+                      }`}
+                    />
+                  </button>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-[#5d4e37] font-inter">Brand Name</label>
+                  <input
+                    type="text"
+                    value={watermark?.text || ""}
+                    onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), text: e.target.value })}
+                    placeholder="Your brand name..."
+                    className="w-full px-3 py-2 text-sm border border-[#d4c4b0] bg-[#faf8f5] text-[#2c2419] font-inter focus:outline-none focus:border-[#8b6834]"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs text-[#5d4e37] font-inter">Opacity</label>
+                    <span className="text-xs font-bold text-[#8b6834]">{Math.round((watermark?.opacity ?? 0.30) * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="100"
+                    step="10"
+                    value={Math.round((watermark?.opacity ?? 0.30) * 100)}
+                    onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), opacity: Number(e.target.value) / 100 })}
+                    className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((Math.round((watermark?.opacity ?? 0.30) * 100) - 10) / 90) * 100}%, #e8dcc8 ${((Math.round((watermark?.opacity ?? 0.30) * 100) - 10) / 90) * 100}%, #e8dcc8 100%)` }}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs text-[#5d4e37] font-inter">Text Size</label>
+                    <span className="text-xs font-bold text-[#8b6834]">{watermark?.fontSize ?? 48}px</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="20"
+                    max="120"
+                    step="10"
+                    value={watermark?.fontSize ?? 48}
+                    onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), fontSize: Number(e.target.value) })}
+                    className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((watermark?.fontSize ?? 48) - 20) / 100) * 100}%, #e8dcc8 ${(((watermark?.fontSize ?? 48) - 20) / 100) * 100}%, #e8dcc8 100%)` }}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs text-[#5d4e37] font-inter">Angle</label>
+                    <span className="text-xs font-bold text-[#8b6834]">{watermark?.rotation ?? 0}°</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-90"
+                    max="90"
+                    step="10"
+                    value={watermark?.rotation ?? 0}
+                    onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), rotation: Number(e.target.value) })}
+                    className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((watermark?.rotation ?? 0) + 90) / 180) * 100}%, #e8dcc8 ${(((watermark?.rotation ?? 0) + 90) / 180) * 100}%, #e8dcc8 100%)` }}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs text-[#5d4e37] font-inter">Move Left / Right</label>
+                      <span className="text-xs font-bold text-[#8b6834]">{(watermark?.x ?? 0) > 0 ? "+" : ""}{watermark?.x ?? 0}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="-200"
+                      max="200"
+                      step="10"
+                      value={watermark?.x ?? 0}
+                      onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), x: Number(e.target.value) })}
+                      className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                      style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((watermark?.x ?? 0) + 200) / 4}%, #e8dcc8 ${((watermark?.x ?? 0) + 200) / 4}%, #e8dcc8 100%)` }}
+                    />
+                    <div className="flex justify-between text-[10px] text-[#9d8c7a] font-inter">
+                      <span>← Left</span>
+                      <span>Right →</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs text-[#5d4e37] font-inter">Move Up / Down</label>
+                      <span className="text-xs font-bold text-[#8b6834]">{watermark?.y ?? 100}px</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="500"
+                      step="10"
+                      value={watermark?.y ?? 100}
+                      onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), y: Number(e.target.value) })}
+                      className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                      style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((watermark?.y ?? 100) / 500) * 100}%, #e8dcc8 ${((watermark?.y ?? 100) / 500) * 100}%, #e8dcc8 100%)` }}
+                    />
+                    <div className="flex justify-between text-[10px] text-[#9d8c7a] font-inter">
+                      <span>↓ Bottom</span>
+                      <span>Top ↑</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -2718,93 +2970,154 @@ export default function CustomizationPanel({
 
         {/* Footer Tab */}
         {activeTab === "Footer" && (
-          <div className="space-y-6">
-            {/* Font Size */}
-            {fontStyles?.footer && (
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-[#2c2419] font-inter">
-                    Font Size
-                  </label>
-                  <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
-                    {fontStyles.footer.fontSize}
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min="10"
-                  max="24"
-                  value={parseInt(fontStyles.footer.fontSize)}
-                  onChange={(e) =>
-                    onFontStylesChange?.({
-                      ...fontStyles,
-                      footer: {
-                        ...fontStyles.footer,
-                        fontSize: `${e.target.value}px`,
-                      },
+          <div className="space-y-5">
+
+            {/* ── Show / Hide footer toggle (URL cards only) ── */}
+            {cardType === "url" && visibilitySettings && "showFooter" in visibilitySettings && (
+              <div className="flex items-center justify-between py-2 border-b border-[#e8dcc8]">
+                <span className="text-sm font-semibold text-[#2c2419] font-inter">Show Footer</span>
+                <button
+                  onClick={() =>
+                    onVisibilityChange?.({
+                      ...visibilitySettings,
+                      showFooter: !(visibilitySettings as VisibilitySettings).showFooter,
                     })
                   }
-                  className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                  style={{
-                    background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${
-                      ((parseInt(fontStyles.footer.fontSize) - 10) / 14) * 100
-                    }%, #e8dcc8 ${
-                      ((parseInt(fontStyles.footer.fontSize) - 10) / 14) * 100
-                    }%, #e8dcc8 100%)`,
-                  }}
-                />
+                  className={`relative w-11 h-6 rounded-full transition-colors ${
+                    (visibilitySettings as VisibilitySettings).showFooter ? "bg-[#8b6834]" : "bg-[#d4c4b0]"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                      (visibilitySettings as VisibilitySettings).showFooter ? "left-5" : "left-0.5"
+                    }`}
+                  />
+                </button>
               </div>
             )}
 
-            {/* Font Color */}
+            {/* ── Icon color (URL cards only) ── */}
+            {cardType === "url" && (
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-[#2c2419] font-inter">Icon Style</label>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onFooterIconColorChange?.("white")}
+                    className={`flex-1 py-2 text-xs font-semibold border transition-colors ${
+                      footerIconColor === "white"
+                        ? "bg-[#8b6834] text-white border-[#8b6834]"
+                        : "bg-white text-[#5d4e37] border-[#d4c4b0] hover:bg-[#f5f0e8]"
+                    }`}
+                  >
+                    White
+                  </button>
+                  <button
+                    onClick={() => onFooterIconColorChange?.("colored")}
+                    className={`flex-1 py-2 text-xs font-semibold border transition-colors ${
+                      footerIconColor === "colored"
+                        ? "bg-[#8b6834] text-white border-[#8b6834]"
+                        : "bg-white text-[#5d4e37] border-[#d4c4b0] hover:bg-[#f5f0e8]"
+                    }`}
+                  >
+                    Colored
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── Footer items (URL cards only) ── */}
+            {cardType === "url" && (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold text-[#2c2419] font-inter">Footer Items</p>
+                  <span className="text-xs text-[#8b7055]">{footerItems.length}/3</span>
+                </div>
+
+                {/* Existing items */}
+                {footerItems.length > 0 && (
+                  <FooterItemsList
+                    footerItems={footerItems}
+                    onFooterItemsChange={onFooterItemsChange}
+                  />
+                )}
+
+                {/* Add new item */}
+                {footerItems.length < 3 && <FooterItemForm onAdd={(item) => onFooterItemsChange?.([...footerItems, item])} />}
+
+                {footerItems.length === 0 && (
+                  <p className="text-xs text-[#8b7055] font-inter text-center py-2">
+                    No items yet. Add up to 3 social, website, or text entries.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* ── Font customisation ── */}
             {fontStyles?.footer && (
-              <div>
-                <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
-                  Text Color
-                </label>
-                <div className="flex gap-3">
+              <div className="space-y-4 border-t border-[#e8dcc8] pt-4">
+                <p className="text-sm font-semibold text-[#2c2419] font-inter">Text Style</p>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-medium text-[#2c2419] font-inter">Font Size</label>
+                    <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
+                      {fontStyles.footer.fontSize}
+                    </span>
+                  </div>
                   <input
-                    type="color"
-                    value={fontStyles.footer.color}
+                    type="range"
+                    min="10"
+                    max="24"
+                    value={parseInt(fontStyles.footer.fontSize)}
                     onChange={(e) =>
                       onFontStylesChange?.({
                         ...fontStyles,
-                        footer: {
-                          ...fontStyles.footer,
-                          color: e.target.value,
-                        },
+                        footer: { ...fontStyles.footer, fontSize: `${e.target.value}px` },
                       })
                     }
-                    className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
+                    className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${
+                        ((parseInt(fontStyles.footer.fontSize) - 10) / 14) * 100
+                      }%, #e8dcc8 ${
+                        ((parseInt(fontStyles.footer.fontSize) - 10) / 14) * 100
+                      }%, #e8dcc8 100%)`,
+                    }}
                   />
-                  <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">Text Color</label>
+                  <div className="flex gap-3">
                     <input
-                      type="text"
-                      value={fontStyles.footer.color.toUpperCase()}
-                      onChange={(e) => {
-                        let value = e.target.value.toUpperCase();
-                        if (!value.startsWith("#")) {
-                          value = "#" + value.replace(/[^0-9A-F]/g, "");
-                        } else {
-                          value =
-                            "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
-                        }
-                        value = value.slice(0, 7);
-
-                        if (value.length === 7) {
-                          onFontStylesChange?.({
-                            ...fontStyles,
-                            footer: {
-                              ...fontStyles.footer,
-                              color: value,
-                            },
-                          });
-                        }
-                      }}
-                      placeholder="#000000"
-                      className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
-                      maxLength={7}
+                      type="color"
+                      value={fontStyles.footer.color}
+                      onChange={(e) =>
+                        onFontStylesChange?.({
+                          ...fontStyles,
+                          footer: { ...fontStyles.footer, color: e.target.value },
+                        })
+                      }
+                      className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
                     />
+                    <div className="flex-1 bg-white border-2 border-[#d4c4b0] px-4 py-3 flex items-center">
+                      <input
+                        type="text"
+                        value={fontStyles.footer.color.toUpperCase()}
+                        onChange={(e) => {
+                          let value = e.target.value.toUpperCase();
+                          if (!value.startsWith("#")) value = "#" + value.replace(/[^0-9A-F]/g, "");
+                          else value = "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
+                          value = value.slice(0, 7);
+                          if (value.length === 7)
+                            onFontStylesChange?.({
+                              ...fontStyles,
+                              footer: { ...fontStyles.footer, color: value },
+                            });
+                        }}
+                        placeholder="#000000"
+                        className="w-full text-sm font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                        maxLength={7}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

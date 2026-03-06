@@ -18,6 +18,8 @@ import {
   UrlData,
   CardFontStyles,
   VisibilitySettings,
+  FooterItem,
+  WatermarkSettings,
 } from "@/types";
 import { cardAPI } from "@/lib/api";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -172,9 +174,9 @@ export default function Home() {
       letterSpacing: "0px",
     },
     footer: {
-      fontFamily: "Noto Serif Bengali",
+      fontFamily: "DM Sans",
       fontSize: "12px",
-      fontWeight: "500",
+      fontWeight: "600",
       color: "#FFFFFF",
       textAlign: "left",
       letterSpacing: "0px",
@@ -190,7 +192,18 @@ export default function Home() {
       showQrCode: true,
       showTitle: true,
       showAdBanner: true,
+      showFooter: false,
     });
+
+  const [footerItems, setFooterItems] = useState<FooterItem[]>([
+    { id: "default-fb", type: "facebook", value: "socialcard" },
+    { id: "default-ig", type: "instagram", value: "socialcard" },
+    { id: "default-web", type: "website", value: "www.socialcard.com" },
+  ]);
+
+  const [footerOpacity, setFooterOpacity] = useState(100);
+  const [footerIconColor, setFooterIconColor] = useState<"white" | "colored">("white");
+  const [watermark, setWatermark] = useState<WatermarkSettings>({ text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0, enabled: true });
 
   // Editing state
   const [currentLogo, setCurrentLogo] = useState<string>("");
@@ -535,6 +548,7 @@ export default function Home() {
       showQrCode: true,
       showTitle: true,
       showAdBanner: true,
+      showFooter: false,
     });
 
     // Reset font styles based on current theme
@@ -565,9 +579,9 @@ export default function Home() {
           letterSpacing: "0px",
         },
         footer: {
-          fontFamily: "Noto Serif Bengali",
+          fontFamily: "DM Sans",
           fontSize: "12px",
-          fontWeight: "500",
+          fontWeight: "600",
           color: "#FFFFFF",
           textAlign: "left",
           letterSpacing: "0px",
@@ -600,9 +614,9 @@ export default function Home() {
           letterSpacing: "0px",
         },
         footer: {
-          fontFamily: "Noto Serif Bengali",
+          fontFamily: "DM Sans",
           fontSize: "12px",
-          fontWeight: "500",
+          fontWeight: "600",
           color: "#FFFFFF",
           textAlign: "left",
           letterSpacing: "0px",
@@ -635,9 +649,9 @@ export default function Home() {
           letterSpacing: "0px",
         },
         footer: {
-          fontFamily: "Noto Serif Bengali",
+          fontFamily: "DM Sans",
           fontSize: "12px",
-          fontWeight: "500",
+          fontWeight: "600",
           color: "#FFFFFF",
           textAlign: "left",
           letterSpacing: "0px",
@@ -670,9 +684,9 @@ export default function Home() {
           letterSpacing: "0px",
         },
         footer: {
-          fontFamily: "Noto Serif Bengali",
+          fontFamily: "DM Sans",
           fontSize: "12px",
-          fontWeight: "500",
+          fontWeight: "600",
           color: "#FFFFFF",
           textAlign: "left",
           letterSpacing: "0px",
@@ -706,9 +720,9 @@ export default function Home() {
           letterSpacing: "0px",
         },
         footer: {
-          fontFamily: "Noto Serif Bengali",
+          fontFamily: "DM Sans",
           fontSize: "12px",
-          fontWeight: "500",
+          fontWeight: "600",
           color: "#FFFFFF",
           textAlign: "left",
           letterSpacing: "0px",
@@ -776,6 +790,10 @@ export default function Home() {
       adBannerPosition,
       fontStyles,
       visibilitySettings,
+      footerItems,
+      footerOpacity,
+      footerIconColor,
+      watermark,
       isLogoFavicon,
       isDragMode,
       onVisibilityChange: setVisibilitySettings,
@@ -1346,6 +1364,14 @@ export default function Home() {
                 onVisibilityChange={(newSettings) =>
                   setVisibilitySettings(newSettings as VisibilitySettings)
                 }
+                footerItems={footerItems}
+                onFooterItemsChange={setFooterItems}
+                footerOpacity={footerOpacity}
+                onFooterOpacityChange={setFooterOpacity}
+                footerIconColor={footerIconColor}
+                onFooterIconColorChange={setFooterIconColor}
+                watermark={watermark}
+                onWatermarkChange={setWatermark}
                 contentLanguage={
                   photocardData?.title && !isBengali(photocardData.title)
                     ? "english"

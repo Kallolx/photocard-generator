@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--dm-sans",
+});
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import FloatingSupport from "@/components/FloatingSupport";
@@ -20,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={dmSans.variable}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

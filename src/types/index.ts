@@ -70,9 +70,27 @@ export interface CardFontStyles {
   pollOptions?: FontStyles;
 }
 
+export type FooterItemType = "facebook" | "instagram" | "youtube" | "twitter" | "tiktok" | "website" | "text";
+
+export interface FooterItem {
+  id: string;
+  type: FooterItemType;
+  value: string; // username, URL, or plain text
+}
+
 export interface FooterOverlaySettings {
   enabled: boolean;
   opacity: number;
+}
+
+export interface WatermarkSettings {
+  text: string;
+  opacity: number;
+  x: number;
+  y: number;
+  fontSize?: number;
+  rotation?: number;
+  enabled?: boolean;
 }
 
 export interface VisibilitySettings {
@@ -82,6 +100,7 @@ export interface VisibilitySettings {
   showQrCode: boolean;
   showTitle: boolean;
   showAdBanner: boolean;
+  showFooter?: boolean; // optional - defaults to true when not set
 }
 
 export interface CommentCardVisibilitySettings {
