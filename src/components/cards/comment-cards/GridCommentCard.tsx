@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import {
   PhotocardData,
   BackgroundOptions,
@@ -16,6 +17,7 @@ interface GridCommentCardProps {
   fontStyles?: CardFontStyles;
   visibilitySettings?: Partial<VisibilitySettings>;
   onLogoUpload?: (file: File) => void;
+  imagePosition?: { x: number; y: number; scale: number };
 }
 
 export default function GridCommentCard({
@@ -24,6 +26,7 @@ export default function GridCommentCard({
   id = "photocard",
   fontStyles,
   visibilitySettings,
+  imagePosition,
 }: GridCommentCardProps) {
   // Background: default white, but respect solid/gradient overrides
   const getBackgroundStyle = (): React.CSSProperties => {
@@ -61,6 +64,21 @@ export default function GridCommentCard({
       : background?.color && background.color !== "#ffffff"
         ? background.color
         : "#2563eb";
+
+  const commentContainerRef = useRef<HTMLDivElement>(null);
+  const commentTextRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    const container = commentContainerRef.current;
+    const el = commentTextRef.current;
+    if (!container || !el) return;
+    const base = parseFloat(commentFontSize);
+    let size = base;
+    el.style.fontSize = `${size}px`;
+    while (el.scrollHeight > container.clientHeight && size > 10) {
+      size -= 0.5;
+      el.style.fontSize = `${size}px`;
+    }
+  }, [data.commentText, commentFontSize]);
 
   return (
     <div
@@ -131,24 +149,27 @@ export default function GridCommentCard({
           </svg>
 
           {/* Comment text */}
-          <p
-            style={{
-              fontFamily: commentFontFamily,
-              fontSize: commentFontSize,
-              fontWeight: commentFontWeight,
-              color: commentColor,
-              lineHeight: 1.5,
-              wordBreak: "break-word",
-              overflowWrap: "break-word",
-              textAlign: "left",
-            }}
-          >
-            <span style={{ color: accentColor, fontWeight: 800 }}>“</span>
-            {data.commentText && data.commentText.trim()
-              ? data.commentText
-              : "এই একটি নমুনা মন্তব্য যা দেখায় ফটোকার্ড কেমন দেখাবে"}
-            <span style={{ color: accentColor, fontWeight: 800 }}>”</span>
-          </p>
+          <div ref={commentContainerRef} style={{ maxHeight: "210px", overflow: "hidden" }}>
+            <p
+              ref={commentTextRef}
+              style={{
+                fontFamily: commentFontFamily,
+                fontSize: commentFontSize,
+                fontWeight: commentFontWeight,
+                color: commentColor,
+                lineHeight: 1.5,
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
+                textAlign: "left",
+              }}
+            >
+              <span style={{ color: accentColor, fontWeight: 800 }}>"</span>
+              {data.commentText && data.commentText.trim()
+                ? data.commentText
+                : "এই একটি নমুনা মন্তব্য যা দেখায় ফটোকার্ড কেমন দেখাবে"}
+              <span style={{ color: accentColor, fontWeight: 800 }}>"</span>
+            </p>
+          </div>
 
           {/* Divider + person name */}
           <div
@@ -222,7 +243,7 @@ export default function GridCommentCard({
       {/* Person image — bottom right */}
       <div
         className="absolute pointer-events-none"
-        style={{ bottom: 0, right: 0, width: "240px", height: "420px" }}
+        style={{ bottom: 0, right: 0, width: "240px", height: "420px", overflow: "hidden" }}
       >
         <img
           src={
@@ -237,6 +258,8 @@ export default function GridCommentCard({
             objectFit: "contain",
             objectPosition: "bottom center",
             display: "block",
+            transform: `translate(${imagePosition?.x ?? 0}px, ${imagePosition?.y ?? 0}px) scale(${(imagePosition?.scale ?? 100) / 100})`,
+            transformOrigin: "bottom center",
           }}
         />
       </div>

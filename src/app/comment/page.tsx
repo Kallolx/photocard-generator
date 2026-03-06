@@ -13,7 +13,7 @@ import {
   CardFontStyles,
   CommentCardVisibilitySettings,
 } from "@/types";
-import { Upload, Edit, Sparkles, Loader2 } from "lucide-react";
+import { Upload, Edit, Sparkles, Loader2, RotateCcw, MoveHorizontal, MoveVertical, Maximize2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "@/components/UpgradeModal";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -35,9 +35,11 @@ export default function CommentPage() {
   const [isDesktop, setIsDesktop] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [contentExpanded, setContentExpanded] = useState(true);
+  const [imageAdjustExpanded, setImageAdjustExpanded] = useState(true);
   const [cardStyle, setCardStyle] = useState<"classic" | "grid" | "split">("classic");
   const [isAiEnhancing, setIsAiEnhancing] = useState(false);
   const [aiError, setAiError] = useState("");
+  const [imagePosition, setImagePosition] = useState<{ x: number; y: number; scale: number }>({ x: 0, y: 0, scale: 100 });
   const [visibilitySettings, setVisibilitySettings] = useState<CommentCardVisibilitySettings>({
     showLogo: true,
     showDate: false,
@@ -188,6 +190,7 @@ export default function CommentPage() {
         fullSize={isFullSize}
         fontStyles={fontStyles}
         visibilitySettings={visibilitySettings}
+        imagePosition={imagePosition}
       />
     ) : cardStyle === "split" ? (
       <SplitCommentCard
@@ -196,6 +199,7 @@ export default function CommentPage() {
         fullSize={isFullSize}
         fontStyles={fontStyles}
         visibilitySettings={visibilitySettings}
+        imagePosition={imagePosition}
       />
     ) : (
       <ClassicCommentCard
@@ -205,6 +209,7 @@ export default function CommentPage() {
         fullSize={isFullSize}
         fontStyles={fontStyles}
         visibilitySettings={visibilitySettings}
+        imagePosition={imagePosition}
       />
     );
 
@@ -288,6 +293,94 @@ export default function CommentPage() {
                 )}
                 </div>
               </div>
+              {/* Image position controls — only when image is uploaded */}
+              {personImage && (
+                <div className="mt-3 border-2 border-[#d4c4b0] bg-[#e8dcc8]">
+                  {/* Header — matches Content section */}
+                  <button
+                    onClick={() => setImageAdjustExpanded(!imageAdjustExpanded)}
+                    className="w-full flex items-center justify-between px-2 py-1 hover:bg-[#d4c4b0] transition-colors"
+                  >
+                    <h3 className="text-sm font-lora font-bold text-[#2c2419]">Image Adjust</h3>
+                    <svg
+                      className={`w-5 h-5 text-[#5d4e37] transition-transform ${imageAdjustExpanded ? "rotate-180" : ""}`}
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {imageAdjustExpanded && (
+                    <div className="px-2 pb-3 pt-1 space-y-4">
+                      {/* Horizontal */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <MoveHorizontal className="w-3.5 h-3.5 text-[#8b6834]" />
+                            <span className="text-xs font-inter font-semibold text-[#5d4e37]">Horizontal</span>
+                          </div>
+                          <span className="text-xs font-inter font-bold text-[#2c2419] bg-[#faf8f5] border border-[#d4c4b0] px-2 py-0.5 min-w-[44px] text-center">
+                            {imagePosition.x > 0 ? "+" : ""}{imagePosition.x}
+                          </span>
+                        </div>
+                        <input
+                          type="range" min="-150" max="150" value={imagePosition.x}
+                          onChange={(e) => setImagePosition((p) => ({ ...p, x: Number(e.target.value) }))}
+                          className="w-full h-1.5 appearance-none cursor-pointer"
+                          style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((imagePosition.x + 150) / 300) * 100}%, #d4c4b0 ${((imagePosition.x + 150) / 300) * 100}%, #d4c4b0 100%)` }}
+                        />
+                      </div>
+
+                      {/* Vertical */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <MoveVertical className="w-3.5 h-3.5 text-[#8b6834]" />
+                            <span className="text-xs font-inter font-semibold text-[#5d4e37]">Vertical</span>
+                          </div>
+                          <span className="text-xs font-inter font-bold text-[#2c2419] bg-[#faf8f5] border border-[#d4c4b0] px-2 py-0.5 min-w-[44px] text-center">
+                            {imagePosition.y > 0 ? "+" : ""}{imagePosition.y}
+                          </span>
+                        </div>
+                        <input
+                          type="range" min="-150" max="150" value={imagePosition.y}
+                          onChange={(e) => setImagePosition((p) => ({ ...p, y: Number(e.target.value) }))}
+                          className="w-full h-1.5 appearance-none cursor-pointer"
+                          style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((imagePosition.y + 150) / 300) * 100}%, #d4c4b0 ${((imagePosition.y + 150) / 300) * 100}%, #d4c4b0 100%)` }}
+                        />
+                      </div>
+
+                      {/* Scale */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Maximize2 className="w-3.5 h-3.5 text-[#8b6834]" />
+                            <span className="text-xs font-inter font-semibold text-[#5d4e37]">Scale</span>
+                          </div>
+                          <span className="text-xs font-inter font-bold text-[#2c2419] bg-[#faf8f5] border border-[#d4c4b0] px-2 py-0.5 min-w-[44px] text-center">
+                            {imagePosition.scale}%
+                          </span>
+                        </div>
+                        <input
+                          type="range" min="30" max="200" value={imagePosition.scale}
+                          onChange={(e) => setImagePosition((p) => ({ ...p, scale: Number(e.target.value) }))}
+                          className="w-full h-1.5 appearance-none cursor-pointer"
+                          style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((imagePosition.scale - 30) / 170) * 100}%, #d4c4b0 ${((imagePosition.scale - 30) / 170) * 100}%, #d4c4b0 100%)` }}
+                        />
+                      </div>
+
+                      {/* Reset */}
+                      <button
+                        onClick={() => setImagePosition({ x: 0, y: 0, scale: 100 })}
+                        className="flex items-center gap-1.5 w-full justify-center py-1.5 border-2 border-dashed border-[#d4c4b0] text-xs font-inter font-semibold text-[#5d4e37] hover:border-[#8b6834] hover:text-[#8b6834] transition-colors"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        Reset Position
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Content */}

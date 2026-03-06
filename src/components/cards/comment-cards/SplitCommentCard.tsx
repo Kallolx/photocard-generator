@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import {
   PhotocardData,
   CardFontStyles,
@@ -15,6 +16,7 @@ interface SplitCommentCardProps {
   fontStyles?: CardFontStyles;
   visibilitySettings?: Partial<CommentCardVisibilitySettings>;
   background?: BackgroundOptions;
+  imagePosition?: { x: number; y: number; scale: number };
 }
 
 // Fixed two-tone palette — not controlled by BackgroundOptions
@@ -27,6 +29,7 @@ export default function SplitCommentCard({
   fontStyles,
   visibilitySettings,
   background,
+  imagePosition,
 }: SplitCommentCardProps) {
 
   // Comment text styles
@@ -49,6 +52,21 @@ export default function SplitCommentCard({
   const nameScaledFontSize = `${parseFloat(nameFontSize) * nameSvgScale}px`;
 
   const dotOpacity = background?.patternOpacity ?? 0.08;
+
+  const commentContainerRef = useRef<HTMLDivElement>(null);
+  const commentTextRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    const container = commentContainerRef.current;
+    const el = commentTextRef.current;
+    if (!container || !el) return;
+    const base = parseFloat(commentFontSize);
+    let size = base;
+    el.style.fontSize = `${size}px`;
+    while (el.scrollHeight > container.clientHeight && size > 10) {
+      size -= 0.5;
+      el.style.fontSize = `${size}px`;
+    }
+  }, [data.commentText, commentFontSize]);
 
   return (
     <div
@@ -129,7 +147,7 @@ export default function SplitCommentCard({
       {/* ── Person image — pushed further right ── */}
       <div
         className="absolute pointer-events-none z-10"
-        style={{ bottom: 0, right: "-20px", width: "295px", height: "450px" }}
+        style={{ bottom: 0, right: "-20px", width: "295px", height: "450px", overflow: "hidden" }}
       >
         <img
           src={data.image ? getProxiedImageUrl(data.image) : "/images/person-placeholder.png"}
@@ -140,6 +158,8 @@ export default function SplitCommentCard({
             objectFit: "contain",
             objectPosition: "bottom right",
             display: "block",
+            transform: `translate(${imagePosition?.x ?? 0}px, ${imagePosition?.y ?? 0}px) scale(${(imagePosition?.scale ?? 100) / 100})`,
+            transformOrigin: "bottom center",
           }}
         />
       </div>
@@ -163,8 +183,9 @@ export default function SplitCommentCard({
         {/* Opening quote mark SVG removed — quotes are inline in text */}
 
         {/* Comment text */}
-        <div style={{ maxWidth: "220px" }}>
+        <div ref={commentContainerRef} style={{ maxWidth: "220px", height: "240px", overflow: "hidden" }}>
           <p
+            ref={commentTextRef}
             style={{
               fontFamily: commentFontFamily,
               fontSize: commentFontSize,

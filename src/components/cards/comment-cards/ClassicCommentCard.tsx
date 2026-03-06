@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { useRef, useEffect } from "react";
 import {
   PhotocardData,
   BackgroundOptions,
@@ -16,6 +17,7 @@ interface ClassicCommentCardProps {
   fontStyles?: CardFontStyles;
   visibilitySettings?: Partial<VisibilitySettings>;
   onLogoUpload?: (file: File) => void;
+  imagePosition?: { x: number; y: number; scale: number };
 }
 
 function darkenColor(color: string, percent: number = 20): string {
@@ -36,6 +38,7 @@ export default function ClassicCommentCard({
   fullSize = false,
   fontStyles,
   visibilitySettings,
+  imagePosition,
 }: ClassicCommentCardProps) {
 
   const getBackgroundStyle = (): React.CSSProperties => {
@@ -76,6 +79,21 @@ export default function ClassicCommentCard({
   const nameFontWeight = fontStyles?.personName?.fontWeight || "700";
   const nameColor = fontStyles?.personName?.color || "#ffffff";
   const nameFontFamily = fontStyles?.personName?.fontFamily || "Noto Serif Bengali";
+
+  const commentContainerRef = useRef<HTMLDivElement>(null);
+  const commentTextRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    const container = commentContainerRef.current;
+    const el = commentTextRef.current;
+    if (!container || !el) return;
+    const base = parseFloat(commentFontSize);
+    let size = base;
+    el.style.fontSize = `${size}px`;
+    while (el.scrollHeight > container.clientHeight && size > 10) {
+      size -= 0.5;
+      el.style.fontSize = `${size}px`;
+    }
+  }, [data.commentText, commentFontSize]);
 
   return (
     <div
@@ -120,7 +138,8 @@ export default function ClassicCommentCard({
 
             {/* Text overlay inside bubble body (bubble body = top 82.9% of SVG, pointer = bottom 17.1%) */}
             <div
-              className="absolute flex items-center justify-center"
+              ref={commentContainerRef}
+              className="absolute flex items-center justify-center overflow-hidden"
               style={{
                 top: "5%",
                 left: "7%",
@@ -130,6 +149,7 @@ export default function ClassicCommentCard({
               }}
             >
               <p
+                ref={commentTextRef}
                 className="leading-snug"
                 style={{
                   fontFamily: commentFontFamily,
@@ -191,12 +211,12 @@ export default function ClassicCommentCard({
       {/* Person image — last in DOM, paints on top of the bubble */}
       <div
         className="absolute pointer-events-none"
-        style={{ bottom: 0, right: 0, width: "280px", height: "450px" }}
+        style={{ bottom: 0, right: 0, width: "260px", height: "400px", overflow: "hidden" }}
       >
         <img
           src={data.image ? getProxiedImageUrl(data.image) : "/images/person-placeholder.png"}
           alt={data.personName || "Person"}
-          style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom center", display: "block" }}
+          style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "bottom center", display: "block", transform: `translate(${imagePosition?.x ?? 0}px, ${imagePosition?.y ?? 0}px) scale(${(imagePosition?.scale ?? 100) / 100})`, transformOrigin: "bottom center" }}
         />
       </div>
     </div>
