@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import AssetManagerModal from "@/components/AssetManagerModal"; // Added AssetManagerModal import
-import { generateAIVariations } from "@/lib/ai-service";
+// generateAIVariations moved to server-side /api/ai-variations
 import toast from "react-hot-toast";
 
 interface EditingToolbarProps {
@@ -110,7 +110,7 @@ export default function EditingToolbar({
   const isFreeUser = user?.plan === "Free";
   const isPremiumUser = user?.plan === "Premium";
 
-  // Real AI generation using Gemini
+  // AI generation — proxied through /api/ai-variations (auth + tracking + AI-enabled check)
   const generateVariations = async () => {
     if (!currentTitle.trim()) {
       toast.error("Please enter a headline first");
@@ -119,18 +119,33 @@ export default function EditingToolbar({
 
     setIsGenerating(true);
     try {
-      const data = await generateAIVariations(
-        currentTitle,
-        hashtagLang === "bn" ? "Bengali" : "English",
-      );
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
+      const res = await fetch("/api/ai-variations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          title: currentTitle,
+          hashtagLanguage: hashtagLang === "bn" ? "Bengali" : "English",
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || "Failed to generate AI variations");
+      }
+
+      const data = json.data;
       setTitleVariations(
-        data.headlines.map((text, index) => ({
+        data.headlines.map((text: string, index: number) => ({
           id: index + 1,
           text,
         })),
       );
-
       setSocialSummary(data.summary);
       setHashtags(data.hashtags);
       toast.success("AI variations generated!");

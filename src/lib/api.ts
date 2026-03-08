@@ -208,6 +208,17 @@ export const adminAPI = {
     const { data } = await apiClient.put("/admin/notifications/read-all");
     return data;
   },
+
+  // --- AI Management ---
+  getAIUsage: async (params?: { page?: number; limit?: number; search?: string }) => {
+    const { data } = await apiClient.get("/admin/ai-usage", { params });
+    return data;
+  },
+
+  setUserAIEnabled: async (userId: number, ai_enabled: boolean) => {
+    const { data } = await apiClient.put(`/admin/users/${userId}/ai-enabled`, { ai_enabled });
+    return data;
+  },
 };
 
 // Developer API calls

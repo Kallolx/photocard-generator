@@ -1,8 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { generateRemixContent } from "@/lib/ai-service";
+import { verifyUserAIAccess, trackAIUsage } from "@/lib/ai-guard";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    // Auth + AI-enabled check
+    const guard = await verifyUserAIAccess(req);
+    if (!guard.ok) {
+      return NextResponse.json(
+        { success: false, error: guard.error },
+        { status: guard.status },
+      );
+    }
+
     const { headline, content, customPrompt } = await req.json();
 
     if (!headline || !content) {
@@ -12,9 +22,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // Pass custom prompt to ai-service if needed, currently it just rewrites
-    // In the future: generateRemixContent(headline, content, customPrompt)
     const remixResult = await generateRemixContent(headline, content);
+
+    // Track usage (fire-and-forget, don't block response)
+    trackAIUsage(guard.userId!).catch(() => {});
 
     return NextResponse.json({
       success: true,

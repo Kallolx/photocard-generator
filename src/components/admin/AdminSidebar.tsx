@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
+  Bot,
   LogOut,
   Home,
   ChevronRight,
@@ -23,6 +24,7 @@ export default function AdminSidebar({
   const menuItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Users", href: "/admin/users", icon: Users },
+    { name: "AI Control", href: "/admin/ai", icon: Bot },
   ];
 
   const isActive = (href: string) => {
