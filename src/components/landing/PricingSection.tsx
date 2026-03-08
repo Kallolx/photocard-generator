@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import WhatsAppModal from "../WhatsAppModal";
-import { Check, Sparkles } from "lucide-react";
+import { Check, X, Sparkles, Building2 } from "lucide-react";
 
 interface PricingSectionProps {
   t: any;
@@ -88,8 +88,8 @@ export default function PricingSection({ t }: PricingSectionProps) {
           </div>
         </div>
 
-        {/* PERSONAL PLANS */}
-        <div className="mb-4">
+        {/* Plans Grid — 3 columns */}
+        <div className="mb-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 border-2 border-[#d4c4b0]/40">
             {/* Free Plan */}
             <div className="relative bg-white p-10 border-b-2 lg:border-b-0 lg:border-r-2 border-[#d4c4b0]/40 flex flex-col">
@@ -112,17 +112,23 @@ export default function PricingSection({ t }: PricingSectionProps) {
                   {t.pricing.free.description}
                 </p>
               </div>
-              <ul className="space-y-3 mb-10 flex-grow">
+              <ul className="space-y-3 mb-4 flex-grow">
                 {t.pricing.free.features.map((feature: string, i: number) => (
                   <li key={i} className="flex items-start gap-3">
                     <Check className="w-4 h-4 text-[#8b6834] mt-0.5 shrink-0" strokeWidth={3} />
                     <span className="text-[#2c2419] text-sm font-bold">{feature}</span>
                   </li>
                 ))}
+                {t.pricing.free.lockedFeatures.map((feature: string, i: number) => (
+                  <li key={`locked-${i}`} className="flex items-start gap-3 opacity-40">
+                    <X className="w-4 h-4 text-[#2c2419] mt-0.5 shrink-0" strokeWidth={3} />
+                    <span className="text-[#2c2419] text-sm font-bold line-through">{feature}</span>
+                  </li>
+                ))}
               </ul>
               <button
                 onClick={handleFreePlan}
-                className="w-full px-8 py-4 rounded-none border-2 border-[#d4c4b0] text-[#2c2419] text-xs font-black uppercase tracking-[0.2em] hover:bg-[#faf8f5] hover:border-[#8b6834] transition-all"
+                className="w-full px-8 py-4 rounded-none border-2 border-[#d4c4b0] text-[#2c2419] text-xs font-black uppercase tracking-[0.2em] hover:bg-[#faf8f5] hover:border-[#8b6834] transition-all mt-6"
               >
                 {t.pricing.free.cta}
               </button>
@@ -162,7 +168,7 @@ export default function PricingSection({ t }: PricingSectionProps) {
               </ul>
               <button
                 onClick={() => handleUpgrade(t.pricing.basic.name, `৳${getPrice(t.pricing.basic)}`)}
-                className="w-full px-8 py-4 rounded-none bg-[#8b6834] text-white text-xs font-black uppercase tracking-[0.2em] border-2 border-[#8b6834] hover:bg-white hover:text-[#8b6834] transition-all"
+                className="w-full px-8 py-4 rounded-full bg-[#8b6834] text-white text-xs font-black uppercase tracking-[0.2em] border-2 border-[#8b6834] hover:bg-white hover:text-[#8b6834] transition-all"
               >
                 {t.pricing.basic.cta}
               </button>
@@ -207,121 +213,54 @@ export default function PricingSection({ t }: PricingSectionProps) {
           </div>
         </div>
 
-        {/* PUBLISHER PLANS */}
-        <div className="mt-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 border-2 border-[#d4c4b0]/40">
-            {/* Starter Plan */}
-            <div className="relative bg-white p-10 border-b-2 lg:border-b-0 lg:border-r-2 border-[#d4c4b0]/40 flex flex-col">
-              <div className="mb-8">
-                <h3 className="text-sm font-black text-[#8b6834] uppercase tracking-[0.2em] mb-4">
-                  {t.pricing.starter.name}
+        {/* Enterprise — full-width below */}
+        <div className="mb-16 border-2 border-[#2c2419] bg-[#2c2419] rounded-lg overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            {/* Left: pitch */}
+            <div className="p-12 border-b-2 lg:border-b-0 lg:border-r-2 border-[#8b6834]/20 flex flex-col gap-6">
+              <div className="flex items-center gap-4">
+                <Building2 className="w-8 h-8 text-white shrink-0" />
+                <h3 className="text-3xl font-black text-white uppercase tracking-tight">
+                  {t.pricing.enterprise.name}
                 </h3>
-                <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-5xl font-black text-[#2c2419] tracking-tighter">
-                    ৳{getPrice(t.pricing.starter)}
-                  </span>
-                  <span className="text-[#b49e82] text-xs font-black uppercase tracking-widest">
-                    / {t.pricing.starter.period}
-                  </span>
-                </div>
-                <p className="text-[10px] font-bold text-[#b49e82] mb-3">
-                  {getUsd(t.pricing.starter)} USD{isYearly ? ` · ${t.pricing.billedYearly}` : ""}
-                </p>
-                <p className="text-[#5d4e37] text-sm font-medium leading-relaxed">
-                  {t.pricing.starter.description}
-                </p>
               </div>
-              <ul className="space-y-3 mb-10 flex-grow">
-                {t.pricing.starter.features.map((feature: string, i: number) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Check className="w-4 h-4 text-[#8b6834] mt-0.5 shrink-0" strokeWidth={3} />
-                    <span className="text-[#2c2419] text-sm font-bold">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => handleUpgrade(t.pricing.starter.name, `৳${getPrice(t.pricing.starter)}`)}
-                className="w-full px-8 py-4 rounded-none border-2 border-[#d4c4b0] text-[#2c2419] text-xs font-black uppercase tracking-[0.2em] hover:bg-[#faf8f5] hover:border-[#8b6834] transition-all"
-              >
-                {t.pricing.starter.cta}
-              </button>
-            </div>
+              <p className="text-[#d4c4b0] text-base font-medium leading-relaxed">
+                {t.pricing.enterprise.description}
+              </p>
 
-            {/* Growth Plan */}
-            <div className="relative bg-[#2c2419] p-10 border-b-2 lg:border-b-0 lg:border-r-2 border-[#2c2419] flex flex-col z-10">
-              <div className="absolute top-0 right-0 bg-[#8b6834] px-4 py-2 text-[10px] font-black text-white uppercase tracking-[0.2em]">
-                {t.pricing.growth.popular}
-              </div>
-              <div className="mb-8 mt-4">
-                <h3 className="text-sm font-black text-[#8b6834] uppercase tracking-[0.2em] mb-4">
-                  {t.pricing.growth.name}
-                </h3>
-                <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-5xl font-black text-white tracking-tighter">
-                    ৳{getPrice(t.pricing.growth)}
-                  </span>
-                  <span className="text-[#b49e82] text-xs font-black uppercase tracking-widest">
-                    / {t.pricing.growth.period}
-                  </span>
+              {/* Price block — prominent */}
+              <div className="border-t border-[#8b6834]/20 pt-6">
+                <p className="text-xs font-black text-[#8b6834] uppercase tracking-[0.25em] mb-3">
+                  {t.pricing.enterprise.startingFrom}
+                </p>
+                <div className="flex items-baseline gap-3 mb-2">
+                  <span className="text-4xl font-black text-white tracking-tighter">৳{t.pricing.enterprise.price}</span>
+                  <span className="text-[#b49e82] text-sm font-black uppercase tracking-widest leading-tight">/ {t.pricing.enterprise.period}</span>
                 </div>
-                <p className="text-[10px] font-bold text-[#8b6834] mb-3">
-                  {getUsd(t.pricing.growth)} USD{isYearly ? ` · ${t.pricing.billedYearly}` : ""}
-                </p>
-                <p className="text-[#d4c4b0] text-sm font-medium leading-relaxed">
-                  {t.pricing.growth.description}
+                <p className="text-[#8b6834] text-sm font-semibold italic">
+                  Pricing scales with usage — contact us for a custom quote.
                 </p>
               </div>
-              <ul className="space-y-3 mb-10 flex-grow">
-                {t.pricing.growth.features.map((feature: string, i: number) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Check className="w-4 h-4 text-[#8b6834] mt-0.5 shrink-0" strokeWidth={3} />
-                    <span className="text-white font-bold text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => handleUpgrade(t.pricing.growth.name, `৳${getPrice(t.pricing.growth)}`)}
-                className="w-full px-8 py-4 rounded-none bg-[#8b6834] text-white text-xs font-black uppercase tracking-[0.2em] border-2 border-[#8b6834] hover:bg-white hover:text-[#8b6834] transition-all"
-              >
-                {t.pricing.growth.cta}
-              </button>
-            </div>
 
-            {/* Scale Plan */}
-            <div className="relative bg-white p-10 flex flex-col">
-              <div className="mb-8">
-                <h3 className="text-sm font-black text-[#8b6834] uppercase tracking-[0.2em] mb-4">
-                  {t.pricing.scale.name}
-                </h3>
-                <div className="flex items-baseline gap-2 mb-1">
-                  <span className="text-5xl font-black text-[#2c2419] tracking-tighter">
-                    ৳{getPrice(t.pricing.scale)}
-                  </span>
-                  <span className="text-[#b49e82] text-xs font-black uppercase tracking-widest">
-                    / {t.pricing.scale.period}
-                  </span>
-                </div>
-                <p className="text-[10px] font-bold text-[#b49e82] mb-3">
-                  {getUsd(t.pricing.scale)} USD{isYearly ? ` · ${t.pricing.billedYearly}` : ""}
-                </p>
-                <p className="text-[#5d4e37] text-sm font-medium leading-relaxed">
-                  {t.pricing.scale.description}
-                </p>
+              <div className="mt-auto pt-4">
+                <button
+                  onClick={() => router.push("/contact")}
+                  className="w-full px-10 py-5 rounded-full bg-[#8b6834] text-white text-sm font-black uppercase tracking-[0.2em] border-2 border-[#8b6834] hover:bg-white hover:text-[#8b6834] transition-all"
+                >
+                  {t.pricing.enterprise.cta}
+                </button>
               </div>
-              <ul className="space-y-3 mb-10 flex-grow">
-                {t.pricing.scale.features.map((feature: string, i: number) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <Check className="w-4 h-4 text-[#8b6834] mt-0.5 shrink-0" strokeWidth={3} />
-                    <span className="text-[#2c2419] text-sm font-bold">{feature}</span>
-                  </li>
+            </div>
+            {/* Right: features as separated rows — compact */}
+            <div className="p-8 pr-10">
+              <div className="flex flex-col">
+                {t.pricing.enterprise.features.map((feature: string, i: number) => (
+                  <div key={i} className="flex items-center gap-4 py-4" style={{ borderTop: i !== 0 ? "1px solid rgba(255,255,255,0.1)" : "none" }}>
+                    <Check className="w-4 h-4 text-[#8b6834] shrink-0" strokeWidth={3} />
+                    <span className="text-white font-semibold text-sm">{feature}</span>
+                  </div>
                 ))}
-              </ul>
-              <button
-                onClick={() => handleUpgrade(t.pricing.scale.name, `৳${getPrice(t.pricing.scale)}`)}
-                className="w-full px-8 py-4 rounded-none bg-[#2c2419] text-white text-xs font-black uppercase tracking-[0.2em] border-2 border-[#2c2419] hover:bg-[#8b6834] hover:border-[#8b6834] transition-all"
-              >
-                {t.pricing.scale.cta}
-              </button>
+              </div>
             </div>
           </div>
         </div>

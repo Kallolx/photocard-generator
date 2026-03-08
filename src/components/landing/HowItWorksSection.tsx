@@ -85,14 +85,6 @@ export default function HowItWorksSection({ t }: HowItWorksProps) {
                   {step.description}
                 </p>
               </div>
-
-              {/* Arrow Indicator */}
-              {index < steps.length - 1 && (
-                <div className="hidden lg:flex absolute top-1/2 -right-4 transform -translate-y-1/2 z-20 items-center justify-center pointer-events-none">
-                  <div className="w-8 h-0.5 bg-[#d4c4b0]/40"></div>
-                  <ChevronRight className="w-6 h-6 text-[#d4c4b0]/60 -ml-3" />
-                </div>
-              )}
             </div>
           ))}
         </div>

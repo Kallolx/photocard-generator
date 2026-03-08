@@ -131,6 +131,7 @@ export default function NewsPage() {
   const [upgradeFeature, setUpgradeFeature] = useState("");
   const router = useRouter();
   const isFreeUser = user?.plan === "Free";
+  const isProUser = user?.plan === "Premium";
 
   const [news, setNews] = useState<NewsItem[]>([]);
   const [stats, setStats] = useState<NewsStats | null>(null);
@@ -1104,18 +1105,37 @@ export default function NewsPage() {
                   </div>
                 )}
 
-                <button
-                  onClick={handleRemix}
-                  disabled={isRemixing}
-                  className="w-full py-3.5 bg-[#8b6834] text-white text-xs font-black uppercase tracking-widest hover:bg-[#2c2419] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
-                >
-                  <RefreshCcw
-                    className={`w-4 h-4 ${isRemixing ? "animate-spin" : ""}`}
-                  />
-                  {isRemixing
-                    ? "Rewriting with AI..."
-                    : "AI Auto-Rewrite Content"}
-                </button>
+                {isProUser ? (
+                  <button
+                    onClick={handleRemix}
+                    disabled={isRemixing}
+                    className="w-full py-3.5 bg-[#8b6834] text-white text-xs font-black uppercase tracking-widest hover:bg-[#2c2419] transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
+                  >
+                    <RefreshCcw
+                      className={`w-4 h-4 ${isRemixing ? "animate-spin" : ""}`}
+                    />
+                    {isRemixing
+                      ? "Rewriting with AI..."
+                      : "AI Auto-Rewrite Content"}
+                  </button>
+                ) : (
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        setIsRemixModalOpen(false);
+                        setUpgradeFeature("AI Remix & Auto-Rewrite");
+                        setShowUpgradeModal(true);
+                      }}
+                      className="w-full py-3.5 bg-[#f5f0e8] text-[#8b6834] text-xs font-black uppercase tracking-widest border-2 border-[#d4c4b0] hover:bg-[#8b6834] hover:text-white hover:border-[#8b6834] transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Lock className="w-4 h-4" />
+                      AI Auto-Rewrite — Pro Only
+                    </button>
+                    <p className="text-center text-[10px] text-[#b49e82] font-bold uppercase tracking-widest">
+                      You can still edit manually above
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Right Column: Preview/Image Options */}

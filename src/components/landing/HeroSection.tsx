@@ -31,7 +31,6 @@ export default function HeroSection({ t }: HeroSectionProps) {
             <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-none bg-[#f5f0e8] border-2 border-[#8b6834]/20 mb-8 group transition-all hover:border-[#8b6834]/40">
               <div className="relative">
                 <Sparkles className="w-4 h-4 text-[#8b6834]" />
-                <div className="absolute inset-0 bg-[#8b6834] opacity-20 blur-sm animate-pulse rounded-full"></div>
               </div>
               <span className="text-xs font-black text-[#8b6834] uppercase tracking-[0.2em]">
                 {t.hero.badge || "AI-Powered Social Media Cards"}
@@ -45,7 +44,7 @@ export default function HeroSection({ t }: HeroSectionProps) {
               </span>
             </h1>
 
-            <p className="text-xl text-[#5d4e37] mb-10 leading-relaxed font-bold max-w-2xl mx-auto lg:mx-0 border-l-4 border-[#8b6834]/20 lg:pl-6 pl-0">
+            <p className="text-xl text-[#5d4e37] mb-10 leading-relaxed tracking-tight font-bold max-w-2xl mx-auto lg:mx-0 border-l-4 border-[#8b6834]/20 lg:pl-6 pl-0">
               {t.hero.subtitle}
             </p>
 

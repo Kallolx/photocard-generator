@@ -17,14 +17,28 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 );
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  // Changed the default state from "bn" to "en"
   const [lang, setLangState] = useState<Language>("en");
 
   useEffect(() => {
+    // If the user has a saved preference, use it immediately — no fetch needed
     const savedLang = localStorage.getItem("language");
     if (savedLang === "en" || savedLang === "bn") {
       setLangState(savedLang);
+      return;
     }
+
+    // No saved preference — detect country via our server-side API (avoids CORS/blocks)
+    fetch("/api/geo")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.country_code === "BD") {
+          setLangState("bn");
+        }
+        // else stays "en" (the initial default)
+      })
+      .catch(() => {
+        // Stay on "en" if anything fails
+      });
   }, []);
 
   const setLang = (newLang: Language) => {
