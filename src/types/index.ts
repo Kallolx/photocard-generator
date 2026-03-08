@@ -125,3 +125,17 @@ export interface PollCardVisibilitySettings {
   showSocialMedia: boolean;
   showAdBanner: boolean;
 }
+
+export interface IslamicCardVisibilitySettings {
+  showLogo: boolean;
+  showNarrator: boolean;
+  showSource: boolean;
+  showFooter: boolean;
+}
+
+export interface IslamicCardFontStyles {
+  narrator: FontStyles;
+  hadisText: FontStyles;
+  source: FontStyles;
+  footer: FontStyles;
+}

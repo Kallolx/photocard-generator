@@ -40,34 +40,24 @@ type Notification = CardNotification | UpdateNotification;
 
 const NOTIFICATIONS: Notification[] = [
   {
-    id: "card-thumbnail-v1",
-    type: "card",
-    badge: "New Tool",
-    title: "New Thumbnail Creator 🎉",
-    description:
-      "Design pro thumbnails with multi-image split layouts, drag-to-reorder, seam styling, logo upload & more. Try it now!",
-    thumbnail: "/images/yt.png",
-    link: "/thumbnail",
-  },
-  {
-    id: "card-comment-split-v1",
+    id: "card-url-banner-v1",
     type: "card",
     badge: "New Card",
-    title: "New Split Comment Card 🎉",
+    title: "New Banner URL Card 🎉",
     description:
-      "Two-tone yellow & blue layout with angled divider and speech-bubble name tag. Available on the Comment Card page.",
-    thumbnail: "/themes/com-3.png",
-    link: "/comment",
+      "Organic wavy SVG banner with gradient fill, dark grid overlay and a bold headline. Available on the URL Card page.",
+    thumbnail: "/themes/cus-9.png",
+    link: "/url",
   },
   {
-    id: "card-comment-grid-v1",
+    id: "card-url-blend-v1",
     type: "card",
     badge: "New Card",
-    title: "New Grid Comment Card 🎉",
+    title: "New Blend URL Card 🎉",
     description:
-      "Clean white grid background with bold left-aligned quote text. Available on the Comment Card page.",
-    thumbnail: "/themes/com-2.png",
-    link: "/comment",
+      "Clean white text section that seamlessly blends into the article image below, with alternating headline colours. Available on the URL Card page.",
+    thumbnail: "/themes/cus-10.png",
+    link: "/url",
   },
   {
     id: "update-march-2026",

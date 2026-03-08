@@ -112,16 +112,91 @@ const ENGLISH_FONTS = [
 ];
 
 const FOOTER_PLATFORMS: { id: FooterItemType; icon: React.ReactNode }[] = [
-  { id: "facebook", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg> },
-  { id: "instagram", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg> },
-  { id: "youtube", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg> },
-  { id: "twitter", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg> },
-  { id: "tiktok", icon: <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.27 8.27 0 0 0 4.84 1.55V6.67a4.85 4.85 0 0 1-1.07.02z" /></svg> },
-  { id: "website", icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg> },
-  { id: "text", icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> },
+  {
+    id: "facebook",
+    icon: (
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      </svg>
+    ),
+  },
+  {
+    id: "instagram",
+    icon: (
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+      </svg>
+    ),
+  },
+  {
+    id: "youtube",
+    icon: (
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    ),
+  },
+  {
+    id: "twitter",
+    icon: (
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+      </svg>
+    ),
+  },
+  {
+    id: "tiktok",
+    icon: (
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.27 8.27 0 0 0 4.84 1.55V6.67a4.85 4.85 0 0 1-1.07.02z" />
+      </svg>
+    ),
+  },
+  {
+    id: "website",
+    icon: (
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+        />
+      </svg>
+    ),
+  },
+  {
+    id: "text",
+    icon: (
+      <svg
+        className="w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
+      </svg>
+    ),
+  },
 ];
 
-function FooterItemsList({ footerItems, onFooterItemsChange }: { footerItems: FooterItem[]; onFooterItemsChange?: (items: FooterItem[]) => void }) {
+function FooterItemsList({
+  footerItems,
+  onFooterItemsChange,
+}: {
+  footerItems: FooterItem[];
+  onFooterItemsChange?: (items: FooterItem[]) => void;
+}) {
   const [editingId, setEditingId] = useState<string | null>(null);
   return (
     <div className="space-y-2">
@@ -132,23 +207,109 @@ function FooterItemsList({ footerItems, onFooterItemsChange }: { footerItems: Fo
             initialType={item.type}
             initialValue={item.value}
             onAdd={(updated) => {
-              onFooterItemsChange?.(footerItems.map((i) => (i.id === item.id ? { ...updated, id: item.id } : i)));
+              onFooterItemsChange?.(
+                footerItems.map((i) =>
+                  i.id === item.id ? { ...updated, id: item.id } : i,
+                ),
+              );
               setEditingId(null);
             }}
             onCancel={() => setEditingId(null)}
           />
         ) : (
-          <div key={item.id} className="flex items-center gap-2 border border-[#d4c4b0] bg-white px-3 py-2">
+          <div
+            key={item.id}
+            className="flex items-center gap-2 border border-[#d4c4b0] bg-white px-3 py-2"
+          >
             <span className="text-lg leading-none shrink-0">
-              {item.type === "facebook" && (<svg className="w-4 h-4 text-[#1877f2]" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>)}
-              {item.type === "instagram" && (<svg className="w-4 h-4" fill="none" viewBox="0 0 24 24"><defs><radialGradient id="ig1" cx="30%" cy="107%" r="1.5"><stop offset="0%" stopColor="#ffd676" /><stop offset="10%" stopColor="#f9a12e" /><stop offset="50%" stopColor="#e1306c" /><stop offset="90%" stopColor="#833ab4" /></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#ig1)" /><rect x="6.5" y="6.5" width="11" height="11" rx="3" stroke="#fff" strokeWidth="1.5" /><circle cx="12" cy="12" r="2.8" stroke="#fff" strokeWidth="1.5" /><circle cx="16.3" cy="7.7" r="0.8" fill="#fff" /></svg>)}
-              {item.type === "youtube" && (<svg className="w-4 h-4 text-[#ff0000]" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>)}
-              {item.type === "twitter" && (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>)}
-              {item.type === "tiktok" && (<svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.27 8.27 0 0 0 4.84 1.55V6.67a4.85 4.85 0 0 1-1.07.02z" /></svg>)}
-              {item.type === "website" && (<svg className="w-4 h-4 text-[#8b6834]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>)}
-              {item.type === "text" && (<span className="text-xs font-bold text-[#8b7055]">T</span>)}
+              {item.type === "facebook" && (
+                <svg
+                  className="w-4 h-4 text-[#1877f2]"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              )}
+              {item.type === "instagram" && (
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <defs>
+                    <radialGradient id="ig1" cx="30%" cy="107%" r="1.5">
+                      <stop offset="0%" stopColor="#ffd676" />
+                      <stop offset="10%" stopColor="#f9a12e" />
+                      <stop offset="50%" stopColor="#e1306c" />
+                      <stop offset="90%" stopColor="#833ab4" />
+                    </radialGradient>
+                  </defs>
+                  <rect width="24" height="24" rx="6" fill="url(#ig1)" />
+                  <rect
+                    x="6.5"
+                    y="6.5"
+                    width="11"
+                    height="11"
+                    rx="3"
+                    stroke="#fff"
+                    strokeWidth="1.5"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="2.8"
+                    stroke="#fff"
+                    strokeWidth="1.5"
+                  />
+                  <circle cx="16.3" cy="7.7" r="0.8" fill="#fff" />
+                </svg>
+              )}
+              {item.type === "youtube" && (
+                <svg
+                  className="w-4 h-4 text-[#ff0000]"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                </svg>
+              )}
+              {item.type === "twitter" && (
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              )}
+              {item.type === "tiktok" && (
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.27 8.27 0 0 0 4.84 1.55V6.67a4.85 4.85 0 0 1-1.07.02z" />
+                </svg>
+              )}
+              {item.type === "website" && (
+                <svg
+                  className="w-4 h-4 text-[#8b6834]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                  />
+                </svg>
+              )}
+              {item.type === "text" && (
+                <span className="text-xs font-bold text-[#8b7055]">T</span>
+              )}
             </span>
-            <span className="flex-1 text-xs font-medium text-[#2c2419] truncate">{item.value}</span>
+            <span className="flex-1 text-xs font-medium text-[#2c2419] truncate">
+              {item.value}
+            </span>
             <button
               onClick={() => setEditingId(item.id)}
               className="shrink-0 text-[#8b6834] hover:text-[#6b4f28] transition-colors"
@@ -157,24 +318,42 @@ function FooterItemsList({ footerItems, onFooterItemsChange }: { footerItems: Fo
               <Edit2 className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => onFooterItemsChange?.(footerItems.filter((i) => i.id !== item.id))}
+              onClick={() =>
+                onFooterItemsChange?.(
+                  footerItems.filter((i) => i.id !== item.id),
+                )
+              }
               className="shrink-0 text-red-400 hover:text-red-600 transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
-        )
+        ),
       )}
     </div>
   );
 }
 
-function FooterItemForm({ onAdd, onCancel, initialType, initialValue }: { onAdd: (item: FooterItem) => void; onCancel?: () => void; initialType?: FooterItemType; initialValue?: string }) {
+function FooterItemForm({
+  onAdd,
+  onCancel,
+  initialType,
+  initialValue,
+}: {
+  onAdd: (item: FooterItem) => void;
+  onCancel?: () => void;
+  initialType?: FooterItemType;
+  initialValue?: string;
+}) {
   const [type, setType] = useState<FooterItemType>(initialType ?? "facebook");
   const [value, setValue] = useState(initialValue ?? "");
 
   const placeholder =
-    type === "website" ? "www.example.com" : type === "text" ? "Any text..." : "@username";
+    type === "website"
+      ? "www.example.com"
+      : type === "text"
+        ? "Any text..."
+        : "@username";
 
   return (
     <div className="border border-dashed border-[#d4c4b0] p-3 space-y-2">
@@ -216,7 +395,10 @@ function FooterItemForm({ onAdd, onCancel, initialType, initialValue }: { onAdd:
         <Plus className="w-3.5 h-3.5" /> {onCancel ? "Save" : "Add"}
       </button>
       {onCancel && (
-        <button onClick={onCancel} className="w-full py-1.5 text-xs text-[#8b7055] hover:text-[#2c2419] transition-colors">
+        <button
+          onClick={onCancel}
+          className="w-full py-1.5 text-xs text-[#8b7055] hover:text-[#2c2419] transition-colors"
+        >
           Cancel
         </button>
       )}
@@ -339,6 +521,18 @@ export default function CustomizationPanel({
       thumbnail: "/themes/cus-7.png",
     },
     {
+      id: "banner",
+      name: "Banner",
+      locked: isFreeUser,
+      thumbnail: "/themes/cus-9.png",
+    },
+    {
+      id: "blend",
+      name: "Blend",
+      locked: isFreeUser,
+      thumbnail: "/themes/cus-10.png",
+    },
+    {
       id: "overlay",
       name: "Overlay",
       locked: false,
@@ -362,7 +556,7 @@ export default function CustomizationPanel({
       locked: isFreeUser, // Lock Modern 2 theme for Free users
       thumbnail: "/themes/cus-4.png",
     },
-        {
+    {
       id: "minimal",
       name: "Minimal",
       locked: isFreeUser,
@@ -424,7 +618,9 @@ export default function CustomizationPanel({
               ? "Minimal Theme"
               : themeId === "vertical"
                 ? "Vertical Theme"
-                : "Premium Theme";
+                : themeId === "banner"
+                  ? "Banner Theme"
+                  : "Premium Theme";
       setUpgradeFeature(featureName);
       setShowUpgradeModal(true);
       return;
@@ -1110,13 +1306,15 @@ export default function CustomizationPanel({
                   Pattern Locked
                 </p>
                 <p className="text-xs text-[#5d4e37] font-inter leading-relaxed max-w-[200px]">
-                  The Magazine card uses a fixed built-in pattern. You cannot change it.
+                  The Magazine card uses a fixed built-in pattern. You cannot
+                  change it.
                 </p>
               </div>
             ) : theme === "split" ? (
               <div>
                 <p className="text-xs text-[#5d4e37] font-inter mb-4 leading-relaxed">
-                  The Split card uses a decorative dot pattern at the corners. Adjust its opacity below.
+                  The Split card uses a decorative dot pattern at the corners.
+                  Adjust its opacity below.
                 </p>
                 <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
                   Dot Pattern Opacity
@@ -1147,7 +1345,8 @@ export default function CustomizationPanel({
             ) : theme === "grid" ? (
               <div>
                 <p className="text-xs text-[#5d4e37] font-inter mb-4 leading-relaxed">
-                  The Grid card uses a built-in grid pattern. Adjust its opacity below.
+                  The Grid card uses a built-in grid pattern. Adjust its opacity
+                  below.
                 </p>
                 <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
                   Grid Opacity
@@ -1172,6 +1371,59 @@ export default function CustomizationPanel({
                   />
                   <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
                     {Math.round((background.patternOpacity ?? 0.07) * 100)}%
+                  </div>
+                </div>
+              </div>
+            ) : theme === "banner" ? (
+              <div className="space-y-5">
+                <p className="text-xs text-[#5d4e37] font-inter leading-relaxed">
+                  The Banner card has a built-in grid overlay. Adjust its opacity and colour below.
+                </p>
+                <div>
+                  <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">Grid Opacity</h3>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={background.patternOpacity ?? 0.5}
+                      onChange={(e) =>
+                        onBackgroundChange({ ...background, patternOpacity: parseFloat(e.target.value) })
+                      }
+                      className="flex-1 h-1 appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((background.patternOpacity ?? 0.5)) * 100}%, #e8dcc8 ${((background.patternOpacity ?? 0.5)) * 100}%, #e8dcc8 100%)`,
+                      }}
+                    />
+                    <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
+                      {Math.round((background.patternOpacity ?? 0.5) * 100)}%
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">Grid Colour</h3>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => onBackgroundChange({ ...background, patternColor: "#000000" })}
+                      className={`flex-1 py-2 rounded text-sm font-semibold font-inter border-2 transition-all bg-black text-white ${
+                        (background.patternColor ?? "#000000") === "#000000"
+                          ? "border-[#8b6834]"
+                          : "border-[#d4c4b0] opacity-50"
+                      }`}
+                    >
+                      Black
+                    </button>
+                    <button
+                      onClick={() => onBackgroundChange({ ...background, patternColor: "#ffffff" })}
+                      className={`flex-1 py-2 rounded text-sm font-semibold font-inter border-2 transition-all bg-white text-black ${
+                        background.patternColor === "#ffffff"
+                          ? "border-[#8b6834]"
+                          : "border-[#d4c4b0] opacity-50"
+                      }`}
+                    >
+                      White
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1374,11 +1626,28 @@ export default function CustomizationPanel({
             {cardType === "url" && (
               <div className="space-y-4 border-t border-[#e8dcc8] pt-5">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-semibold text-[#2c2419] font-inter">Brand Watermark</h3>
+                  <h3 className="text-sm font-semibold text-[#2c2419] font-inter">
+                    Brand Watermark
+                  </h3>
                   <button
-                    onClick={() => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0, enabled: true }), enabled: !(watermark?.enabled ?? true) })}
+                    onClick={() =>
+                      onWatermarkChange?.({
+                        ...(watermark ?? {
+                          text: "",
+                          opacity: 0.3,
+                          x: 0,
+                          y: 0,
+                          fontSize: 48,
+                          rotation: 0,
+                          enabled: true,
+                        }),
+                        enabled: !(watermark?.enabled ?? true),
+                      })
+                    }
                     className={`relative w-11 h-6 rounded-full transition-colors ${
-                      (watermark?.enabled ?? true) ? "bg-[#8b6834]" : "bg-[#d4c4b0]"
+                      (watermark?.enabled ?? true)
+                        ? "bg-[#8b6834]"
+                        : "bg-[#d4c4b0]"
                     }`}
                   >
                     <span
@@ -1389,35 +1658,71 @@ export default function CustomizationPanel({
                   </button>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs text-[#5d4e37] font-inter">Brand Name</label>
+                  <label className="text-xs text-[#5d4e37] font-inter">
+                    Brand Name
+                  </label>
                   <input
                     type="text"
                     value={watermark?.text || ""}
-                    onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), text: e.target.value })}
+                    onChange={(e) =>
+                      onWatermarkChange?.({
+                        ...(watermark ?? {
+                          text: "",
+                          opacity: 0.3,
+                          x: 0,
+                          y: 0,
+                          fontSize: 48,
+                          rotation: 0,
+                        }),
+                        text: e.target.value,
+                      })
+                    }
                     placeholder="Your brand name..."
                     className="w-full px-3 py-2 text-sm border border-[#d4c4b0] bg-[#faf8f5] text-[#2c2419] font-inter focus:outline-none focus:border-[#8b6834]"
                   />
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
-                    <label className="text-xs text-[#5d4e37] font-inter">Opacity</label>
-                    <span className="text-xs font-bold text-[#8b6834]">{Math.round((watermark?.opacity ?? 0.30) * 100)}%</span>
+                    <label className="text-xs text-[#5d4e37] font-inter">
+                      Opacity
+                    </label>
+                    <span className="text-xs font-bold text-[#8b6834]">
+                      {Math.round((watermark?.opacity ?? 0.3) * 100)}%
+                    </span>
                   </div>
                   <input
                     type="range"
                     min="10"
                     max="100"
                     step="10"
-                    value={Math.round((watermark?.opacity ?? 0.30) * 100)}
-                    onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), opacity: Number(e.target.value) / 100 })}
+                    value={Math.round((watermark?.opacity ?? 0.3) * 100)}
+                    onChange={(e) =>
+                      onWatermarkChange?.({
+                        ...(watermark ?? {
+                          text: "",
+                          opacity: 0.3,
+                          x: 0,
+                          y: 0,
+                          fontSize: 48,
+                          rotation: 0,
+                        }),
+                        opacity: Number(e.target.value) / 100,
+                      })
+                    }
                     className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                    style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((Math.round((watermark?.opacity ?? 0.30) * 100) - 10) / 90) * 100}%, #e8dcc8 ${((Math.round((watermark?.opacity ?? 0.30) * 100) - 10) / 90) * 100}%, #e8dcc8 100%)` }}
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((Math.round((watermark?.opacity ?? 0.3) * 100) - 10) / 90) * 100}%, #e8dcc8 ${((Math.round((watermark?.opacity ?? 0.3) * 100) - 10) / 90) * 100}%, #e8dcc8 100%)`,
+                    }}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
-                    <label className="text-xs text-[#5d4e37] font-inter">Text Size</label>
-                    <span className="text-xs font-bold text-[#8b6834]">{watermark?.fontSize ?? 48}px</span>
+                    <label className="text-xs text-[#5d4e37] font-inter">
+                      Text Size
+                    </label>
+                    <span className="text-xs font-bold text-[#8b6834]">
+                      {watermark?.fontSize ?? 48}px
+                    </span>
                   </div>
                   <input
                     type="range"
@@ -1425,15 +1730,33 @@ export default function CustomizationPanel({
                     max="120"
                     step="10"
                     value={watermark?.fontSize ?? 48}
-                    onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), fontSize: Number(e.target.value) })}
+                    onChange={(e) =>
+                      onWatermarkChange?.({
+                        ...(watermark ?? {
+                          text: "",
+                          opacity: 0.3,
+                          x: 0,
+                          y: 0,
+                          fontSize: 48,
+                          rotation: 0,
+                        }),
+                        fontSize: Number(e.target.value),
+                      })
+                    }
                     className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                    style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((watermark?.fontSize ?? 48) - 20) / 100) * 100}%, #e8dcc8 ${(((watermark?.fontSize ?? 48) - 20) / 100) * 100}%, #e8dcc8 100%)` }}
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((watermark?.fontSize ?? 48) - 20) / 100) * 100}%, #e8dcc8 ${(((watermark?.fontSize ?? 48) - 20) / 100) * 100}%, #e8dcc8 100%)`,
+                    }}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
-                    <label className="text-xs text-[#5d4e37] font-inter">Angle</label>
-                    <span className="text-xs font-bold text-[#8b6834]">{watermark?.rotation ?? 0}°</span>
+                    <label className="text-xs text-[#5d4e37] font-inter">
+                      Angle
+                    </label>
+                    <span className="text-xs font-bold text-[#8b6834]">
+                      {watermark?.rotation ?? 0}°
+                    </span>
                   </div>
                   <input
                     type="range"
@@ -1441,16 +1764,35 @@ export default function CustomizationPanel({
                     max="90"
                     step="10"
                     value={watermark?.rotation ?? 0}
-                    onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), rotation: Number(e.target.value) })}
+                    onChange={(e) =>
+                      onWatermarkChange?.({
+                        ...(watermark ?? {
+                          text: "",
+                          opacity: 0.3,
+                          x: 0,
+                          y: 0,
+                          fontSize: 48,
+                          rotation: 0,
+                        }),
+                        rotation: Number(e.target.value),
+                      })
+                    }
                     className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                    style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((watermark?.rotation ?? 0) + 90) / 180) * 100}%, #e8dcc8 ${(((watermark?.rotation ?? 0) + 90) / 180) * 100}%, #e8dcc8 100%)` }}
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(((watermark?.rotation ?? 0) + 90) / 180) * 100}%, #e8dcc8 ${(((watermark?.rotation ?? 0) + 90) / 180) * 100}%, #e8dcc8 100%)`,
+                    }}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center">
-                      <label className="text-xs text-[#5d4e37] font-inter">Move Left / Right</label>
-                      <span className="text-xs font-bold text-[#8b6834]">{(watermark?.x ?? 0) > 0 ? "+" : ""}{watermark?.x ?? 0}</span>
+                      <label className="text-xs text-[#5d4e37] font-inter">
+                        Move Left / Right
+                      </label>
+                      <span className="text-xs font-bold text-[#8b6834]">
+                        {(watermark?.x ?? 0) > 0 ? "+" : ""}
+                        {watermark?.x ?? 0}
+                      </span>
                     </div>
                     <input
                       type="range"
@@ -1458,9 +1800,23 @@ export default function CustomizationPanel({
                       max="200"
                       step="10"
                       value={watermark?.x ?? 0}
-                      onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), x: Number(e.target.value) })}
+                      onChange={(e) =>
+                        onWatermarkChange?.({
+                          ...(watermark ?? {
+                            text: "",
+                            opacity: 0.3,
+                            x: 0,
+                            y: 0,
+                            fontSize: 48,
+                            rotation: 0,
+                          }),
+                          x: Number(e.target.value),
+                        })
+                      }
                       className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                      style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((watermark?.x ?? 0) + 200) / 4}%, #e8dcc8 ${((watermark?.x ?? 0) + 200) / 4}%, #e8dcc8 100%)` }}
+                      style={{
+                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((watermark?.x ?? 0) + 200) / 4}%, #e8dcc8 ${((watermark?.x ?? 0) + 200) / 4}%, #e8dcc8 100%)`,
+                      }}
                     />
                     <div className="flex justify-between text-[10px] text-[#9d8c7a] font-inter">
                       <span>← Left</span>
@@ -1469,8 +1825,12 @@ export default function CustomizationPanel({
                   </div>
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center">
-                      <label className="text-xs text-[#5d4e37] font-inter">Move Up / Down</label>
-                      <span className="text-xs font-bold text-[#8b6834]">{watermark?.y ?? 100}px</span>
+                      <label className="text-xs text-[#5d4e37] font-inter">
+                        Move Up / Down
+                      </label>
+                      <span className="text-xs font-bold text-[#8b6834]">
+                        {watermark?.y ?? 100}px
+                      </span>
                     </div>
                     <input
                       type="range"
@@ -1478,9 +1838,23 @@ export default function CustomizationPanel({
                       max="500"
                       step="10"
                       value={watermark?.y ?? 100}
-                      onChange={(e) => onWatermarkChange?.({ ...(watermark ?? { text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0 }), y: Number(e.target.value) })}
+                      onChange={(e) =>
+                        onWatermarkChange?.({
+                          ...(watermark ?? {
+                            text: "",
+                            opacity: 0.3,
+                            x: 0,
+                            y: 0,
+                            fontSize: 48,
+                            rotation: 0,
+                          }),
+                          y: Number(e.target.value),
+                        })
+                      }
                       className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
-                      style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((watermark?.y ?? 100) / 500) * 100}%, #e8dcc8 ${((watermark?.y ?? 100) / 500) * 100}%, #e8dcc8 100%)` }}
+                      style={{
+                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((watermark?.y ?? 100) / 500) * 100}%, #e8dcc8 ${((watermark?.y ?? 100) / 500) * 100}%, #e8dcc8 100%)`,
+                      }}
                     />
                     <div className="flex justify-between text-[10px] text-[#9d8c7a] font-inter">
                       <span>↓ Bottom</span>
@@ -1566,63 +1940,222 @@ export default function CustomizationPanel({
                     <button
                       onClick={() =>
                         setExpandedFontSection(
-                          expandedFontSection === "commentText" ? null : "commentText",
+                          expandedFontSection === "commentText"
+                            ? null
+                            : "commentText",
                         )
                       }
                       className="w-full px-3 py-2 flex items-center justify-between bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors"
                     >
-                      <span className="text-xs font-bold text-[#2c2419] tracking-wide">COMMENT TEXT</span>
+                      <span className="text-xs font-bold text-[#2c2419] tracking-wide">
+                        COMMENT TEXT
+                      </span>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-[#5d4e37]">
-                          {fontStyles.commentText.fontSize} · {fontStyles.commentText.fontFamily.split(" ")[0]}
+                          {fontStyles.commentText.fontSize} ·{" "}
+                          {fontStyles.commentText.fontFamily.split(" ")[0]}
                         </span>
-                        <svg className={`w-3.5 h-3.5 text-[#8b6834] transition-transform ${expandedFontSection === "commentText" ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <svg
+                          className={`w-3.5 h-3.5 text-[#8b6834] transition-transform ${expandedFontSection === "commentText" ? "rotate-180" : ""}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
                         </svg>
                       </div>
                     </button>
                     {expandedFontSection === "commentText" && (
                       <div className="px-3 py-2.5 space-y-2 border-t border-[#f0ebe0]">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">Font</span>
+                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                            Font
+                          </span>
                           <div className="flex gap-1 flex-1">
-                            {(contentLanguage === "english" ? ENGLISH_FONTS : BANGLA_FONTS).map((font) => (
-                              <button key={font.id} onClick={() => onFontStylesChange({ ...fontStyles, commentText: { ...fontStyles.commentText!, fontFamily: font.id } })} className={`flex-1 py-1 px-0.5 text-[10px] font-bold border transition-all truncate ${fontStyles.commentText!.fontFamily === font.id ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}>{font.name}</button>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">Size</span>
-                          <input type="range" min="16" max="56" value={parseInt(fontStyles.commentText!.fontSize)} onChange={(e) => onFontStylesChange({ ...fontStyles, commentText: { ...fontStyles.commentText!, fontSize: `${e.target.value}px` } })} className="flex-1 h-1 appearance-none cursor-pointer" style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.commentText!.fontSize) - 16) / 40) * 100}%, #e8dcc8 ${((parseInt(fontStyles.commentText!.fontSize) - 16) / 40) * 100}%, #e8dcc8 100%)` }} />
-                          <span className="text-[10px] font-bold text-[#8b6834] w-9 text-right">{fontStyles.commentText!.fontSize}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">Weight</span>
-                          <div className="flex gap-1 flex-1">
-                            {([["400","N"],["500","M"],["600","S"],["700","B"],["800","XB"]] as const).map(([w, l]) => (
-                              <button key={w} onClick={() => onFontStylesChange({ ...fontStyles, commentText: { ...fontStyles.commentText!, fontWeight: w } })} className={`flex-1 py-1 text-[10px] font-bold border transition-all ${fontStyles.commentText!.fontWeight === w ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}>{l}</button>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">Color</span>
-                          <input type="color" value={fontStyles.commentText!.color} onChange={(e) => onFontStylesChange({ ...fontStyles, commentText: { ...fontStyles.commentText!, color: e.target.value } })} className="h-7 w-9 border border-[#d4c4b0] cursor-pointer shrink-0" />
-                          <div className="flex-1 border border-[#d4c4b0] px-2 py-1">
-                            <input type="text" value={fontStyles.commentText!.color.toUpperCase()} maxLength={7} onChange={(e) => { let v = e.target.value.toUpperCase(); if (!v.startsWith("#")) v = "#" + v.replace(/[^0-9A-F]/g, ""); else v = "#" + v.slice(1).replace(/[^0-9A-F]/g, ""); v = v.slice(0, 7); if (v.length === 7) onFontStylesChange({ ...fontStyles, commentText: { ...fontStyles.commentText!, color: v } }); }} className="w-full text-xs font-mono text-[#2c2419] font-semibold bg-transparent outline-none" />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">Align</span>
-                          <div className="flex gap-1">
-                            {(["left", "center", "right"] as const).map((align) => (
-                              <button key={align} onClick={() => onFontStylesChange({ ...fontStyles, commentText: { ...fontStyles.commentText!, textAlign: align } })} className={`w-7 h-7 flex items-center justify-center border transition-all ${fontStyles.commentText!.textAlign === align ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#5d4e37] hover:border-[#8b6834]"}`}>
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  {align === "left" && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h10M4 18h14" />}
-                                  {align === "center" && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M7 12h10M5 18h14" />}
-                                  {align === "right" && <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M10 12h10M6 18h14" />}
-                                </svg>
+                            {(contentLanguage === "english"
+                              ? ENGLISH_FONTS
+                              : BANGLA_FONTS
+                            ).map((font) => (
+                              <button
+                                key={font.id}
+                                onClick={() =>
+                                  onFontStylesChange({
+                                    ...fontStyles,
+                                    commentText: {
+                                      ...fontStyles.commentText!,
+                                      fontFamily: font.id,
+                                    },
+                                  })
+                                }
+                                className={`flex-1 py-1 px-0.5 text-[10px] font-bold border transition-all truncate ${fontStyles.commentText!.fontFamily === font.id ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
+                              >
+                                {font.name}
                               </button>
                             ))}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                            Size
+                          </span>
+                          <input
+                            type="range"
+                            min="16"
+                            max="56"
+                            value={parseInt(fontStyles.commentText!.fontSize)}
+                            onChange={(e) =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                commentText: {
+                                  ...fontStyles.commentText!,
+                                  fontSize: `${e.target.value}px`,
+                                },
+                              })
+                            }
+                            className="flex-1 h-1 appearance-none cursor-pointer"
+                            style={{
+                              background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.commentText!.fontSize) - 16) / 40) * 100}%, #e8dcc8 ${((parseInt(fontStyles.commentText!.fontSize) - 16) / 40) * 100}%, #e8dcc8 100%)`,
+                            }}
+                          />
+                          <span className="text-[10px] font-bold text-[#8b6834] w-9 text-right">
+                            {fontStyles.commentText!.fontSize}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                            Weight
+                          </span>
+                          <div className="flex gap-1 flex-1">
+                            {(
+                              [
+                                ["400", "N"],
+                                ["500", "M"],
+                                ["600", "S"],
+                                ["700", "B"],
+                                ["800", "XB"],
+                              ] as const
+                            ).map(([w, l]) => (
+                              <button
+                                key={w}
+                                onClick={() =>
+                                  onFontStylesChange({
+                                    ...fontStyles,
+                                    commentText: {
+                                      ...fontStyles.commentText!,
+                                      fontWeight: w,
+                                    },
+                                  })
+                                }
+                                className={`flex-1 py-1 text-[10px] font-bold border transition-all ${fontStyles.commentText!.fontWeight === w ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
+                              >
+                                {l}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                            Color
+                          </span>
+                          <input
+                            type="color"
+                            value={fontStyles.commentText!.color}
+                            onChange={(e) =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                commentText: {
+                                  ...fontStyles.commentText!,
+                                  color: e.target.value,
+                                },
+                              })
+                            }
+                            className="h-7 w-9 border border-[#d4c4b0] cursor-pointer shrink-0"
+                          />
+                          <div className="flex-1 border border-[#d4c4b0] px-2 py-1">
+                            <input
+                              type="text"
+                              value={fontStyles.commentText!.color.toUpperCase()}
+                              maxLength={7}
+                              onChange={(e) => {
+                                let v = e.target.value.toUpperCase();
+                                if (!v.startsWith("#"))
+                                  v = "#" + v.replace(/[^0-9A-F]/g, "");
+                                else
+                                  v =
+                                    "#" + v.slice(1).replace(/[^0-9A-F]/g, "");
+                                v = v.slice(0, 7);
+                                if (v.length === 7)
+                                  onFontStylesChange({
+                                    ...fontStyles,
+                                    commentText: {
+                                      ...fontStyles.commentText!,
+                                      color: v,
+                                    },
+                                  });
+                              }}
+                              className="w-full text-xs font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                            Align
+                          </span>
+                          <div className="flex gap-1">
+                            {(["left", "center", "right"] as const).map(
+                              (align) => (
+                                <button
+                                  key={align}
+                                  onClick={() =>
+                                    onFontStylesChange({
+                                      ...fontStyles,
+                                      commentText: {
+                                        ...fontStyles.commentText!,
+                                        textAlign: align,
+                                      },
+                                    })
+                                  }
+                                  className={`w-7 h-7 flex items-center justify-center border transition-all ${fontStyles.commentText!.textAlign === align ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#5d4e37] hover:border-[#8b6834]"}`}
+                                >
+                                  <svg
+                                    className="w-3 h-3"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    {align === "left" && (
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 6h16M4 12h10M4 18h14"
+                                      />
+                                    )}
+                                    {align === "center" && (
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 6h16M7 12h10M5 18h14"
+                                      />
+                                    )}
+                                    {align === "right" && (
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 6h16M10 12h10M6 18h14"
+                                      />
+                                    )}
+                                  </svg>
+                                </button>
+                              ),
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1635,49 +2168,166 @@ export default function CustomizationPanel({
                     <button
                       onClick={() =>
                         setExpandedFontSection(
-                          expandedFontSection === "personName" ? null : "personName",
+                          expandedFontSection === "personName"
+                            ? null
+                            : "personName",
                         )
                       }
                       className="w-full px-3 py-2 flex items-center justify-between bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors"
                     >
-                      <span className="text-xs font-bold text-[#2c2419] tracking-wide">PERSON NAME</span>
+                      <span className="text-xs font-bold text-[#2c2419] tracking-wide">
+                        PERSON NAME
+                      </span>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-[#5d4e37]">
-                          {fontStyles.personName.fontSize} · {fontStyles.personName.fontFamily.split(" ")[0]}
+                          {fontStyles.personName.fontSize} ·{" "}
+                          {fontStyles.personName.fontFamily.split(" ")[0]}
                         </span>
-                        <svg className={`w-3.5 h-3.5 text-[#8b6834] transition-transform ${expandedFontSection === "personName" ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <svg
+                          className={`w-3.5 h-3.5 text-[#8b6834] transition-transform ${expandedFontSection === "personName" ? "rotate-180" : ""}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
                         </svg>
                       </div>
                     </button>
                     {expandedFontSection === "personName" && (
                       <div className="px-3 py-2.5 space-y-2 border-t border-[#f0ebe0]">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">Font</span>
+                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                            Font
+                          </span>
                           <div className="flex gap-1 flex-1">
-                            {(contentLanguage === "english" ? ENGLISH_FONTS : BANGLA_FONTS).map((font) => (
-                              <button key={font.id} onClick={() => onFontStylesChange({ ...fontStyles, personName: { ...fontStyles.personName!, fontFamily: font.id } })} className={`flex-1 py-1 px-0.5 text-[10px] font-bold border transition-all truncate ${fontStyles.personName!.fontFamily === font.id ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}>{font.name}</button>
+                            {(contentLanguage === "english"
+                              ? ENGLISH_FONTS
+                              : BANGLA_FONTS
+                            ).map((font) => (
+                              <button
+                                key={font.id}
+                                onClick={() =>
+                                  onFontStylesChange({
+                                    ...fontStyles,
+                                    personName: {
+                                      ...fontStyles.personName!,
+                                      fontFamily: font.id,
+                                    },
+                                  })
+                                }
+                                className={`flex-1 py-1 px-0.5 text-[10px] font-bold border transition-all truncate ${fontStyles.personName!.fontFamily === font.id ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
+                              >
+                                {font.name}
+                              </button>
                             ))}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">Size</span>
-                          <input type="range" min="12" max="32" value={parseInt(fontStyles.personName!.fontSize)} onChange={(e) => onFontStylesChange({ ...fontStyles, personName: { ...fontStyles.personName!, fontSize: `${e.target.value}px` } })} className="flex-1 h-1 appearance-none cursor-pointer" style={{ background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.personName!.fontSize) - 12) / 20) * 100}%, #e8dcc8 ${((parseInt(fontStyles.personName!.fontSize) - 12) / 20) * 100}%, #e8dcc8 100%)` }} />
-                          <span className="text-[10px] font-bold text-[#8b6834] w-9 text-right">{fontStyles.personName!.fontSize}</span>
+                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                            Size
+                          </span>
+                          <input
+                            type="range"
+                            min="12"
+                            max="32"
+                            value={parseInt(fontStyles.personName!.fontSize)}
+                            onChange={(e) =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                personName: {
+                                  ...fontStyles.personName!,
+                                  fontSize: `${e.target.value}px`,
+                                },
+                              })
+                            }
+                            className="flex-1 h-1 appearance-none cursor-pointer"
+                            style={{
+                              background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.personName!.fontSize) - 12) / 20) * 100}%, #e8dcc8 ${((parseInt(fontStyles.personName!.fontSize) - 12) / 20) * 100}%, #e8dcc8 100%)`,
+                            }}
+                          />
+                          <span className="text-[10px] font-bold text-[#8b6834] w-9 text-right">
+                            {fontStyles.personName!.fontSize}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">Weight</span>
+                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                            Weight
+                          </span>
                           <div className="flex gap-1 flex-1">
-                            {([['400','N'],['500','M'],['600','S'],['700','B'],['800','XB']] as const).map(([w, l]) => (
-                              <button key={w} onClick={() => onFontStylesChange({ ...fontStyles, personName: { ...fontStyles.personName!, fontWeight: w } })} className={`flex-1 py-1 text-[10px] font-bold border transition-all ${fontStyles.personName!.fontWeight === w ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}>{l}</button>
+                            {(
+                              [
+                                ["400", "N"],
+                                ["500", "M"],
+                                ["600", "S"],
+                                ["700", "B"],
+                                ["800", "XB"],
+                              ] as const
+                            ).map(([w, l]) => (
+                              <button
+                                key={w}
+                                onClick={() =>
+                                  onFontStylesChange({
+                                    ...fontStyles,
+                                    personName: {
+                                      ...fontStyles.personName!,
+                                      fontWeight: w,
+                                    },
+                                  })
+                                }
+                                className={`flex-1 py-1 text-[10px] font-bold border transition-all ${fontStyles.personName!.fontWeight === w ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
+                              >
+                                {l}
+                              </button>
                             ))}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">Color</span>
-                          <input type="color" value={fontStyles.personName!.color} onChange={(e) => onFontStylesChange({ ...fontStyles, personName: { ...fontStyles.personName!, color: e.target.value } })} className="h-7 w-9 border border-[#d4c4b0] cursor-pointer shrink-0" />
+                          <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                            Color
+                          </span>
+                          <input
+                            type="color"
+                            value={fontStyles.personName!.color}
+                            onChange={(e) =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                personName: {
+                                  ...fontStyles.personName!,
+                                  color: e.target.value,
+                                },
+                              })
+                            }
+                            className="h-7 w-9 border border-[#d4c4b0] cursor-pointer shrink-0"
+                          />
                           <div className="flex-1 border border-[#d4c4b0] px-2 py-1">
-                            <input type="text" value={fontStyles.personName!.color.toUpperCase()} maxLength={7} onChange={(e) => { let v = e.target.value.toUpperCase(); if (!v.startsWith("#")) v = "#" + v.replace(/[^0-9A-F]/g, ""); else v = "#" + v.slice(1).replace(/[^0-9A-F]/g, ""); v = v.slice(0, 7); if (v.length === 7) onFontStylesChange({ ...fontStyles, personName: { ...fontStyles.personName!, color: v } }); }} className="w-full text-xs font-mono text-[#2c2419] font-semibold bg-transparent outline-none" />
+                            <input
+                              type="text"
+                              value={fontStyles.personName!.color.toUpperCase()}
+                              maxLength={7}
+                              onChange={(e) => {
+                                let v = e.target.value.toUpperCase();
+                                if (!v.startsWith("#"))
+                                  v = "#" + v.replace(/[^0-9A-F]/g, "");
+                                else
+                                  v =
+                                    "#" + v.slice(1).replace(/[^0-9A-F]/g, "");
+                                v = v.slice(0, 7);
+                                if (v.length === 7)
+                                  onFontStylesChange({
+                                    ...fontStyles,
+                                    personName: {
+                                      ...fontStyles.personName!,
+                                      color: v,
+                                    },
+                                  });
+                              }}
+                              className="w-full text-xs font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                            />
                           </div>
                         </div>
                       </div>
@@ -1853,257 +2503,260 @@ export default function CustomizationPanel({
             </div>
 
             {/* Headline */}
-            {cardType !== "comment" && <div className="border border-[#d4c4b0] overflow-hidden">
-              <button
-                onClick={() =>
-                  setExpandedFontSection(
-                    expandedFontSection === "headline" ? null : "headline",
-                  )
-                }
-                className="w-full px-3 py-2 flex items-center justify-between bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors"
-              >
-                <span className="text-xs font-bold text-[#2c2419] tracking-wide">
-                  HEADLINE
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-[#5d4e37]">
-                    {fontStyles.headline.fontSize} ·{" "}
-                    {fontStyles.headline.fontFamily.split(" ")[0]}
+            {cardType !== "comment" && (
+              <div className="border border-[#d4c4b0] overflow-hidden">
+                <button
+                  onClick={() =>
+                    setExpandedFontSection(
+                      expandedFontSection === "headline" ? null : "headline",
+                    )
+                  }
+                  className="w-full px-3 py-2 flex items-center justify-between bg-[#faf8f5] hover:bg-[#f5f0e8] transition-colors"
+                >
+                  <span className="text-xs font-bold text-[#2c2419] tracking-wide">
+                    HEADLINE
                   </span>
-                  <svg
-                    className={`w-3.5 h-3.5 text-[#8b6834] transition-transform ${expandedFontSection === "headline" ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </button>
-
-              {expandedFontSection === "headline" && (
-                <div className="px-3 py-2.5 space-y-2 border-t border-[#f0ebe0]">
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
-                      Font
+                    <span className="text-[10px] text-[#5d4e37]">
+                      {fontStyles.headline.fontSize} ·{" "}
+                      {fontStyles.headline.fontFamily.split(" ")[0]}
                     </span>
-                    <div className="flex gap-1 flex-1">
-                      {(contentLanguage === "english"
-                        ? ENGLISH_FONTS
-                        : BANGLA_FONTS
-                      ).map((font) => (
-                        <button
-                          key={font.id}
-                          onClick={() =>
-                            onFontStylesChange({
-                              ...fontStyles,
-                              headline: {
-                                ...fontStyles.headline,
-                                fontFamily: font.id,
-                              },
-                            })
-                          }
-                          className={`flex-1 py-1 px-0.5 text-[10px] font-bold border transition-all truncate ${fontStyles.headline.fontFamily === font.id ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
-                        >
-                          {font.name}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
-                      Size
-                    </span>
-                    <input
-                      type="range"
-                      min="16"
-                      max="48"
-                      value={parseInt(fontStyles.headline.fontSize)}
-                      onChange={(e) =>
-                        onFontStylesChange({
-                          ...fontStyles,
-                          headline: {
-                            ...fontStyles.headline,
-                            fontSize: `${e.target.value}px`,
-                          },
-                        })
-                      }
-                      className="flex-1 h-1 appearance-none cursor-pointer"
-                      style={{
-                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 100%)`,
-                      }}
-                    />
-                    <span className="text-[10px] font-bold text-[#8b6834] w-9 text-right">
-                      {fontStyles.headline.fontSize}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
-                      Weight
-                    </span>
-                    <div className="flex gap-1 flex-1">
-                      {(
-                        [
-                          ["400", "N"],
-                          ["500", "M"],
-                          ["600", "S"],
-                          ["700", "B"],
-                          ["800", "XB"],
-                        ] as const
-                      ).map(([w, l]) => (
-                        <button
-                          key={w}
-                          onClick={() =>
-                            onFontStylesChange({
-                              ...fontStyles,
-                              headline: {
-                                ...fontStyles.headline,
-                                fontWeight: w,
-                              },
-                            })
-                          }
-                          className={`flex-1 py-1 text-[10px] font-bold border transition-all ${fontStyles.headline.fontWeight === w ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
-                        >
-                          {l}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
-                      Color
-                    </span>
-                    <input
-                      type="color"
-                      value={fontStyles.headline.color}
-                      onChange={(e) =>
-                        onFontStylesChange({
-                          ...fontStyles,
-                          headline: {
-                            ...fontStyles.headline,
-                            color: e.target.value,
-                          },
-                        })
-                      }
-                      className="h-7 w-9 border border-[#d4c4b0] cursor-pointer shrink-0"
-                    />
-                    <div className="flex-1 border border-[#d4c4b0] px-2 py-1">
-                      <input
-                        type="text"
-                        value={fontStyles.headline.color.toUpperCase()}
-                        maxLength={7}
-                        onChange={(e) => {
-                          let v = e.target.value.toUpperCase();
-                          if (!v.startsWith("#"))
-                            v = "#" + v.replace(/[^0-9A-F]/g, "");
-                          else v = "#" + v.slice(1).replace(/[^0-9A-F]/g, "");
-                          v = v.slice(0, 7);
-                          if (v.length === 7)
-                            onFontStylesChange({
-                              ...fontStyles,
-                              headline: { ...fontStyles.headline, color: v },
-                            });
-                        }}
-                        className="w-full text-xs font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                    <svg
+                      className={`w-3.5 h-3.5 text-[#8b6834] transition-transform ${expandedFontSection === "headline" ? "rotate-180" : ""}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
                       />
-                    </div>
+                    </svg>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
-                      Align
-                    </span>
-                    <div className="flex gap-1">
-                      {(["left", "center", "right"] as const).map((align) => (
-                        <button
-                          key={align}
-                          onClick={() =>
-                            onFontStylesChange({
-                              ...fontStyles,
-                              headline: {
-                                ...fontStyles.headline,
-                                textAlign: align,
-                              },
-                            })
-                          }
-                          className={`w-7 h-7 flex items-center justify-center border transition-all ${fontStyles.headline.textAlign === align ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#5d4e37] hover:border-[#8b6834]"}`}
-                        >
-                          <svg
-                            className="w-3 h-3"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            {align === "left" && (
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 6h16M4 12h10M4 18h14"
-                              />
-                            )}
-                            {align === "center" && (
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 6h16M7 12h10M5 18h14"
-                              />
-                            )}
-                            {align === "right" && (
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 6h16M10 12h10M6 18h14"
-                              />
-                            )}
-                          </svg>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
-                      Shadow
-                    </span>
-                    <div className="flex gap-1 flex-1">
-                      {(
-                        ["none", "soft", "hard", "glow", "outline"] as const
-                      ).map((preset) => (
-                        <button
-                          key={preset}
-                          onClick={() =>
-                            onFontStylesChange({
-                              ...fontStyles,
-                              headline: {
-                                ...fontStyles.headline,
-                                textShadow: {
-                                  preset,
-                                  angle:
-                                    fontStyles.headline.textShadow?.angle ||
-                                    135,
+                </button>
+
+                {expandedFontSection === "headline" && (
+                  <div className="px-3 py-2.5 space-y-2 border-t border-[#f0ebe0]">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                        Font
+                      </span>
+                      <div className="flex gap-1 flex-1">
+                        {(contentLanguage === "english"
+                          ? ENGLISH_FONTS
+                          : BANGLA_FONTS
+                        ).map((font) => (
+                          <button
+                            key={font.id}
+                            onClick={() =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                headline: {
+                                  ...fontStyles.headline,
+                                  fontFamily: font.id,
                                 },
-                              },
-                            })
-                          }
-                          className={`flex-1 py-1 text-[10px] font-bold border transition-all capitalize ${(fontStyles.headline.textShadow?.preset || "none") === preset ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
-                        >
-                          {preset === "outline"
-                            ? "Out"
-                            : preset.charAt(0).toUpperCase() + preset.slice(1)}
-                        </button>
-                      ))}
+                              })
+                            }
+                            className={`flex-1 py-1 px-0.5 text-[10px] font-bold border transition-all truncate ${fontStyles.headline.fontFamily === font.id ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
+                          >
+                            {font.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                        Size
+                      </span>
+                      <input
+                        type="range"
+                        min="16"
+                        max="48"
+                        value={parseInt(fontStyles.headline.fontSize)}
+                        onChange={(e) =>
+                          onFontStylesChange({
+                            ...fontStyles,
+                            headline: {
+                              ...fontStyles.headline,
+                              fontSize: `${e.target.value}px`,
+                            },
+                          })
+                        }
+                        className="flex-1 h-1 appearance-none cursor-pointer"
+                        style={{
+                          background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 ${((parseInt(fontStyles.headline.fontSize) - 16) / 32) * 100}%, #e8dcc8 100%)`,
+                        }}
+                      />
+                      <span className="text-[10px] font-bold text-[#8b6834] w-9 text-right">
+                        {fontStyles.headline.fontSize}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                        Weight
+                      </span>
+                      <div className="flex gap-1 flex-1">
+                        {(
+                          [
+                            ["400", "N"],
+                            ["500", "M"],
+                            ["600", "S"],
+                            ["700", "B"],
+                            ["800", "XB"],
+                          ] as const
+                        ).map(([w, l]) => (
+                          <button
+                            key={w}
+                            onClick={() =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                headline: {
+                                  ...fontStyles.headline,
+                                  fontWeight: w,
+                                },
+                              })
+                            }
+                            className={`flex-1 py-1 text-[10px] font-bold border transition-all ${fontStyles.headline.fontWeight === w ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
+                          >
+                            {l}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                        Color
+                      </span>
+                      <input
+                        type="color"
+                        value={fontStyles.headline.color}
+                        onChange={(e) =>
+                          onFontStylesChange({
+                            ...fontStyles,
+                            headline: {
+                              ...fontStyles.headline,
+                              color: e.target.value,
+                            },
+                          })
+                        }
+                        className="h-7 w-9 border border-[#d4c4b0] cursor-pointer shrink-0"
+                      />
+                      <div className="flex-1 border border-[#d4c4b0] px-2 py-1">
+                        <input
+                          type="text"
+                          value={fontStyles.headline.color.toUpperCase()}
+                          maxLength={7}
+                          onChange={(e) => {
+                            let v = e.target.value.toUpperCase();
+                            if (!v.startsWith("#"))
+                              v = "#" + v.replace(/[^0-9A-F]/g, "");
+                            else v = "#" + v.slice(1).replace(/[^0-9A-F]/g, "");
+                            v = v.slice(0, 7);
+                            if (v.length === 7)
+                              onFontStylesChange({
+                                ...fontStyles,
+                                headline: { ...fontStyles.headline, color: v },
+                              });
+                          }}
+                          className="w-full text-xs font-mono text-[#2c2419] font-semibold bg-transparent outline-none"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                        Align
+                      </span>
+                      <div className="flex gap-1">
+                        {(["left", "center", "right"] as const).map((align) => (
+                          <button
+                            key={align}
+                            onClick={() =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                headline: {
+                                  ...fontStyles.headline,
+                                  textAlign: align,
+                                },
+                              })
+                            }
+                            className={`w-7 h-7 flex items-center justify-center border transition-all ${fontStyles.headline.textAlign === align ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#5d4e37] hover:border-[#8b6834]"}`}
+                          >
+                            <svg
+                              className="w-3 h-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              {align === "left" && (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 6h16M4 12h10M4 18h14"
+                                />
+                              )}
+                              {align === "center" && (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 6h16M7 12h10M5 18h14"
+                                />
+                              )}
+                              {align === "right" && (
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 6h16M10 12h10M6 18h14"
+                                />
+                              )}
+                            </svg>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-semibold text-[#5d4e37] w-14 shrink-0">
+                        Shadow
+                      </span>
+                      <div className="flex gap-1 flex-1">
+                        {(
+                          ["none", "soft", "hard", "glow", "outline"] as const
+                        ).map((preset) => (
+                          <button
+                            key={preset}
+                            onClick={() =>
+                              onFontStylesChange({
+                                ...fontStyles,
+                                headline: {
+                                  ...fontStyles.headline,
+                                  textShadow: {
+                                    preset,
+                                    angle:
+                                      fontStyles.headline.textShadow?.angle ||
+                                      135,
+                                  },
+                                },
+                              })
+                            }
+                            className={`flex-1 py-1 text-[10px] font-bold border transition-all capitalize ${(fontStyles.headline.textShadow?.preset || "none") === preset ? "border-[#8b6834] bg-[#8b6834] text-white" : "border-[#d4c4b0] text-[#2c2419] hover:border-[#8b6834]"}`}
+                          >
+                            {preset === "outline"
+                              ? "Out"
+                              : preset.charAt(0).toUpperCase() +
+                                preset.slice(1)}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>}
+                )}
+              </div>
+            )}
 
             {/* Font Selection Modal (Placeholder) */}
             {showFontModal && (
@@ -2971,35 +3624,45 @@ export default function CustomizationPanel({
         {/* Footer Tab */}
         {activeTab === "Footer" && (
           <div className="space-y-5">
-
             {/* ── Show / Hide footer toggle (URL cards only) ── */}
-            {cardType === "url" && visibilitySettings && "showFooter" in visibilitySettings && (
-              <div className="flex items-center justify-between py-2 border-b border-[#e8dcc8]">
-                <span className="text-sm font-semibold text-[#2c2419] font-inter">Show Footer</span>
-                <button
-                  onClick={() =>
-                    onVisibilityChange?.({
-                      ...visibilitySettings,
-                      showFooter: !(visibilitySettings as VisibilitySettings).showFooter,
-                    })
-                  }
-                  className={`relative w-11 h-6 rounded-full transition-colors ${
-                    (visibilitySettings as VisibilitySettings).showFooter ? "bg-[#8b6834]" : "bg-[#d4c4b0]"
-                  }`}
-                >
-                  <span
-                    className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
-                      (visibilitySettings as VisibilitySettings).showFooter ? "left-5" : "left-0.5"
+            {cardType === "url" &&
+              visibilitySettings &&
+              "showFooter" in visibilitySettings && (
+                <div className="flex items-center justify-between py-2 border-b border-[#e8dcc8]">
+                  <span className="text-sm font-semibold text-[#2c2419] font-inter">
+                    Show Footer
+                  </span>
+                  <button
+                    onClick={() =>
+                      onVisibilityChange?.({
+                        ...visibilitySettings,
+                        showFooter: !(visibilitySettings as VisibilitySettings)
+                          .showFooter,
+                      })
+                    }
+                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                      (visibilitySettings as VisibilitySettings).showFooter
+                        ? "bg-[#8b6834]"
+                        : "bg-[#d4c4b0]"
                     }`}
-                  />
-                </button>
-              </div>
-            )}
+                  >
+                    <span
+                      className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                        (visibilitySettings as VisibilitySettings).showFooter
+                          ? "left-5"
+                          : "left-0.5"
+                      }`}
+                    />
+                  </button>
+                </div>
+              )}
 
             {/* ── Icon color (URL cards only) ── */}
             {cardType === "url" && (
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-[#2c2419] font-inter">Icon Style</label>
+                <label className="text-sm font-semibold text-[#2c2419] font-inter">
+                  Icon Style
+                </label>
                 <div className="flex gap-2">
                   <button
                     onClick={() => onFooterIconColorChange?.("white")}
@@ -3029,8 +3692,12 @@ export default function CustomizationPanel({
             {cardType === "url" && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-[#2c2419] font-inter">Footer Items</p>
-                  <span className="text-xs text-[#8b7055]">{footerItems.length}/3</span>
+                  <p className="text-sm font-semibold text-[#2c2419] font-inter">
+                    Footer Items
+                  </p>
+                  <span className="text-xs text-[#8b7055]">
+                    {footerItems.length}/3
+                  </span>
                 </div>
 
                 {/* Existing items */}
@@ -3042,7 +3709,13 @@ export default function CustomizationPanel({
                 )}
 
                 {/* Add new item */}
-                {footerItems.length < 3 && <FooterItemForm onAdd={(item) => onFooterItemsChange?.([...footerItems, item])} />}
+                {footerItems.length < 3 && (
+                  <FooterItemForm
+                    onAdd={(item) =>
+                      onFooterItemsChange?.([...footerItems, item])
+                    }
+                  />
+                )}
 
                 {footerItems.length === 0 && (
                   <p className="text-xs text-[#8b7055] font-inter text-center py-2">
@@ -3055,10 +3728,14 @@ export default function CustomizationPanel({
             {/* ── Font customisation ── */}
             {fontStyles?.footer && (
               <div className="space-y-4 border-t border-[#e8dcc8] pt-4">
-                <p className="text-sm font-semibold text-[#2c2419] font-inter">Text Style</p>
+                <p className="text-sm font-semibold text-[#2c2419] font-inter">
+                  Text Style
+                </p>
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-[#2c2419] font-inter">Font Size</label>
+                    <label className="text-sm font-medium text-[#2c2419] font-inter">
+                      Font Size
+                    </label>
                     <span className="text-sm font-bold text-[#8b6834] bg-[#e8dcc8] px-3 py-1 border border-[#d4c4b0]">
                       {fontStyles.footer.fontSize}
                     </span>
@@ -3071,7 +3748,10 @@ export default function CustomizationPanel({
                     onChange={(e) =>
                       onFontStylesChange?.({
                         ...fontStyles,
-                        footer: { ...fontStyles.footer, fontSize: `${e.target.value}px` },
+                        footer: {
+                          ...fontStyles.footer,
+                          fontSize: `${e.target.value}px`,
+                        },
                       })
                     }
                     className="w-full h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
@@ -3085,7 +3765,9 @@ export default function CustomizationPanel({
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">Text Color</label>
+                  <label className="text-sm font-medium text-[#2c2419] mb-2 block font-inter">
+                    Text Color
+                  </label>
                   <div className="flex gap-3">
                     <input
                       type="color"
@@ -3093,7 +3775,10 @@ export default function CustomizationPanel({
                       onChange={(e) =>
                         onFontStylesChange?.({
                           ...fontStyles,
-                          footer: { ...fontStyles.footer, color: e.target.value },
+                          footer: {
+                            ...fontStyles.footer,
+                            color: e.target.value,
+                          },
                         })
                       }
                       className="h-12 w-20 border-2 border-[#d4c4b0] cursor-pointer shadow-sm"
@@ -3104,8 +3789,11 @@ export default function CustomizationPanel({
                         value={fontStyles.footer.color.toUpperCase()}
                         onChange={(e) => {
                           let value = e.target.value.toUpperCase();
-                          if (!value.startsWith("#")) value = "#" + value.replace(/[^0-9A-F]/g, "");
-                          else value = "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
+                          if (!value.startsWith("#"))
+                            value = "#" + value.replace(/[^0-9A-F]/g, "");
+                          else
+                            value =
+                              "#" + value.slice(1).replace(/[^0-9A-F]/g, "");
                           value = value.slice(0, 7);
                           if (value.length === 7)
                             onFontStylesChange?.({

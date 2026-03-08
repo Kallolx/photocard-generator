@@ -28,6 +28,8 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import ClassicUrlCard from "@/components/cards/url-cards/ClassicUrlCard";
 import DuoUrlCard from "@/components/cards/url-cards/DuoUrlCard";
 import OverlayUrlCard from "@/components/cards/url-cards/OverlayUrlCard";
+import BannerUrlCard from "@/components/cards/url-cards/BannerUrlCard";
+import BlendUrlCard from "@/components/cards/url-cards/BlendUrlCard";
 import DownloadControls from "@/components/DownloadControls";
 import { toPng } from "html-to-image";
 import JSZip from "jszip";
@@ -318,6 +320,20 @@ export default function Home() {
         headline: { ...prev.headline, fontSize: "28px", color: "#FFFFFF" },
       }));
       setBackground({ type: "solid", color: "#E53E3E" });
+    } else if (theme === "banner") {
+      setFontStyles((prev) => ({
+        ...prev,
+        week: { ...prev.week, fontSize: "12px", fontWeight: "500", color: "#FFFFFF" },
+        date: { ...prev.date, fontSize: "12px", fontWeight: "500", color: "#FFFFFF" },
+        headline: { ...prev.headline, fontSize: "28px", fontWeight: "700", color: "#FFFFFF", textAlign: "left" },
+      }));
+    } else if (theme === "blend") {
+      setFontStyles((prev) => ({
+        ...prev,
+        week: { ...prev.week, fontSize: "11px", fontWeight: "500", color: "#4b5563" },
+        date: { ...prev.date, fontSize: "11px", fontWeight: "500", color: "#4b5563" },
+        headline: { ...prev.headline, fontSize: "30px", fontWeight: "700", color: "#111827", textAlign: "left" },
+      }));
     } else {
       // Reset to default for other themes
       setFontStyles((prev) => ({
@@ -336,6 +352,7 @@ export default function Home() {
           ...prev.headline,
           fontSize: "24px",
           color: "#FFFFFF",
+          textAlign: "center",
         },
       }));
     }
@@ -834,6 +851,10 @@ export default function Home() {
           <DuoUrlCard {...commonProps} />
         ) : theme === "overlay" ? (
           <OverlayUrlCard {...commonProps} />
+        ) : theme === "banner" ? (
+          <BannerUrlCard {...commonProps} />
+        ) : theme === "blend" ? (
+          <BlendUrlCard {...commonProps} />
         ) : (
           <ClassicUrlCard
             {...commonProps}
@@ -1159,6 +1180,36 @@ export default function Home() {
                 id={`temp-card-${i}`}
                 fullSize={true}
                 frameBorderColor={frameBorderColor}
+                adBannerImage={adBannerImage}
+                adBannerZoom={adBannerZoom}
+                fontStyles={fontStyles}
+                visibilitySettings={visibilitySettings}
+                isLogoFavicon={isLogoFavicon}
+              />,
+            );
+          } else if (theme === "banner") {
+            root.render(
+              <BannerUrlCard
+                data={item.data}
+                isGenerating={true}
+                background={background}
+                id={`temp-card-${i}`}
+                fullSize={true}
+                adBannerImage={adBannerImage}
+                adBannerZoom={adBannerZoom}
+                fontStyles={fontStyles}
+                visibilitySettings={visibilitySettings}
+                isLogoFavicon={isLogoFavicon}
+              />,
+            );
+          } else if (theme === "blend") {
+            root.render(
+              <BlendUrlCard
+                data={item.data}
+                isGenerating={true}
+                background={background}
+                id={`temp-card-${i}`}
+                fullSize={true}
                 adBannerImage={adBannerImage}
                 adBannerZoom={adBannerZoom}
                 fontStyles={fontStyles}
