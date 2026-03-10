@@ -517,7 +517,7 @@ export default function CustomizationPanel({
     {
       id: "duo",
       name: "Duo",
-      locked: false,
+      locked: isFreeUser,
       thumbnail: "/themes/cus-7.png",
     },
     {
@@ -535,13 +535,13 @@ export default function CustomizationPanel({
     {
       id: "overlay",
       name: "Overlay",
-      locked: false,
+      locked: isFreeUser,
       thumbnail: "/themes/cus-8.png",
     },
     {
       id: "magazine",
       name: "Magazine",
-      locked: false, // Free for all users
+      locked: isFreeUser, // Free for all users
       thumbnail: "/themes/cus-6.png",
     },
     {

@@ -189,6 +189,7 @@ export default function Navbar() {
       label: "Background Remover",
       href: "/background-remover",
       icon: <Scissors className="w-4 h-4" />,
+      locked: isFreeUser,
     },
     {
       label: "Collage",
@@ -372,12 +373,20 @@ export default function Navbar() {
           {otherLinks.map((link) => (
             <Link
               key={link.label}
-              href={link.href}
-              className={`text-sm font-bold font-inter transition-colors hover:text-[#8b6834] ${
-                pathname === link.href ? "text-[#2c2419]" : "text-[#5d4e37]"
+              href={link.locked ? "#" : link.href}
+              onClick={(e) => {
+                if (link.locked) {
+                  e.preventDefault();
+                  setUpgradeFeature(link.label);
+                  setShowUpgradeModal(true);
+                }
+              }}
+              className={`flex items-center gap-1 text-sm font-bold font-inter transition-colors hover:text-[#8b6834] ${
+                pathname === link.href ? "text-[#2c2419]" : link.locked ? "text-[#5d4e37]/50" : "text-[#5d4e37]"
               }`}
             >
               {link.label}
+              {link.locked && <Lock className="w-3 h-3 text-[#8b6834]/60" />}
             </Link>
           ))}
         </div>

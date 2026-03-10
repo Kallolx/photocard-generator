@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { Upload, X, Download, Loader2, ImageIcon, Menu } from "lucide-react";
+import { Upload, X, Download, Loader2, ImageIcon, Menu, Lock, Sparkles } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import DashboardSidebar from "@/components/DashboardSidebar";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -241,6 +241,30 @@ export default function BackgroundRemoverPage() {
 
           {/* Scrollable Main Content */}
           <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-8 font-inter">
+          {isFreeUser ? (
+            <div className="flex-1 flex flex-col items-center justify-center p-6 text-center h-full">
+              <div className="w-24 h-24 bg-white border-2 border-[#d4c4b0] shadow-none flex items-center justify-center text-[#8b6834] mb-8 animate-bounce">
+                <Lock className="w-12 h-12" />
+              </div>
+              <h1 className="text-3xl font-black text-[#2c2419] mb-4 uppercase tracking-tight">
+                Background Remover
+              </h1>
+              <p className="text-[#5d4e37] max-w-md mb-8 leading-relaxed font-medium">
+                Remove backgrounds from images instantly with AI precision. Available on Basic and Premium plans.
+              </p>
+              <button
+                onClick={() => {
+                  setUpgradeFeature("Background Remover");
+                  setShowUpgradeModal(true);
+                }}
+                className="px-8 py-4 bg-[#8b6834] text-white text-xs font-black uppercase tracking-widest border-2 border-[#8b6834] hover:bg-[#2c2419] hover:border-[#2c2419] transform hover:-translate-y-1 transition-all flex items-center gap-3"
+              >
+                <Sparkles className="w-6 h-6" />
+                Upgrade to Unlock
+              </button>
+            </div>
+          ) : (
+          <>
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-lora font-bold text-[#2c2419] mb-4">
@@ -465,6 +489,8 @@ export default function BackgroundRemoverPage() {
                 </div>
               )}
             </div>
+          )}          
+          </>
           )}
           </main>
         </div>

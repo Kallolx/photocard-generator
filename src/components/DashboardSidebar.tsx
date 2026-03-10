@@ -96,9 +96,9 @@ export default function DashboardSidebar({
   const isOnCardType = allCardTypes.some((c) => c.href === pathname);
 
   const otherTools = [
-    { label: "Background Remover", href: "/background-remover", icon: <Scissors className="w-5 h-5" /> },
-    { label: "Collage Maker", href: "/collage", icon: <LayoutGrid className="w-5 h-5" /> },
-    { label: "Bangla Converter", href: "/bangla-converter", icon: <Languages className="w-5 h-5" /> },
+    { label: "Background Remover", href: "/background-remover", icon: <Scissors className="w-5 h-5" />, locked: isFreeUser },
+    { label: "Collage Maker", href: "/collage", icon: <LayoutGrid className="w-5 h-5" />, locked: false },
+    { label: "Bangla Converter", href: "/bangla-converter", icon: <Languages className="w-5 h-5" />, locked: false },
   ];
 
   const NavItem = ({
@@ -290,6 +290,13 @@ export default function DashboardSidebar({
                 icon={tool.icon}
                 label={tool.label}
                 isActive={pathname === tool.href}
+                locked={tool.locked}
+                onClick={(e) => {
+                  if (tool.locked) {
+                    e.preventDefault();
+                    onUpgrade(tool.label);
+                  }
+                }}
               />
             ))}
           </div>
