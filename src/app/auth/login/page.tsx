@@ -173,9 +173,9 @@ export default function LoginPage() {
 
               {/* Divider */}
               <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-[#d4c4b0]" />
+                <div className="flex-1 h-px bg-[#d4c4b0]"></div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#8b6834]">or</span>
-                <div className="flex-1 h-px bg-[#d4c4b0]" />
+                <div className="flex-1 h-px bg-[#d4c4b0]"></div>
               </div>
 
               {/* Google Sign-In */}
