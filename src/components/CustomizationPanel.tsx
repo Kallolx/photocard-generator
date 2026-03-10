@@ -578,6 +578,18 @@ export default function CustomizationPanel({
       thumbnail: "/themes/com-1.png",
     },
     {
+      id: "portrait",
+      name: "Portrait",
+      locked: false,
+      thumbnail: "/themes/com-5.png",
+    },
+    {
+      id: "quoteframe",
+      name: "Quote Frame",
+      locked: false,
+      thumbnail: "/themes/com-6.png",
+    },
+    {
       id: "grid",
       name: "Grid",
       locked: false,
@@ -1377,10 +1389,13 @@ export default function CustomizationPanel({
             ) : theme === "banner" ? (
               <div className="space-y-5">
                 <p className="text-xs text-[#5d4e37] font-inter leading-relaxed">
-                  The Banner card has a built-in grid overlay. Adjust its opacity and colour below.
+                  The Banner card has a built-in grid overlay. Adjust its
+                  opacity and colour below.
                 </p>
                 <div>
-                  <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">Grid Opacity</h3>
+                  <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                    Grid Opacity
+                  </h3>
                   <div className="flex items-center gap-4">
                     <input
                       type="range"
@@ -1389,11 +1404,14 @@ export default function CustomizationPanel({
                       step="0.01"
                       value={background.patternOpacity ?? 0.5}
                       onChange={(e) =>
-                        onBackgroundChange({ ...background, patternOpacity: parseFloat(e.target.value) })
+                        onBackgroundChange({
+                          ...background,
+                          patternOpacity: parseFloat(e.target.value),
+                        })
                       }
                       className="flex-1 h-1 appearance-none cursor-pointer"
                       style={{
-                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${((background.patternOpacity ?? 0.5)) * 100}%, #e8dcc8 ${((background.patternOpacity ?? 0.5)) * 100}%, #e8dcc8 100%)`,
+                        background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(background.patternOpacity ?? 0.5) * 100}%, #e8dcc8 ${(background.patternOpacity ?? 0.5) * 100}%, #e8dcc8 100%)`,
                       }}
                     />
                     <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
@@ -1402,10 +1420,17 @@ export default function CustomizationPanel({
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">Grid Colour</h3>
+                  <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                    Grid Colour
+                  </h3>
                   <div className="flex gap-3">
                     <button
-                      onClick={() => onBackgroundChange({ ...background, patternColor: "#000000" })}
+                      onClick={() =>
+                        onBackgroundChange({
+                          ...background,
+                          patternColor: "#000000",
+                        })
+                      }
                       className={`flex-1 py-2 rounded text-sm font-semibold font-inter border-2 transition-all bg-black text-white ${
                         (background.patternColor ?? "#000000") === "#000000"
                           ? "border-[#8b6834]"
@@ -1415,7 +1440,12 @@ export default function CustomizationPanel({
                       Black
                     </button>
                     <button
-                      onClick={() => onBackgroundChange({ ...background, patternColor: "#ffffff" })}
+                      onClick={() =>
+                        onBackgroundChange({
+                          ...background,
+                          patternColor: "#ffffff",
+                        })
+                      }
                       className={`flex-1 py-2 rounded text-sm font-semibold font-inter border-2 transition-all bg-white text-black ${
                         background.patternColor === "#ffffff"
                           ? "border-[#8b6834]"
@@ -1452,6 +1482,70 @@ export default function CustomizationPanel({
                   />
                   <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
                     {Math.round((background.patternOpacity || 0.35) * 100)}%
+                  </div>
+                </div>
+              </div>
+            ) : theme === "portrait" ? (
+              <div>
+                <p className="text-xs text-[#5d4e37] font-inter mb-4 leading-relaxed">
+                  The Portrait card uses a fixed lines pattern. Adjust its
+                  opacity below.
+                </p>
+                <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                  Lines Pattern Opacity
+                </h3>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={background.patternOpacity ?? 0.4}
+                    onChange={(e) =>
+                      onBackgroundChange({
+                        ...background,
+                        patternOpacity: parseFloat(e.target.value),
+                      })
+                    }
+                    className="flex-1 h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(background.patternOpacity ?? 0.4) * 100}%, #e8dcc8 ${(background.patternOpacity ?? 0.4) * 100}%, #e8dcc8 100%)`,
+                    }}
+                  />
+                  <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
+                    {Math.round((background.patternOpacity ?? 0.4) * 100)}%
+                  </div>
+                </div>
+              </div>
+            ) : theme === "quoteframe" ? (
+              <div>
+                <p className="text-xs text-[#5d4e37] font-inter mb-4 leading-relaxed">
+                  The Quote Frame card uses a fixed lines pattern. Adjust its
+                  opacity below.
+                </p>
+                <h3 className="text-sm font-medium font-inter text-[#2c2419] mb-3">
+                  Lines Pattern Opacity
+                </h3>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={background.patternOpacity ?? 0.3}
+                    onChange={(e) =>
+                      onBackgroundChange({
+                        ...background,
+                        patternOpacity: parseFloat(e.target.value),
+                      })
+                    }
+                    className="flex-1 h-1 bg-[#e8dcc8] appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #8b6834 0%, #8b6834 ${(background.patternOpacity ?? 0.3) * 100}%, #e8dcc8 ${(background.patternOpacity ?? 0.3) * 100}%, #e8dcc8 100%)`,
+                    }}
+                  />
+                  <div className="w-12 text-right text-md font-medium font-inter text-[#2c2419]">
+                    {Math.round((background.patternOpacity ?? 0.3) * 100)}%
                   </div>
                 </div>
               </div>

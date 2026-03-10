@@ -60,6 +60,26 @@ const NOTIFICATIONS: Notification[] = [
     link: "/url",
   },
   {
+    id: "card-comment-portrait-v1",
+    type: "card",
+    badge: "New Card",
+    title: "New Portrait Card 🎉",
+    thumbnail: "/themes/com-5.png",
+    description:
+      "Dark portrait-style quote card with a bold accent panel, word highlight feature and a customisable background colour. Available on the Comment Card page.",
+    link: "/comment",
+  },
+  {
+    id: "card-comment-quoteframe-v1",
+    type: "card",
+    badge: "New Card",
+    title: "New Quote Card 🎉",
+    thumbnail: "/themes/com-6.png",
+    description:
+      "Elegant frame-shaped quote card with a clipped person image, paper-texture background and customisable background colour. Available on the Comment Card page.",
+    link: "/comment",
+  },
+  {
     id: "update-march-2026",
     type: "update",
     badge: "Update",
@@ -69,6 +89,8 @@ const NOTIFICATIONS: Notification[] = [
       "Browse news from 🛜 RSS Feeds",
       "Remix news & images with AI ✨",
       "AI content variations in Editor Toolbar",
+      "Background Remover tool 🧹",
+      "Bangla Converter 🇧🇩",
     ],
   },
 ];

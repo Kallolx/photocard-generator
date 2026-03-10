@@ -6,6 +6,8 @@ import Navbar from "@/components/Navbar";
 import ClassicCommentCard from "@/components/cards/comment-cards/ClassicCommentCard";
 import GridCommentCard from "@/components/cards/comment-cards/GridCommentCard";
 import SplitCommentCard from "@/components/cards/comment-cards/SplitCommentCard";
+import PortraitCommentCard from "@/components/cards/comment-cards/PortraitCommentCard";
+import QuoteFrameCommentCard from "@/components/cards/comment-cards/QuoteFrameCommentCard";
 import CustomizationPanel from "@/components/CustomizationPanel";
 import {
   PhotocardData,
@@ -13,7 +15,7 @@ import {
   CardFontStyles,
   CommentCardVisibilitySettings,
 } from "@/types";
-import { Upload, Edit, Sparkles, Loader2, RotateCcw, MoveHorizontal, MoveVertical, Maximize2 } from "lucide-react";
+import { Upload, Edit, Sparkles, Loader2, RotateCcw, MoveHorizontal, MoveVertical, Maximize2, Highlighter, Type, Palette } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import UpgradeModal from "@/components/UpgradeModal";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -36,10 +38,15 @@ export default function CommentPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [contentExpanded, setContentExpanded] = useState(true);
   const [imageAdjustExpanded, setImageAdjustExpanded] = useState(true);
-  const [cardStyle, setCardStyle] = useState<"classic" | "grid" | "split">("classic");
+  const [cardStyle, setCardStyle] = useState<"classic" | "grid" | "split" | "portrait" | "quoteframe">("classic");
   const [isAiEnhancing, setIsAiEnhancing] = useState(false);
   const [aiError, setAiError] = useState("");
   const [imagePosition, setImagePosition] = useState<{ x: number; y: number; scale: number }>({ x: 0, y: 0, scale: 100 });
+  const [highlightIndices, setHighlightIndices] = useState<number[]>([5, 6, 7]);
+  const [showHighlight, setShowHighlight] = useState(true);
+  const [showHighlightModal, setShowHighlightModal] = useState(false);
+  const [pendingIndices, setPendingIndices] = useState<number[]>([]);
+  const [portraitBgColor, setPortraitBgColor] = useState("#2e0000");
   const [visibilitySettings, setVisibilitySettings] = useState<CommentCardVisibilitySettings>({
     showLogo: true,
     showDate: false,
@@ -200,6 +207,30 @@ export default function CommentPage() {
         fontStyles={fontStyles}
         visibilitySettings={visibilitySettings}
         imagePosition={imagePosition}
+      />
+    ) : cardStyle === "portrait" ? (
+      <PortraitCommentCard
+        id={cardId}
+        data={cardData}
+        background={background}
+        fullSize={isFullSize}
+        fontStyles={fontStyles}
+        visibilitySettings={visibilitySettings}
+        imagePosition={imagePosition}
+        highlightIndices={highlightIndices}
+        showHighlight={showHighlight}
+        cardBgColor={portraitBgColor}
+      />
+    ) : cardStyle === "quoteframe" ? (
+      <QuoteFrameCommentCard
+        id={cardId}
+        data={cardData}
+        background={background}
+        fullSize={isFullSize}
+        fontStyles={fontStyles}
+        visibilitySettings={visibilitySettings}
+        imagePosition={imagePosition}
+        cardBgColor={portraitBgColor}
       />
     ) : (
       <ClassicCommentCard
@@ -440,58 +471,46 @@ export default function CommentPage() {
                 onAdBannerPositionChange={() => {}}
                 theme={cardStyle}
                 onThemeChange={(t) => {
-                  const next = t as "classic" | "grid" | "split";
+                  const next = t as "classic" | "grid" | "split" | "portrait" | "quoteframe";
                   setCardStyle(next);
-                  if (next === "grid") {
-                    setBackground((prev) =>
-                      prev.color === "#dc2626" || !prev.color
-                        ? { ...prev, type: "solid", color: "#ffffff" }
-                        : prev
-                    );
+
+                  // Unconditionally reset to each theme's canonical defaults
+                  if (next === "classic") {
+                    setBackground((prev) => ({ ...prev, type: "solid", color: "#dc2626" }));
                     setFontStyles((prev) => ({
                       ...prev,
-                      commentText: {
-                        ...prev.commentText!,
-                        color: prev.commentText?.color === "#1a1a1a" || prev.commentText?.color === "#ffffff"
-                          ? "#111111"
-                          : prev.commentText!.color,
-                        textAlign: "left",
-                      },
-                      personName: {
-                        ...prev.personName!,
-                        color: prev.personName?.color === "#FFFFFF" ? "#444444" : prev.personName!.color,
-                      },
+                      commentText: { ...prev.commentText!, color: "#1a1a1a", textAlign: "center" },
+                      personName:  { ...prev.personName!,  color: "#FFFFFF" },
+                    }));
+                  } else if (next === "grid") {
+                    setBackground((prev) => ({ ...prev, type: "solid", color: "#ffffff" }));
+                    setFontStyles((prev) => ({
+                      ...prev,
+                      commentText: { ...prev.commentText!, color: "#111111", textAlign: "left" },
+                      personName:  { ...prev.personName!,  color: "#444444" },
                     }));
                   } else if (next === "split") {
+                    setBackground((prev) => ({ ...prev, type: "solid", color: "#dc2626" }));
                     setFontStyles((prev) => ({
                       ...prev,
-                      commentText: {
-                        ...prev.commentText!,
-                        color: "#111111",
-                        textAlign: "left",
-                      },
-                      personName: {
-                        ...prev.personName!,
-                        color: "#1a1a1a",
-                      },
+                      commentText: { ...prev.commentText!, color: "#111111", textAlign: "left" },
+                      personName:  { ...prev.personName!,  color: "#1a1a1a" },
                     }));
-                  } else {
-                    setBackground((prev) =>
-                      prev.color === "#ffffff"
-                        ? { ...prev, type: "solid", color: "#dc2626" }
-                        : prev
-                    );
+                  } else if (next === "portrait") {
+                    setBackground((prev) => ({ ...prev, type: "solid", color: "#3700ff" }));
+                    setPortraitBgColor("#2e0000");
                     setFontStyles((prev) => ({
                       ...prev,
-                      commentText: {
-                        ...prev.commentText!,
-                        color: prev.commentText?.color === "#111111" ? "#1a1a1a" : prev.commentText!.color,
-                        textAlign: "center",
-                      },
-                      personName: {
-                        ...prev.personName!,
-                        color: prev.personName?.color === "#444444" ? "#FFFFFF" : prev.personName!.color,
-                      },
+                      commentText: { ...prev.commentText!, color: "#ffffff", textAlign: "left" },
+                      personName:  { ...prev.personName!,  color: "#ffffff" },
+                    }));
+                  } else if (next === "quoteframe") {
+                    setBackground((prev) => ({ ...prev, type: "solid", color: "#16a34a" }));
+                    setPortraitBgColor("#fcfcfc");
+                    setFontStyles((prev) => ({
+                      ...prev,
+                      commentText: { ...prev.commentText!, color: "#1a1a1a", textAlign: "left" },
+                      personName:  { ...prev.personName!,  color: "#1a1a1a" },
                     }));
                   }
                 }}
@@ -514,10 +533,56 @@ export default function CommentPage() {
           )}
 
           {/* ── Right Preview ── */}
-          <DotBackground className="flex-1 bg-[#faf8f5] md:overflow-y-auto md:min-h-0">
+          <DotBackground className="flex-1 bg-[#faf8f5] md:overflow-y-auto md:min-h-0 relative">
+            {/* Portrait / QuoteFrame card toolbar — styled like EditingToolbar */}
+            {(cardStyle === "portrait" || cardStyle === "quoteframe") && (
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 bg-[#f5f0e8] border-2 border-[#d4c4b0] p-3 flex flex-col gap-3 z-40 shadow-lg">
+                {/* Highlight words */}
+                <button
+                  onClick={() => {
+                    setPendingIndices([...highlightIndices]);
+                    setShowHighlightModal(true);
+                  }}
+                  className={`p-3 border-2 border-[#d4c4b0] transition-colors group relative ${
+                    showHighlight && highlightIndices.length > 0
+                      ? "bg-[#8b6834] hover:bg-[#2c2419]"
+                      : "bg-[#e8dcc8] hover:bg-[#d4c4b0]"
+                  }`}
+                  title="Highlight Words"
+                >
+                  <Highlighter className={`w-5 h-5 ${showHighlight && highlightIndices.length > 0 ? "text-white" : "text-[#2c2419]"}`} />
+                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Highlight Words
+                  </div>
+                </button>
+
+                {/* Background color picker */}
+                <label
+                  className="p-3 border-2 border-[#d4c4b0] bg-[#e8dcc8] hover:bg-[#d4c4b0] transition-colors group relative cursor-pointer"
+                  title="Card Background Color"
+                >
+                  <Palette className="w-5 h-5 text-[#2c2419]" />
+                  <div
+                    className="absolute bottom-0 right-0 w-2.5 h-2.5 border border-[#d4c4b0] rounded-sm"
+                    style={{ backgroundColor: portraitBgColor }}
+                  />
+                  <input
+                    type="color"
+                    value={portraitBgColor}
+                    onChange={(e) => setPortraitBgColor(e.target.value)}
+                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                  />
+                  <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Background Color
+                  </div>
+                </label>
+              </div>
+            )}
+
             <div className="flex items-start justify-center p-4 md:pl-12 md:pr-8 md:py-8 w-full h-full">
               <div className="w-full flex justify-center">
                 <div className="flex flex-col items-center gap-6 mt-12">
+
                   {renderCard("photocard-comment", true)}
                   <DownloadControls
                     isVisible={!!(logo || personImage || commentText)}
@@ -535,6 +600,79 @@ export default function CommentPage() {
           feature="Quote Cards"
           requiredPlan="Basic"
         />
+
+        {/* Highlight word selector modal */}
+        {showHighlightModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-[#faf8f5] border-2 border-[#d4c4b0] max-w-lg w-full max-h-[90vh] overflow-y-auto">
+              {/* Header */}
+              <div className="sticky top-0 bg-[#f5f0e8] border-b-2 border-[#d4c4b0] p-6">
+                <h3 className="text-xl font-lora font-bold text-[#2c2419]">Select Words to Highlight</h3>
+                <p className="text-xs text-[#5d4e37] font-inter mt-1">Tap words to toggle. Selected words will get a colored box on the card.</p>
+                {/* Plain / Highlight toggle */}
+                <div className="flex items-center gap-3 mt-3">
+                  <span className="text-xs font-inter font-semibold text-[#5d4e37]">Show highlights</span>
+                  <button
+                    onClick={() => setShowHighlight((v) => !v)}
+                    className={`relative w-10 h-5 rounded-full transition-colors ${
+                      showHighlight ? "bg-[#8b6834]" : "bg-[#d4c4b0]"
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                        showHighlight ? "translate-x-5" : "translate-x-0.5"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="flex flex-wrap gap-2">
+                  {(commentText || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে").split(" ").map((word, i) => (
+                    <button
+                      key={i}
+                      onClick={() =>
+                        setPendingIndices((prev) =>
+                          prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
+                        )
+                      }
+                      className={`px-3 py-1.5 text-sm font-inter font-medium border-2 transition-colors ${
+                        pendingIndices.includes(i)
+                          ? "bg-[#8b6834] text-white border-[#8b6834]"
+                          : "bg-white text-[#2c2419] border-[#d4c4b0] hover:border-[#8b6834]"
+                      }`}
+                    >
+                      {word}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-[#f5f0e8] border-t-2 border-[#d4c4b0] p-6">
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setHighlightIndices(pendingIndices);
+                      setShowHighlight(true);
+                      setShowHighlightModal(false);
+                    }}
+                    className="flex-1 py-3 bg-[#8b6834] text-[#faf8f5] font-inter font-bold hover:bg-[#2c2419] transition-colors"
+                  >
+                    Apply Changes
+                  </button>
+                  <button
+                    onClick={() => setShowHighlightModal(false)}
+                    className="flex-1 py-3 bg-[#d4c4b0] text-[#2c2419] font-inter font-bold hover:bg-[#e8dcc8] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </ProtectedRoute>
   );
