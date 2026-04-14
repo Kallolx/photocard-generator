@@ -74,6 +74,8 @@ interface BlendUrlCardProps {
   footerIconColor?: "white" | "colored";
   watermark?: WatermarkSettings;
   isLogoFavicon?: boolean;
+  highlightIndices?: number[];
+  highlightStyle?: "boxed" | "colored";
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -104,6 +106,8 @@ export default function BlendUrlCard({
     showFooter: false,
   },
   isLogoFavicon = false,
+  highlightIndices = [],
+  highlightStyle = "colored",
 }: BlendUrlCardProps) {
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -141,9 +145,29 @@ export default function BlendUrlCard({
   })();
 
   const accentColor = getAccentColor();
+  const safeHighlightBg = ["#fff", "#ffffff"].includes((accentColor || "").toLowerCase())
+    ? "#dc2626"
+    : accentColor;
   const footerBg = darkenHexColor(
     (background?.type === "gradient" ? background?.gradientFrom : undefined) || background?.color || "#1a1a2e",
   );
+
+  const words = (data.title || "").trim().split(/\s+/).filter(Boolean);
+  const highlighted = new Set(highlightIndices);
+  const titleRuns: { text: string; highlighted: boolean }[] = [];
+
+  let i = 0;
+  while (i < words.length) {
+    if (highlighted.has(i)) {
+      const start = i;
+      while (i + 1 < words.length && highlighted.has(i + 1)) i += 1;
+      titleRuns.push({ text: words.slice(start, i + 1).join(" "), highlighted: true });
+      i += 1;
+      continue;
+    }
+    titleRuns.push({ text: words[i], highlighted: false });
+    i += 1;
+  }
 
   // ── Render ──────────────────────────────────────────────────────────────────
 
@@ -234,42 +258,57 @@ export default function BlendUrlCard({
             </div>
           )}
 
-          {/* Headline — alternating group colors: groups of 3 words alternate between font color and accent color */}
-          {visibilitySettings.showTitle && (() => {
-            const mainColor = fontStyles?.headline.color ?? "#111827";
-            const words = (data.title ?? "").split(" ");
-            const GROUP = 3;
-            return (
-              <h2
-                style={{
-                  fontFamily: fontStyles?.headline.fontFamily ?? "Noto Serif Bengali",
-                  fontSize: fontStyles?.headline.fontSize ?? "30px",
-                  fontWeight: fontStyles?.headline.fontWeight ?? "700",
-                  textAlign: (fontStyles?.headline.textAlign as React.CSSProperties["textAlign"]) ?? "left",
-                  letterSpacing: fontStyles?.headline.letterSpacing ?? "0px",
-                  lineHeight: 1.18,
-                  textShadow: headlineTextShadow !== "none" ? headlineTextShadow : undefined,
-                  margin: 0,
-                  overflow: "hidden",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 4,
-                  WebkitBoxOrient: "vertical",
-                  position: "relative",
-                  zIndex: 1,
-                } as React.CSSProperties}
-              >
-                {words.map((word, idx) => {
-                  const groupIdx = Math.floor(idx / GROUP);
-                  const color = groupIdx % 2 === 0 ? mainColor : accentColor;
-                  return (
-                    <span key={idx} style={{ color }}>
-                      {word}{idx < words.length - 1 ? " " : ""}
-                    </span>
-                  );
-                })}
-              </h2>
-            );
-          })()}
+          {/* Headline with selectable highlight words (boxed or colored mode) */}
+          {visibilitySettings.showTitle && (
+            <h2
+              style={{
+                fontFamily: fontStyles?.headline.fontFamily ?? "Noto Serif Bengali",
+                fontSize: fontStyles?.headline.fontSize ?? "30px",
+                fontWeight: fontStyles?.headline.fontWeight ?? "700",
+                textAlign: (fontStyles?.headline.textAlign as React.CSSProperties["textAlign"]) ?? "left",
+                letterSpacing: fontStyles?.headline.letterSpacing ?? "0px",
+                lineHeight: 1.18,
+                textShadow: headlineTextShadow !== "none" ? headlineTextShadow : undefined,
+                margin: 0,
+                overflow: "hidden",
+                display: "-webkit-box",
+                WebkitLineClamp: 4,
+                WebkitBoxOrient: "vertical",
+                position: "relative",
+                zIndex: 1,
+                color: fontStyles?.headline.color ?? "#111827",
+              } as React.CSSProperties}
+            >
+              {titleRuns.map((run, idx) => (
+                <span
+                  key={`${run.text}-${idx}`}
+                  style={
+                    run.highlighted
+                      ? highlightStyle === "boxed"
+                        ? {
+                            display: "inline-block",
+                            color: "#ffffff",
+                            backgroundColor: safeHighlightBg,
+                            padding: "0 5px 1px",
+                            borderRadius: "2px",
+                            lineHeight: 1.05,
+                            verticalAlign: "baseline",
+                            marginRight: "3px",
+                          }
+                        : {
+                            color: accentColor,
+                          }
+                      : undefined
+                  }
+                >
+                  {run.text}
+                  {idx < titleRuns.length - 1 && (highlightStyle === "boxed" ? !run.highlighted : true)
+                    ? " "
+                    : ""}
+                </span>
+              ))}
+            </h2>
+          )}
 
           {/* Meta row: site name · weekday · date */}
           <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap", position: "relative", zIndex: 1 }}>

@@ -30,6 +30,7 @@ import DuoUrlCard from "@/components/cards/url-cards/DuoUrlCard";
 import OverlayUrlCard from "@/components/cards/url-cards/OverlayUrlCard";
 import BannerUrlCard from "@/components/cards/url-cards/BannerUrlCard";
 import BlendUrlCard from "@/components/cards/url-cards/BlendUrlCard";
+import SourceUrlCard from "@/components/cards/url-cards/SourceUrlCard";
 import DownloadControls from "@/components/DownloadControls";
 import { toPng } from "html-to-image";
 import JSZip from "jszip";
@@ -75,7 +76,7 @@ export default function Home() {
     type: "solid",
     color: "#dc2626",
     pattern: "p1",
-    patternOpacity: 0.3,
+    patternOpacity: 0.2,
     patternScale: 1.0,
   });
   const [frameBorderColor, setFrameBorderColor] = useState("#dc2626");
@@ -96,6 +97,21 @@ export default function Home() {
   const [adBannerPosition, setAdBannerPosition] = useState({ x: 0, y: 0 });
   const [theme, setTheme] = useState<string>("classic");
   const [isDragMode, setIsDragMode] = useState(false);
+  const [sourceHighlightIndices, setSourceHighlightIndices] = useState<number[]>(
+    [0, 1],
+  );
+  const [blendHighlightIndices, setBlendHighlightIndices] = useState<number[]>(
+    [0, 1],
+  );
+  const [blendHighlightStyle, setBlendHighlightStyle] = useState<"boxed" | "colored">(
+    "colored",
+  );
+  const [bannerHighlightIndices, setBannerHighlightIndices] = useState<number[]>(
+    [0, 1],
+  );
+  const [bannerHighlightStyle, setBannerHighlightStyle] = useState<"boxed" | "colored">(
+    "colored",
+  );
   const [elementLayout, setElementLayout] = useState<{
     topLeft: "logo" | "dateWeek" | "qrCode" | "cta";
     topRight: "logo" | "dateWeek" | "qrCode" | "cta";
@@ -250,6 +266,12 @@ export default function Home() {
 
   // Update font styles when theme changes
   useEffect(() => {
+    if ((theme === "source" || theme === "blend" || theme === "banner") && isDragMode) {
+      setIsDragMode(false);
+    }
+  }, [theme, isDragMode]);
+
+  useEffect(() => {
     if (theme === "vertical") {
       // Set specific defaults for vertical theme
       setFontStyles((prev) => ({
@@ -288,6 +310,7 @@ export default function Home() {
           ...prev.headline,
           fontSize: "24px",
           color: "#000000",
+          textAlign: "center",
         },
       }));
     } else if (theme === "duo") {
@@ -310,6 +333,7 @@ export default function Home() {
           ...prev.headline,
           fontSize: "28px",
           color: "#FFFFFF",
+          textAlign: "center",
         },
       }));
     } else if (theme === "overlay") {
@@ -317,9 +341,23 @@ export default function Home() {
         ...prev,
         week: { ...prev.week, fontSize: "16px", fontWeight: "600", color: "#ffffff" },
         date: { ...prev.date, fontSize: "16px", fontWeight: "600", color: "#ffffff" },
-        headline: { ...prev.headline, fontSize: "28px", color: "#FFFFFF" },
+        headline: { ...prev.headline, fontSize: "28px", color: "#FFFFFF", textAlign: "center" },
       }));
       setBackground({ type: "solid", color: "#E53E3E" });
+    } else if (theme === "source") {
+      setFontStyles((prev) => ({
+        ...prev,
+        week: { ...prev.week, fontSize: "15px", fontWeight: "500", color: "#4b5563" },
+        date: { ...prev.date, fontSize: "15px", fontWeight: "500", color: "#4b5563" },
+        headline: {
+          ...prev.headline,
+          fontSize: "30px",
+          fontWeight: "700",
+          color: "#111827",
+          textAlign: "left",
+        },
+      }));
+      setBackground({ type: "solid", color: "#dc2626" });
     } else if (theme === "banner") {
       setFontStyles((prev) => ({
         ...prev,
@@ -364,6 +402,9 @@ export default function Home() {
     } else if (theme === "duo") {
       setFrameBorderColor("#dc2626");
       setFrameBorderThickness(4);
+    } else if (theme === "source") {
+      setFrameBorderColor("#ffffff");
+      setFrameBorderThickness(0);
     } else if (theme === "classic") {
       setFrameBorderColor("#ffffff");
       setFrameBorderThickness(4);
@@ -710,6 +751,48 @@ export default function Home() {
         },
       });
       setBackground({ type: "solid", color: "#E53E3E" });
+    } else if (theme === "source") {
+      setFontStyles({
+        week: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "15px",
+          fontWeight: "500",
+          color: "#4b5563",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
+        date: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "15px",
+          fontWeight: "500",
+          color: "#4b5563",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
+        headline: {
+          fontFamily: "Noto Serif Bengali",
+          fontSize: "30px",
+          fontWeight: "700",
+          color: "#111827",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
+        footer: {
+          fontFamily: "DM Sans",
+          fontSize: "12px",
+          fontWeight: "600",
+          color: "#4b5563",
+          textAlign: "left",
+          letterSpacing: "0px",
+        },
+      });
+      setBackground({
+        type: "solid",
+        color: "#dc2626",
+        pattern: "p1",
+        patternOpacity: 0,
+        patternScale: 1.0,
+      });
     } else {
       setFontStyles({
         week: {
@@ -754,6 +837,9 @@ export default function Home() {
     } else if (theme === "duo") {
       setFrameBorderColor("#dc2626");
       setFrameBorderThickness(4);
+    } else if (theme === "source") {
+      setFrameBorderColor("#ffffff");
+      setFrameBorderThickness(0);
     } else if (theme === "classic") {
       setFrameBorderColor("#ffffff");
       setFrameBorderThickness(4);
@@ -772,7 +858,7 @@ export default function Home() {
       type: "solid",
       color: "#dc2626",
       pattern: "p1",
-      patternOpacity: 0.3,
+      patternOpacity: theme === "source" ? 0 : 0.3,
       patternScale: 1.0,
     });
   };
@@ -852,9 +938,22 @@ export default function Home() {
         ) : theme === "overlay" ? (
           <OverlayUrlCard {...commonProps} />
         ) : theme === "banner" ? (
-          <BannerUrlCard {...commonProps} />
+          <BannerUrlCard
+            {...commonProps}
+            highlightIndices={bannerHighlightIndices}
+            highlightStyle={bannerHighlightStyle}
+          />
         ) : theme === "blend" ? (
-          <BlendUrlCard {...commonProps} />
+          <BlendUrlCard
+            {...commonProps}
+            highlightIndices={blendHighlightIndices}
+            highlightStyle={blendHighlightStyle}
+          />
+        ) : theme === "source" ? (
+          <SourceUrlCard
+            {...commonProps}
+            highlightIndices={sourceHighlightIndices}
+          />
         ) : (
           <ClassicUrlCard
             {...commonProps}
@@ -1200,6 +1299,8 @@ export default function Home() {
                 fontStyles={fontStyles}
                 visibilitySettings={visibilitySettings}
                 isLogoFavicon={isLogoFavicon}
+                highlightIndices={bannerHighlightIndices}
+                highlightStyle={bannerHighlightStyle}
               />,
             );
           } else if (theme === "blend") {
@@ -1215,6 +1316,8 @@ export default function Home() {
                 fontStyles={fontStyles}
                 visibilitySettings={visibilitySettings}
                 isLogoFavicon={isLogoFavicon}
+                highlightIndices={blendHighlightIndices}
+                highlightStyle={blendHighlightStyle}
               />,
             );
           } else {
@@ -1456,6 +1559,37 @@ export default function Home() {
                 onImageChange={handleImageChange}
                 onTitleChange={handleTitleChange}
                 onDragModeToggle={() => setIsDragMode(!isDragMode)}
+                showDragTool={theme !== "source" && theme !== "blend" && theme !== "banner"}
+                showHighlightTool={theme === "source" || theme === "blend" || theme === "banner"}
+                highlightWordIndices={
+                  theme === "blend"
+                    ? blendHighlightIndices
+                    : theme === "banner"
+                      ? bannerHighlightIndices
+                      : sourceHighlightIndices
+                }
+                onHighlightWordIndicesChange={
+                  theme === "blend"
+                    ? setBlendHighlightIndices
+                    : theme === "banner"
+                      ? setBannerHighlightIndices
+                      : setSourceHighlightIndices
+                }
+                highlightStyle={
+                  theme === "blend"
+                    ? blendHighlightStyle
+                    : theme === "banner"
+                      ? bannerHighlightStyle
+                      : "boxed"
+                }
+                onHighlightStyleChange={
+                  theme === "blend"
+                    ? setBlendHighlightStyle
+                    : theme === "banner"
+                      ? setBannerHighlightStyle
+                      : undefined
+                }
+                highlightColor={background.color || "#8b6834"}
               />
             )}
             <div className="flex items-start justify-center md:justify-start md:pl-12 p-4 md:pr-8 md:py-8 w-full h-full">

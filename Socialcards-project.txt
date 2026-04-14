@@ -1,0 +1,67 @@
+{
+  slug: "socialcards",
+  tabName: "Socialcards - Photo Gen",
+  domain: "photocard.app",
+  title: "Socialcards - Photo Gen",
+  badge: "Recent Work",
+  description:
+    "Socialcards is a multi-format social card generator in Photocard that combines 12+ card types, live RSS news ingestion, URL-to-card automation, AI-assisted content workflows, and high-quality export in one unified dashboard.",
+  features: [
+    {
+      icon: "🧩",
+      title: "50+ Card Types in One Place",
+      desc: "Supports Today’s News, URL Newscard, Custom Card, Comment/Quote, Poll, Compare, Marketing, Real Estate, News Thumbnail, Info, Islamic, and Wish cards from a single dashboard.",
+    },
+    {
+      icon: "📰",
+      title: "Latest News RSS Feeds",
+      desc: "Aggregates and mixes RSS feeds across Bangladesh, Global, Asia, Europe, and USA sources with deduplication, freshness windows, source balancing, and 15-minute revalidation.",
+    },
+    {
+      icon: "⚡",
+      title: "URL-to-Card Automation",
+      desc: "Converts links into ready-to-edit cards with metadata extraction, news context transfer, and fast route handoff into generator flows.",
+    },
+    {
+      icon: "✨",
+      title: "AI-Assisted Content Tools",
+      desc: "Includes AI remix/rewrite workflows and assistant-driven text generation to speed headline, caption, and content iteration.",
+    },
+    {
+      icon: "🎨",
+      title: "Deep Customization + Bangla Support",
+      desc: "Provides logo, font, color, background, and theme controls with Bangla conversion and Bengali typography support built into the editor experience.",
+    },
+    {
+      icon: "📤",
+      title: "Production Export + Access Control",
+      desc: "Delivers HD card export and plan-based feature gating (news feed, background remover, AI remix, API access, analytics) across user tiers.",
+    }
+  ],
+  heroImage: "/projects/socialcards/hero.png",
+  overview:
+    "Socialcards was built as an end-to-end social media card workspace where teams can move from content discovery to final export without leaving the product. It combines live RSS news streams, URL-based generation, multi-template editing, and localized/Bangla-ready output for creator and newsroom workflows.",
+  challenges:
+    "The hardest engineering challenge was maintaining speed and consistency while merging diverse feed sources, metadata extraction, and multiple generator routes. We solved this with parallel feed fetching, de-duplication by link/title, source balancing, cache/revalidation windows, and guarded premium-access flows across the dashboard.",
+  achievements:
+    "Delivered a unified creator workflow across 12+ card types, improved recency and variety of news cards with regional RSS aggregation, reduced repeated work through auto-filled generation flows, and strengthened monetization UX through reliable plan-based gating and upgrade prompts.",
+  techStack: [
+    "Next.js",
+    "React",
+    "TypeScript",
+    "Tailwind CSS",
+    "Framer Motion",
+    "rss-parser",
+    "date-fns",
+    "OpenAI API",
+    "Google Gemini API",
+    "Node.js / Express (backend)",
+    "MySQL (mysql2)",
+    "Puppeteer",
+    "Cloudflare Tunnel",
+  ],
+  liveUrl: "https://photocard.app/socialcards",
+  githubUrl: "https://github.com/",
+  year: "2026",
+  color: "#8B6834",
+}

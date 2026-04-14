@@ -78,6 +78,8 @@ interface BannerUrlCardProps {
   footerIconColor?: "white" | "colored";
   watermark?: WatermarkSettings;
   isLogoFavicon?: boolean;
+  highlightIndices?: number[];
+  highlightStyle?: "boxed" | "colored";
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -108,6 +110,8 @@ export default function BannerUrlCard({
     showFooter: false,
   },
   isLogoFavicon = false,
+  highlightIndices = [],
+  highlightStyle = "colored",
 }: BannerUrlCardProps) {
 
   // ── Colour helpers ──────────────────────────────────────────────────────────
@@ -160,9 +164,29 @@ export default function BannerUrlCard({
   // ── Derived values ──────────────────────────────────────────────────────────
 
   const bannerColor = getBannerColor();
+  const safeHighlightBg = ["#fff", "#ffffff"].includes((bannerColor || "").toLowerCase())
+    ? "#dc2626"
+    : bannerColor;
   const footerBg = darkenHexColor(
     (background?.type === "gradient" ? background?.gradientFrom : undefined) || background?.color || "#1a1410",
   );
+
+  const words = (data.title || "").trim().split(/\s+/).filter(Boolean);
+  const highlighted = new Set(highlightIndices);
+  const titleRuns: { text: string; highlighted: boolean }[] = [];
+
+  let i = 0;
+  while (i < words.length) {
+    if (highlighted.has(i)) {
+      const start = i;
+      while (i + 1 < words.length && highlighted.has(i + 1)) i += 1;
+      titleRuns.push({ text: words.slice(start, i + 1).join(" "), highlighted: true });
+      i += 1;
+      continue;
+    }
+    titleRuns.push({ text: words[i], highlighted: false });
+    i += 1;
+  }
 
   const headlineTextShadow = (() => {
     const c = fontStyles?.headline.color ?? "#FFFFFF";
@@ -298,7 +322,34 @@ export default function BannerUrlCard({
                   WebkitBoxOrient: "vertical",
                 } as React.CSSProperties}
               >
-                {data.title}
+                {titleRuns.map((run, idx) => (
+                  <span
+                    key={`${run.text}-${idx}`}
+                    style={
+                      run.highlighted
+                        ? highlightStyle === "boxed"
+                          ? {
+                              display: "inline-block",
+                              color: "#ffffff",
+                              backgroundColor: safeHighlightBg,
+                              padding: "0 5px 1px",
+                              borderRadius: "2px",
+                              lineHeight: 1.05,
+                              verticalAlign: "baseline",
+                              marginRight: "3px",
+                            }
+                          : {
+                              color: bannerColor,
+                            }
+                        : undefined
+                    }
+                  >
+                    {run.text}
+                    {idx < titleRuns.length - 1 && (highlightStyle === "boxed" ? !run.highlighted : true)
+                      ? " "
+                      : ""}
+                  </span>
+                ))}
               </h2>
             )}
           </div>

@@ -8,6 +8,7 @@ import {
   Plus,
   Type,
   Move,
+  Highlighter,
   Lock,
   Sparkles,
   Copy,
@@ -39,6 +40,12 @@ interface EditingToolbarProps {
   showTitleTool?: boolean;
   showDragTool?: boolean;
   showPersonOverlayTool?: boolean;
+  showHighlightTool?: boolean;
+  highlightWordIndices?: number[];
+  onHighlightWordIndicesChange?: (indices: number[]) => void;
+  highlightColor?: string;
+  highlightStyle?: "boxed" | "colored";
+  onHighlightStyleChange?: (style: "boxed" | "colored") => void;
 }
 
 interface TitleVariation {
@@ -65,6 +72,12 @@ export default function EditingToolbar({
   showTitleTool = true,
   showDragTool = true,
   showPersonOverlayTool = false, // Only show for comment cards
+  showHighlightTool = false,
+  highlightWordIndices = [],
+  onHighlightWordIndicesChange,
+  highlightColor = "#fde68a",
+  highlightStyle = "boxed",
+  onHighlightStyleChange,
 }: EditingToolbarProps) {
   const { user } = useAuth();
   const [showTitleEditor, setShowTitleEditor] = useState(false);
@@ -75,6 +88,8 @@ export default function EditingToolbar({
   const [isGenerating, setIsGenerating] = useState(false);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
   const [showAssetManager, setShowAssetManager] = useState(false);
+  const [showHighlightSelector, setShowHighlightSelector] = useState(false);
+  const [pendingHighlightIndices, setPendingHighlightIndices] = useState<number[]>([]);
   const [hashtagLang, setHashtagLang] = useState<"en" | "bn">("bn");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
@@ -295,6 +310,29 @@ export default function EditingToolbar({
             />
             <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               {isDragMode ? "Drag Mode ON" : "Drag Mode OFF"}
+            </div>
+          </button>
+        )}
+
+        {/* Highlight Selector */}
+        {showHighlightTool && onHighlightWordIndicesChange && (
+          <button
+            onClick={() =>
+              handleToolClick(() => {
+                setPendingHighlightIndices([...highlightWordIndices]);
+                setShowHighlightSelector(true);
+              })
+            }
+            className="p-3 bg-[#e8dcc8] hover:bg-[#d4c4b0] border-2 border-[#d4c4b0] transition-colors group relative"
+            title="Highlight Words"
+          >
+            <Highlighter className="w-5 h-5 text-[#2c2419]" />
+            <div
+              className="absolute bottom-0 right-0 w-2.5 h-2.5 border border-[#d4c4b0] rounded-sm"
+              style={{ backgroundColor: highlightColor }}
+            />
+            <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              Highlight Words
             </div>
           </button>
         )}
@@ -586,6 +624,100 @@ export default function EditingToolbar({
           currentLogoUrl={currentLogo}
           requiresFavicon={true}
         />
+      )}
+
+      {/* Highlight Selector Modal */}
+      {showHighlightSelector && showHighlightTool && onHighlightWordIndicesChange && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#faf8f5] border-2 border-[#d4c4b0] max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-[#f5f0e8] border-b-2 border-[#d4c4b0] p-6">
+              <h3 className="text-xl font-lora font-bold text-[#2c2419]">Select Words to Highlight</h3>
+              <p className="text-xs text-[#5d4e37] font-inter mt-1">
+                Select one or more words. Adjacent selected words will share the same highlight block.
+              </p>
+            </div>
+
+            <div className="p-6">
+              {onHighlightStyleChange && (
+                <div className="mb-5">
+                  <p className="text-xs text-[#5d4e37] font-inter mb-2">Highlight Style</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => onHighlightStyleChange("boxed")}
+                      className={`px-3 py-2 text-xs font-bold border-2 transition-colors ${
+                        highlightStyle === "boxed"
+                          ? "bg-[#2c2419] text-white border-[#2c2419]"
+                          : "bg-white text-[#2c2419] border-[#d4c4b0] hover:border-[#8b6834]"
+                      }`}
+                    >
+                      Boxed
+                    </button>
+                    <button
+                      onClick={() => onHighlightStyleChange("colored")}
+                      className={`px-3 py-2 text-xs font-bold border-2 transition-colors ${
+                        highlightStyle === "colored"
+                          ? "bg-[#2c2419] text-white border-[#2c2419]"
+                          : "bg-white text-[#2c2419] border-[#d4c4b0] hover:border-[#8b6834]"
+                      }`}
+                    >
+                      Colored Words
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap gap-2">
+                {(currentTitle || "এই একটি নমুনা শিরোনাম যা দেখায় ফটোকার্ড কেমন দেখাবে")
+                  .split(" ")
+                  .filter(Boolean)
+                  .map((word, i) => (
+                    <button
+                      key={`${word}-${i}`}
+                      onClick={() =>
+                        setPendingHighlightIndices((prev) =>
+                          prev.includes(i)
+                            ? prev.filter((x) => x !== i)
+                            : [...prev, i],
+                        )
+                      }
+                      className={`px-3 py-1.5 text-sm font-inter font-medium border-2 transition-colors ${
+                        pendingHighlightIndices.includes(i)
+                          ? "text-white border-[#2c2419]"
+                          : "bg-white text-[#2c2419] border-[#d4c4b0] hover:border-[#8b6834]"
+                      }`}
+                      style={
+                        pendingHighlightIndices.includes(i)
+                          ? { backgroundColor: highlightColor }
+                          : undefined
+                      }
+                    >
+                      {word}
+                    </button>
+                  ))}
+              </div>
+            </div>
+
+            <div className="sticky bottom-0 bg-[#f5f0e8] border-t-2 border-[#d4c4b0] p-6">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    onHighlightWordIndicesChange(pendingHighlightIndices);
+                    setShowHighlightSelector(false);
+                  }}
+                  className="flex-1 py-3 bg-[#8b6834] text-[#faf8f5] font-inter font-bold hover:bg-[#2c2419] transition-colors"
+                >
+                  Apply Changes
+                </button>
+                <button
+                  onClick={() => setShowHighlightSelector(false)}
+                  className="flex-1 py-3 bg-[#d4c4b0] text-[#2c2419] font-inter font-bold hover:bg-[#e8dcc8] transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

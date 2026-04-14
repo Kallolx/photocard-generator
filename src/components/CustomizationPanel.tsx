@@ -539,6 +539,12 @@ export default function CustomizationPanel({
       thumbnail: "/themes/cus-8.png",
     },
     {
+      id: "source",
+      name: "Source",
+      locked: isFreeUser,
+      thumbnail: "/themes/cus-11.png",
+    },
+    {
       id: "magazine",
       name: "Magazine",
       locked: isFreeUser, // Free for all users
@@ -1298,7 +1304,7 @@ export default function CustomizationPanel({
         {/* Pattern Tab */}
         {activeTab === "Pattern" && (
           <div className="space-y-6">
-            {theme === "magazine" ? (
+            {theme === "magazine" || theme === "source" ? (
               <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1318,8 +1324,9 @@ export default function CustomizationPanel({
                   Pattern Locked
                 </p>
                 <p className="text-xs text-[#5d4e37] font-inter leading-relaxed max-w-[200px]">
-                  The Magazine card uses a fixed built-in pattern. You cannot
-                  change it.
+                  {theme === "source"
+                    ? "The Source card uses a clean fixed layout without pattern controls."
+                    : "The Magazine card uses a fixed built-in pattern. You cannot change it."}
                 </p>
               </div>
             ) : theme === "split" ? (
