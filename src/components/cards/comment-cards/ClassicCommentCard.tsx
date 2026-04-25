@@ -188,7 +188,7 @@ export default function ClassicCommentCard({
         <div className="flex-1" />
 
         {/* Bottom bar — logo flush to bottom-left edge */}
-        <div className="relative" style={{ minHeight: "80px" }}>
+        <div className="relative" style={{ minHeight: "40px" }}>
           {/* Logo — touches left and bottom edges, no gap */}
           {visibilitySettings?.showLogo !== false && data.logo && (
           <div className="absolute bottom-0 left-0 z-10">

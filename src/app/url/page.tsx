@@ -52,10 +52,17 @@ export default function Home() {
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
 
+  const [isUrlPanelCollapsed, setIsUrlPanelCollapsed] = useState(false);
+
   // Auto-fill and auto-submit URL from the All News page
   useEffect(() => {
     const pendingUrl = sessionStorage.getItem("pendingUrlGeneration");
     const pendingTheme = sessionStorage.getItem("pendingThemeGeneration");
+    
+    // Check if we already have the generated data from the news page
+    const pendingTitle = sessionStorage.getItem("pendingRemixTitle");
+    const pendingContent = sessionStorage.getItem("pendingRemixContent");
+    const pendingImage = sessionStorage.getItem("pendingRemixImage");
 
     if (pendingTheme) {
       sessionStorage.removeItem("pendingThemeGeneration");
@@ -65,11 +72,33 @@ export default function Home() {
     if (pendingUrl) {
       sessionStorage.removeItem("pendingUrlGeneration");
       setUrl(pendingUrl);
-
-      // Auto-submit form briefly after rendering
-      setTimeout(() => {
-        handleUrlSubmit(pendingUrl);
-      }, 500);
+      
+      // If we have pre-fetched data, skip hitting the API and construct PhotocardData immediately
+      if (pendingTitle && pendingImage) {
+        sessionStorage.removeItem("pendingRemixTitle");
+        sessionStorage.removeItem("pendingRemixContent");
+        sessionStorage.removeItem("pendingRemixImage");
+        
+        setPhotocardData({
+            title: pendingTitle,
+            image: pendingImage,
+            logo: "", // the url route doesn't have the source icon unfortunately, we can fallback
+            favicon: "",
+            siteName: "",
+            url: pendingUrl,
+            weekName: ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"][new Date().getDay()],
+            date: new Date().toLocaleDateString("bn-BD", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })
+        });
+      } else {
+        // Auto-submit form briefly after rendering to fetch via API
+        setTimeout(() => {
+          handleUrlSubmit(pendingUrl);
+        }, 500);
+      }
     }
   }, []);
   const [background, setBackground] = useState<BackgroundOptions>({
@@ -95,7 +124,7 @@ export default function Home() {
   const [adBannerImage, setAdBannerImage] = useState<string | null>(null);
   const [adBannerZoom, setAdBannerZoom] = useState<number>(100);
   const [adBannerPosition, setAdBannerPosition] = useState({ x: 0, y: 0 });
-  const [theme, setTheme] = useState<string>("classic");
+  const [theme, setTheme] = useState<string>("duo");
   const [isDragMode, setIsDragMode] = useState(false);
   const [sourceHighlightIndices, setSourceHighlightIndices] = useState<number[]>(
     [0, 1],
@@ -308,7 +337,7 @@ export default function Home() {
         },
         headline: {
           ...prev.headline,
-          fontSize: "24px",
+          fontSize: "28px",
           color: "#000000",
           textAlign: "center",
         },
@@ -341,7 +370,7 @@ export default function Home() {
         ...prev,
         week: { ...prev.week, fontSize: "16px", fontWeight: "600", color: "#ffffff" },
         date: { ...prev.date, fontSize: "16px", fontWeight: "600", color: "#ffffff" },
-        headline: { ...prev.headline, fontSize: "28px", color: "#FFFFFF", textAlign: "center" },
+        headline: { ...prev.headline, fontSize: "27px", color: "#FFFFFF", textAlign: "center" },
       }));
       setBackground({ type: "solid", color: "#E53E3E" });
     } else if (theme === "source") {
@@ -351,7 +380,7 @@ export default function Home() {
         date: { ...prev.date, fontSize: "15px", fontWeight: "500", color: "#4b5563" },
         headline: {
           ...prev.headline,
-          fontSize: "30px",
+          fontSize: "29px",
           fontWeight: "700",
           color: "#111827",
           textAlign: "left",
@@ -370,7 +399,21 @@ export default function Home() {
         ...prev,
         week: { ...prev.week, fontSize: "11px", fontWeight: "500", color: "#4b5563" },
         date: { ...prev.date, fontSize: "11px", fontWeight: "500", color: "#4b5563" },
-        headline: { ...prev.headline, fontSize: "30px", fontWeight: "700", color: "#111827", textAlign: "left" },
+        headline: { ...prev.headline, fontSize: "29px", fontWeight: "700", color: "#111827", textAlign: "left" },
+      }));
+    } else if (theme === "modern") {
+      setFontStyles((prev) => ({
+        ...prev,
+        week: { ...prev.week, fontSize: "18px", color: "#FFFFFF" },
+        date: { ...prev.date, fontSize: "18px", color: "#FFFFFF" },
+        headline: { ...prev.headline, fontSize: "29px", color: "#FFFFFF", textAlign: "center" },
+      }));
+    } else if (theme === "classic") {
+      setFontStyles((prev) => ({
+        ...prev,
+        week: { ...prev.week, fontSize: "18px", color: "#FFFFFF" },
+        date: { ...prev.date, fontSize: "18px", color: "#FFFFFF" },
+        headline: { ...prev.headline, fontSize: "30px", color: "#FFFFFF", textAlign: "center" },
       }));
     } else {
       // Reset to default for other themes
@@ -1494,10 +1537,15 @@ export default function Home() {
               adBannerImage={adBannerImage}
               onAdBannerChange={setAdBannerImage}
               onDownloadAll={handleDownloadAll}
+              isCollapsed={isUrlPanelCollapsed}
+              onCollapsedChange={setIsUrlPanelCollapsed}
             />
 
             {/* Customization Panel */}
-            <div className="mt-6 flex-1 md:min-h-0 md:overflow-hidden">
+            <div 
+              className="mt-6 flex-1 md:min-h-0 md:overflow-hidden"
+              onClick={() => setIsUrlPanelCollapsed(true)}
+            >
               <CustomizationPanel
                 background={background}
                 onBackgroundChange={setBackground}

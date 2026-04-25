@@ -22,6 +22,8 @@ interface UrlComponentProps {
   adBannerImage?: string | null;
   onAdBannerChange?: (image: string | null) => void;
   onDownloadAll?: () => void;
+  isCollapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
 }
 
 export default function UrlComponent({
@@ -38,13 +40,18 @@ export default function UrlComponent({
   frameBorderColor,
   adBannerImage,
   onAdBannerChange,
-  onDownloadAll
+  onDownloadAll,
+  isCollapsed,
+  onCollapsedChange
 }: UrlComponentProps) {
   const [url, setUrl] = useState('');
   const [urls, setUrls] = useState<string[]>(['']);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
   const { user, features } = useAuth();
+
+  const collapsedState = isCollapsed !== undefined ? isCollapsed : internalCollapsed;
+  const setCollapsed = onCollapsedChange || setInternalCollapsed;
   
   const handleSingleSubmit = () => {
     if (url.trim()) {
@@ -77,51 +84,12 @@ export default function UrlComponent({
 
   return (
     <div className="space-y-3">
-      {/* Mode Selector */}
-      <div className="bg-[#f5f0e8] p-1 border-2 border-[#d4c4b0]">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => setMode('single')}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium font-inter transition-all duration-200 ${
-              mode === 'single'
-                ? 'bg-white text-[#2c2419] shadow-sm'
-                : 'text-[#5d4e37] hover:text-[#8b6834] hover:bg-[#e8dcc8]'
-            }`}
-          >
-            <User className="w-4 h-4" />
-            <span>Single</span>
-          </button>
-          <button
-            onClick={() => {
-              if (user?.plan === 'Premium') {
-                setMode('multiple');
-              } else {
-                setShowUpgradeModal(true);
-              }
-            }}
-            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium font-inter transition-all duration-200 relative ${
-              mode === 'multiple'
-                ? 'bg-white text-[#2c2419] shadow-sm'
-                : 'text-[#5d4e37] hover:text-[#8b6834] hover:bg-[#e8dcc8]'
-            } ${
-              user?.plan !== 'Premium' ? 'opacity-60' : ''
-            }`}
-          >
-            <Grid3X3 className="w-4 h-4" />
-            <span>Batch</span>
-            {user?.plan !== 'Premium' && (
-              <Lock className="w-3 h-3 absolute top-2 right-2 text-[#8b6834]" />
-            )}
-          </button>
-        </div>
-      </div>
-
       {/* URL Input Section */}
       <div className="bg-[#f5f0e8] border-2 border-[#d4c4b0]">
         {/* Header — always visible, click to collapse */}
         <div
           className="flex items-center gap-2 p-4 cursor-pointer select-none"
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={() => setCollapsed(!collapsedState)}
         >
           <div className="p-2 bg-[#8b6834]">
             <Link2 className="w-4 h-4 text-white" />
@@ -129,14 +97,54 @@ export default function UrlComponent({
           <h2 className="text-base md:text-lg font-lora font-bold text-[#2c2419] flex-1">
             {mode === 'single' ? 'Article URL' : 'Multiple URLs'}
           </h2>
-          {isCollapsed
-            ? <ChevronDown className="w-4 h-4 text-[#8b6834]" />
-            : <ChevronUp className="w-4 h-4 text-[#8b6834]" />}
+          <div className="p-1 border border-[#d4c4b0] rounded-sm bg-white">
+            {collapsedState
+              ? <ChevronDown className="w-4 h-4 text-[#8b6834]" />
+              : <ChevronUp className="w-4 h-4 text-[#8b6834]" />}
+          </div>
         </div>
 
         {/* Collapsible body */}
-        {!isCollapsed && (
+        {!collapsedState && (
           <div className="px-6 pb-6">
+            {/* Mode Selector */}
+            <div className="bg-[#f5f0e8] p-1 mb-4 border-2 border-[#d4c4b0]">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setMode('single')}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium font-inter transition-all duration-200 ${
+                    mode === 'single'
+                      ? 'bg-white text-[#2c2419] shadow-sm'
+                      : 'text-[#5d4e37] hover:text-[#8b6834] hover:bg-[#e8dcc8]'
+                  }`}
+                >
+                  <User className="w-4 h-4" />
+                  <span>Single</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (user?.plan === 'Premium') {
+                      setMode('multiple');
+                    } else {
+                      setShowUpgradeModal(true);
+                    }
+                  }}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-md font-medium font-inter transition-all duration-200 relative ${
+                    mode === 'multiple'
+                      ? 'bg-white text-[#2c2419] shadow-sm'
+                      : 'text-[#5d4e37] hover:text-[#8b6834] hover:bg-[#e8dcc8]'
+                  } ${
+                    user?.plan !== 'Premium' ? 'opacity-60' : ''
+                  }`}
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                  <span>Batch</span>
+                  {user?.plan !== 'Premium' && (
+                    <Lock className="w-3 h-3 absolute top-2 right-2 text-[#8b6834]" />
+                  )}
+                </button>
+              </div>
+            </div>
         
         {mode === 'single' ? (
           <>

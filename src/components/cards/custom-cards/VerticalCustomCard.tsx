@@ -1265,7 +1265,7 @@ export default function VerticalCustomCard({
         {visibilitySettings?.showAdBanner && adBannerImage && (
           <div
             className="w-full relative z-10 overflow-hidden"
-            style={{ height: "60px" }}
+            style={{ height: "40px" }}
           >
             <img
               src={adBannerImage}
@@ -1289,10 +1289,10 @@ export default function VerticalCustomCard({
           !isGenerating && (
             <div
               className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10"
-              style={{ height: "80px" }}
+              style={{ height: "40px" }}
             >
               <span className="text-[#5d4e37] text-xs font-inter">
-                Ad Banner Area (80px height)
+                Ad Banner Area (40px height)
               </span>
             </div>
           )}

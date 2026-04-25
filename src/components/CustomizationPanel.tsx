@@ -509,34 +509,16 @@ export default function CustomizationPanel({
 
   const THEMES_WITH_LOCK = [
     {
-      id: "classic",
-      name: "Classic",
-      locked: false,
-      thumbnail: "/themes/cus-1.png",
-    },
-    {
       id: "duo",
       name: "Duo",
       locked: isFreeUser,
       thumbnail: "/themes/cus-7.png",
     },
     {
-      id: "banner",
-      name: "Banner",
-      locked: isFreeUser,
-      thumbnail: "/themes/cus-9.png",
-    },
-    {
       id: "blend",
       name: "Blend",
       locked: isFreeUser,
       thumbnail: "/themes/cus-10.png",
-    },
-    {
-      id: "overlay",
-      name: "Overlay",
-      locked: isFreeUser,
-      thumbnail: "/themes/cus-8.png",
     },
     {
       id: "source",
@@ -547,7 +529,7 @@ export default function CustomizationPanel({
     {
       id: "magazine",
       name: "Magazine",
-      locked: isFreeUser, // Free for all users
+      locked: isFreeUser,
       thumbnail: "/themes/cus-6.png",
     },
     {
@@ -555,6 +537,24 @@ export default function CustomizationPanel({
       name: "Modern",
       locked: isFreeUser, // Lock Modern theme for Free users
       thumbnail: "/themes/cus-2.png",
+    },
+    {
+      id: "classic",
+      name: "Classic",
+      locked: false,
+      thumbnail: "/themes/cus-1.png",
+    },
+    {
+      id: "banner",
+      name: "Banner",
+      locked: isFreeUser,
+      thumbnail: "/themes/cus-9.png",
+    },
+    {
+      id: "overlay",
+      name: "Overlay",
+      locked: isFreeUser,
+      thumbnail: "/themes/cus-8.png",
     },
     {
       id: "modern2",
@@ -737,16 +737,6 @@ export default function CustomizationPanel({
                     <Lock className="w-3 h-3" />
                   )}
                 </span>
-                {tab === "Pattern" && (
-                  <span className="absolute top-1 right-1 px-1 py-[1px] bg-gradient-to-br from-[#10b981] to-[#059669] text-white text-[7px] leading-none font-black rounded shadow-sm border border-white/40">
-                    NEW
-                  </span>
-                )}
-                {tab === "Fonts" && (
-                  <span className="absolute top-1 right-1 px-1 py-[1px] bg-gradient-to-br from-[#10b981] to-[#059669] text-white text-[7px] leading-none font-black rounded shadow-sm border border-white/40">
-                    NEW
-                  </span>
-                )}
                 {activeTab === tab && (
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#8b6834]" />
                 )}
@@ -1993,20 +1983,6 @@ export default function CustomizationPanel({
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                           <Lock className="w-8 h-8 text-white drop-shadow-lg" />
                         </div>
-                      )}
-
-                      {/* NEW badge for Duo theme */}
-                      {theme.id === "duo" && (
-                        <span className="absolute top-1.5 right-1.5 px-1.5 py-[2px] bg-red-600 text-white text-[8px] leading-none font-black rounded shadow-md border border-white/40 z-10">
-                          NEW
-                        </span>
-                      )}
-
-                      {/* NEW badge for Overlay theme */}
-                      {theme.id === "overlay" && (
-                        <span className="absolute top-1.5 right-1.5 px-1.5 py-[2px] bg-red-600 text-white text-[8px] leading-none font-black rounded shadow-md border border-white/40 z-10">
-                          NEW
-                        </span>
                       )}
 
                       {/* Selected indicator at bottom inside the image area */}

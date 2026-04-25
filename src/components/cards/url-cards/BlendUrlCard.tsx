@@ -458,7 +458,7 @@ export default function BlendUrlCard({
 
       {/* ── Ad banner ── */}
       {visibilitySettings?.showAdBanner && adBannerImage && (
-        <div className="w-full relative z-10 overflow-hidden" style={{ height: "60px" }}>
+        <div className="w-full relative z-10 overflow-hidden" style={{ height: "40px" }}>
           <img
             src={adBannerImage}
             alt="Advertisement"
@@ -477,8 +477,8 @@ export default function BlendUrlCard({
         </div>
       )}
       {visibilitySettings?.showAdBanner && !adBannerImage && !isGenerating && (
-        <div className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10" style={{ height: "80px" }}>
-          <span className="text-[#5d4e37] text-xs font-inter">Ad Banner Area (80px height)</span>
+        <div className="w-full bg-[#e8dcc8] border-2 border-dashed border-[#d4c4b0] flex items-center justify-center relative z-10" style={{ height: "40px" }}>
+          <span className="text-[#5d4e37] text-xs font-inter">Ad Banner Area (40px height)</span>
         </div>
       )}
     </div>

@@ -150,7 +150,7 @@ export default function DownloadControls({
       // Find divs that contain "Ad Banner Area" text - this is the placeholder
       const allDivs = Array.from(clone.querySelectorAll('div'));
       const adBannerPlaceholder = allDivs.find(div => 
-        div.textContent?.includes('Ad Banner Area (80px height)')
+        div.textContent?.includes('Ad Banner Area (40px height)')
       );
       if (adBannerPlaceholder) {
         adBannerPlaceholder.remove();
@@ -220,7 +220,7 @@ export default function DownloadControls({
       // Remove ad banner placeholder
       const allDivs = Array.from(clone.querySelectorAll('div'));
       const adBannerPlaceholder = allDivs.find(div => 
-        div.textContent?.includes('Ad Banner Area (80px height)')
+        div.textContent?.includes('Ad Banner Area (40px height)')
       );
       if (adBannerPlaceholder) {
         adBannerPlaceholder.remove();

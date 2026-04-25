@@ -46,26 +46,43 @@ export async function POST(request: NextRequest) {
       $('script[type="application/ld+json"]').each((i, el) => {
         if (schemaTitle) return;
         try {
-          const json = JSON.parse($(el).html() || "{}");
+          // Some sites might return encoded JSON text which throws an error if we just use .html(), so we ensure it's unescaped
+          const jsonText = $(el).html() || "{}";
+          // Replace common control chars that might break parsing
+          const cleanJsonText = jsonText.replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t");
+          
+          let json;
+          try {
+              json = JSON.parse(jsonText);
+          } catch(e) {
+              json = JSON.parse(cleanJsonText);
+          }
+          
           const schemas = Array.isArray(json) ? json : json["@graph"] || [json];
 
           for (const item of schemas) {
-            const type = Array.isArray(item["@type"])
-              ? item["@type"]
-              : [item["@type"]];
+            if(!item) continue;
+            
+            const typeRaw = item["@type"];
+            if(!typeRaw) continue;
+            
+            const type = Array.isArray(typeRaw) ? typeRaw : [typeRaw];
+            
             if (
               type.some((t) =>
-                ["Article", "NewsArticle", "BlogPosting", "Report"].includes(t),
+                typeof t === 'string' && ["Article", "NewsArticle", "BlogPosting", "Report"].includes(t),
               )
             ) {
-              if (item.headline) {
+              if (item.headline && typeof item.headline === 'string') {
                 schemaTitle = item.headline;
-              } else if (item.name) {
+              } else if (item.name && typeof item.name === 'string') {
                 schemaTitle = item.name;
               }
             }
           }
-        } catch (e) {}
+        } catch (e) {
+          // Silently skip parse errors in JSON-LD
+        }
       });
     } catch (e) {}
 
