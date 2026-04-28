@@ -480,7 +480,7 @@ export default function MinimalUrlCard({
           return {
             backgroundImage: `url(${background.patternImage})`,
             backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
+            backgroundRepeat: "no-repeat",
             backgroundPosition: "center",
             opacity,
           };
@@ -493,7 +493,11 @@ export default function MinimalUrlCard({
 
   const getCardDate = () => {
     const now = new Date();
-    const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
     const lang = fontStyles?.weekDateLanguage === "english" ? "en-US" : "bn-BD";
     return now.toLocaleDateString(lang, options);
   };
@@ -502,7 +506,15 @@ export default function MinimalUrlCard({
     if (fontStyles?.weekDateLanguage === "english") {
       return new Date().toLocaleDateString("en-US", { weekday: "long" });
     }
-    const days = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
+    const days = [
+      "রবিবার",
+      "সোমবার",
+      "মঙ্গলবার",
+      "বুধবার",
+      "বৃহস্পতিবার",
+      "শুক্রবার",
+      "শনিবার",
+    ];
     return days[new Date().getDay()];
   };
 
@@ -773,142 +785,67 @@ export default function MinimalUrlCard({
         style={getBackgroundStyle()}
       >
         <div className="relative overflow-hidden">
-        {/* Pattern Overlay */}
-        <div
-          className="absolute inset-0 pointer-events-none z-0"
-          style={getPatternStyle()}
-        />
-
-        {/* Brand Watermark */}
-        {watermark?.text && watermark?.enabled !== false && (
+          {/* Pattern Overlay */}
           <div
-            style={{
-              position: "absolute",
-              bottom: watermark.y ?? 0,
-              left: `calc(50% + ${watermark.x ?? 0}px)`,
-              transform: `translateX(-50%) rotate(${watermark.rotation ?? 0}deg)`,
-              opacity: watermark.opacity ?? 0.30,
-              zIndex: 0,
-              pointerEvents: "none",
-              userSelect: "none",
-              whiteSpace: "nowrap",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: /[\u0980-\u09FF]/.test(watermark.text) ? "Noto Serif Bengali" : "DM Sans",
-                fontWeight: 800,
-                letterSpacing: "-0.05em",
-                fontSize: `${watermark.fontSize ?? 48}px`,
-                textTransform: "uppercase",
-                color: "#ffffff",
-              }}
-            >
-              {watermark.text}
-            </span>
-          </div>
-        )}
-
-        {/* Top Image Section - Full width, no padding */}
-        <div className="relative w-full h-[240px] overflow-hidden">
-          {/* Main Image */}
-          <div
-            className="w-full h-full"
-            style={{
-              border: `${frameBorderThickness}px solid ${frameBorderColor}`,
-            }}
-          >
-            {data.image ? (
-              <img
-                src={getProxiedImageUrl(data.image)}
-                alt="Article image"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/placeholder-image.jpg";
-                }}
-              />
-            ) : (
-              <div className="w-full h-full bg-white flex flex-col items-center justify-center gap-2">
-                <svg
-                  className="w-12 h-12 text-gray-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <span className="text-gray-400 text-sm font-inter">
-                  No Image
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Gradient Overlay - Bottom half of image blends to background */}
-          <div
-            className="absolute left-0 right-0 bottom-0 h-[140px] pointer-events-none z-[1]"
-            style={{
-              background: getImageBlendGradient(),
-            }}
+            className="absolute inset-0 pointer-events-none z-0"
+            style={getPatternStyle()}
           />
 
-          {/* Overlay Content - Week/Date and Favicon */}
-          <div className="absolute inset-0 flex justify-between items-start pt-6 pr-4 z-[2]">
-            {/* Top Left Slot */}
-            {renderElement(elementLayout.topLeft)}
-
-            {/* Top Right Slot */}
-            {renderElement(elementLayout.topRight)}
-          </div>
-        </div>
-
-        {/* Logo Section with Complex Shape - Overlapping image and text sections */}
-        {visibilitySettings.showLogo && (
-          <div className="relative -mt-10 z-20 flex justify-center">
-            <div className="relative w-[240px] h-[54px]">
-              {/* Complex SVG Shape Background */}
-              <svg
-                viewBox="0 0 449 100"
-                className="absolute inset-0 w-full h-full"
-                preserveAspectRatio="none"
+          {/* Brand Watermark */}
+          {watermark?.text && watermark?.enabled !== false && (
+            <div
+              style={{
+                position: "absolute",
+                bottom: watermark.y ?? 0,
+                left: `calc(50% + ${watermark.x ?? 0}px)`,
+                transform: `translateX(-50%) rotate(${watermark.rotation ?? 0}deg)`,
+                opacity: watermark.opacity ?? 0.3,
+                zIndex: 0,
+                pointerEvents: "none",
+                userSelect: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
+              <span
                 style={{
-                  filter: "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))",
+                  fontFamily: /[\u0980-\u09FF]/.test(watermark.text)
+                    ? "Noto Serif Bengali"
+                    : "DM Sans",
+                  fontWeight: 800,
+                  letterSpacing: "-0.05em",
+                  fontSize: `${watermark.fontSize ?? 48}px`,
+                  textTransform: "uppercase",
+                  color: "#ffffff",
                 }}
               >
-                {/* Main parallelogram */}
-                <path d="M448 15H48.186L0 83H403.721L448 15Z" fill="#FFFFFF" />
-                {/* Top accent */}
-                <path
-                  d="M35.2299 0L0 49H15.6578L43.0588 10.3158H234.866L244 0H35.2299Z"
-                  fill="#FFFFFF"
-                />
-                {/* Bottom accent */}
-                <path
-                  d="M413.914 100L449 50H433.406L406.118 89.4737H215.096L206 100H413.914Z"
-                  fill="#FFFFFF"
-                />
-              </svg>
+                {watermark.text}
+              </span>
+            </div>
+          )}
 
-              {/* Logo Image or Placeholder - Centered */}
-              <div className="absolute inset-0 flex items-center justify-center p-3">
-                {data.logo ? (
-                  <img
-                    src={getProxiedImageUrl(data.logo)}
-                    alt="Logo"
-                    className="max-w-[120px] max-h-[40px] object-contain"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "/placeholder-logo.png";
-                    }}
-                  />
-                ) : (
+          {/* Top Image Section - Full width, no padding */}
+          <div className="relative w-full h-[240px] overflow-hidden">
+            {/* Main Image */}
+            <div
+              className="w-full h-full"
+              style={{
+                border: `${frameBorderThickness}px solid ${frameBorderColor}`,
+              }}
+            >
+              {data.image ? (
+                <img
+                  src={getProxiedImageUrl(data.image)}
+                  alt="Article image"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src =
+                      "/placeholder-image.jpg";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-white flex flex-col items-center justify-center gap-2">
                   <svg
-                    className="w-5 h-5 text-gray-300"
+                    className="w-12 h-12 text-gray-300"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -920,106 +857,330 @@ export default function MinimalUrlCard({
                       d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
-                )}
-              </div>
+                  <span className="text-gray-400 text-sm font-inter">
+                    No Image
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Gradient Overlay - Bottom half of image blends to background */}
+            <div
+              className="absolute left-0 right-0 bottom-0 h-[140px] pointer-events-none z-[1]"
+              style={{
+                background: getImageBlendGradient(),
+              }}
+            />
+
+            {/* Overlay Content - Week/Date and Favicon */}
+            <div className="absolute inset-0 flex justify-between items-start pt-6 pr-4 z-[2]">
+              {/* Top Left Slot */}
+              {renderElement(elementLayout.topLeft)}
+
+              {/* Top Right Slot */}
+              {renderElement(elementLayout.topRight)}
             </div>
           </div>
-        )}
 
-        {/* Bottom Content Section with Fade Effect */}
-        <div
-          className="px-6 pt-6 pb-4 relative z-10"
-          style={{
-            background: `linear-gradient(to bottom, transparent 0%, ${background.type === "gradient" ? background.gradientFrom || background.color : background.color} 20%, ${background.type === "gradient" ? background.gradientTo || background.color : background.color} 100%)`,
-          }}
-        >
-          {/* Title */}
-          {visibilitySettings.showTitle && (
-            <h2
-              className="text-white text-center leading-tight mb-4 px-2 py-1"
-              style={
-                {
-                  fontFamily:
-                    fontStyles?.headline.fontFamily || "Noto Serif Bengali",
-                  fontSize: fontStyles?.headline.fontSize || "24px",
-                  fontWeight: fontStyles?.headline.fontWeight || "700",
-                  color: fontStyles?.headline.color || "#FFFFFF",
-                  textAlign: fontStyles?.headline.textAlign || "center",
-                  letterSpacing: fontStyles?.headline.letterSpacing || "0px",
-                  textShadow: (() => {
-                    const textColor = fontStyles?.headline.color || "#FFFFFF";
-                    const shadow = getTextShadow(
-                      fontStyles?.headline.textShadow?.preset || "none",
-                      fontStyles?.headline.textShadow?.angle || 135,
-                      textColor,
-                    );
-                    const stroke = getTextStroke(
-                      fontStyles?.headline.textStroke?.width || 0,
-                      fontStyles?.headline.textStroke?.color || "#000000",
-                    );
+          {/* Logo Section with Complex Shape - Overlapping image and text sections */}
+          {visibilitySettings.showLogo && (
+            <div className="relative -mt-10 z-20 flex justify-center">
+              <div className="relative w-[240px] h-[54px]">
+                {/* Complex SVG Shape Background */}
+                <svg
+                  viewBox="0 0 449 100"
+                  className="absolute inset-0 w-full h-full"
+                  preserveAspectRatio="none"
+                  style={{
+                    filter: "drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3))",
+                  }}
+                >
+                  {/* Main parallelogram */}
+                  <path
+                    d="M448 15H48.186L0 83H403.721L448 15Z"
+                    fill="#FFFFFF"
+                  />
+                  {/* Top accent */}
+                  <path
+                    d="M35.2299 0L0 49H15.6578L43.0588 10.3158H234.866L244 0H35.2299Z"
+                    fill="#FFFFFF"
+                  />
+                  {/* Bottom accent */}
+                  <path
+                    d="M413.914 100L449 50H433.406L406.118 89.4737H215.096L206 100H413.914Z"
+                    fill="#FFFFFF"
+                  />
+                </svg>
 
-                    // Combine both effects
-                    if (shadow !== "none" && stroke !== "none") {
-                      return `${stroke}, ${shadow}`;
-                    } else if (stroke !== "none") {
-                      return stroke;
-                    } else {
-                      return shadow;
-                    }
-                  })(),
-                } as React.CSSProperties
-              }
-            >
-              {data.title}
-            </h2>
+                {/* Logo Image or Placeholder - Centered */}
+                <div className="absolute inset-0 flex items-center justify-center p-3">
+                  {data.logo ? (
+                    <img
+                      src={getProxiedImageUrl(data.logo)}
+                      alt="Logo"
+                      className="max-w-[120px] max-h-[40px] object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/placeholder-logo.png";
+                      }}
+                    />
+                  ) : (
+                    <svg
+                      className="w-5 h-5 text-gray-300"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Footer Row - QR Code and CTA */}
-          <div className="flex justify-between items-end mt-0 gap-3">
-            {/* Bottom Left Slot */}
-            {siteNameOnLeft ? (
-              <div className="flex items-center gap-1 text-white/90">
-                <p className="font-dm-sans text-[9px] font-medium tracking-wide">
-                  {getSiteDomain()}
-                </p>
-              </div>
-            ) : (
-              renderElement(elementLayout.bottomLeft)
+          {/* Bottom Content Section with Fade Effect */}
+          <div
+            className="px-6 pt-6 pb-4 relative z-10"
+            style={{
+              background: `linear-gradient(to bottom, transparent 0%, ${background.type === "gradient" ? background.gradientFrom || background.color : background.color} 20%, ${background.type === "gradient" ? background.gradientTo || background.color : background.color} 100%)`,
+            }}
+          >
+            {/* Title */}
+            {visibilitySettings.showTitle && (
+              <h2
+                className="text-white text-center leading-tight mb-4 px-2 py-1"
+                style={
+                  {
+                    fontFamily:
+                      fontStyles?.headline.fontFamily || "Noto Serif Bengali",
+                    fontSize: fontStyles?.headline.fontSize || "24px",
+                    fontWeight: fontStyles?.headline.fontWeight || "700",
+                    color: fontStyles?.headline.color || "#FFFFFF",
+                    textAlign: fontStyles?.headline.textAlign || "center",
+                    letterSpacing: fontStyles?.headline.letterSpacing || "0px",
+                    textShadow: (() => {
+                      const textColor = fontStyles?.headline.color || "#FFFFFF";
+                      const shadow = getTextShadow(
+                        fontStyles?.headline.textShadow?.preset || "none",
+                        fontStyles?.headline.textShadow?.angle || 135,
+                        textColor,
+                      );
+                      const stroke = getTextStroke(
+                        fontStyles?.headline.textStroke?.width || 0,
+                        fontStyles?.headline.textStroke?.color || "#000000",
+                      );
+
+                      // Combine both effects
+                      if (shadow !== "none" && stroke !== "none") {
+                        return `${stroke}, ${shadow}`;
+                      } else if (stroke !== "none") {
+                        return stroke;
+                      } else {
+                        return shadow;
+                      }
+                    })(),
+                  } as React.CSSProperties
+                }
+              >
+                {data.title}
+              </h2>
             )}
 
-            {/* Bottom Right Slot */}
-            <div className="ml-auto">
-              {renderElement(elementLayout.bottomRight)}
+            {/* Footer Row - QR Code and CTA */}
+            <div className="flex justify-between items-end mt-0 gap-3">
+              {/* Bottom Left Slot */}
+              {siteNameOnLeft ? (
+                <div className="flex items-center gap-1 text-white/90">
+                  <p className="font-dm-sans text-[9px] font-medium tracking-wide">
+                    {getSiteDomain()}
+                  </p>
+                </div>
+              ) : (
+                renderElement(elementLayout.bottomLeft)
+              )}
+
+              {/* Bottom Right Slot */}
+              <div className="ml-auto">
+                {renderElement(elementLayout.bottomRight)}
+              </div>
             </div>
           </div>
-        </div>
         </div>
 
         {/* Footer bar – social/website/text items above ad banner */}
-        {visibilitySettings?.showFooter !== false && footerItems && footerItems.length > 0 && (
-          <div
-            className="w-full px-4 py-2 flex items-center justify-evenly"
-            style={{ background: darkenHexColor((background?.type === "gradient" ? background?.gradientFrom : undefined) || background?.color || "#1a1410"), opacity: footerOpacity / 100 }}
-          >
-            {footerItems.map((item) => (
-              <div key={item.id} className="flex items-center gap-1.5">
-                {item.type !== "text" && (
-                  <span className="shrink-0">
-                    {item.type === "facebook" && <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" style={{ color: footerIconColor === "colored" ? "#1877f2" : "#fff" }}><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>}
-                    {item.type === "instagram" && (footerIconColor === "colored" ? <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"><defs><radialGradient id={`ig-f-${id}`} cx="30%" cy="107%" r="1.5"><stop offset="0%" stopColor="#ffd676" /><stop offset="10%" stopColor="#f9a12e" /><stop offset="50%" stopColor="#e1306c" /><stop offset="90%" stopColor="#833ab4" /></radialGradient></defs><rect width="24" height="24" rx="6" fill={`url(#ig-f-${id})`} /><rect x="6.5" y="6.5" width="11" height="11" rx="3" stroke="#fff" strokeWidth="1.5" /><circle cx="12" cy="12" r="2.8" stroke="#fff" strokeWidth="1.5" /><circle cx="16.3" cy="7.7" r="0.8" fill="#fff" /></svg> : <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" style={{ color: "#fff" }}><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" /></svg>)}
-                    {item.type === "youtube" && <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" style={{ color: footerIconColor === "colored" ? "#ff0000" : "#fff" }}><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>}
-                    {item.type === "twitter" && <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" style={{ color: footerIconColor === "colored" ? "#1d9bf0" : "#fff" }}><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>}
-                    {item.type === "tiktok" && <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" style={{ color: footerIconColor === "colored" ? "#EE1D52" : "#fff" }}><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.27 8.27 0 0 0 4.84 1.55V6.67a4.85 4.85 0 0 1-1.07.02z" /></svg>}
-                    {item.type === "website" && <svg className="w-3.5 h-3.5" fill="none" stroke={footerIconColor === "colored" ? "#8b6834" : "white"} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>}
+        {visibilitySettings?.showFooter !== false &&
+          footerItems &&
+          footerItems.length > 0 && (
+            <div
+              className="w-full px-4 py-2 flex items-center justify-evenly"
+              style={{
+                background: darkenHexColor(
+                  (background?.type === "gradient"
+                    ? background?.gradientFrom
+                    : undefined) ||
+                    background?.color ||
+                    "#1a1410",
+                ),
+                opacity: footerOpacity / 100,
+              }}
+            >
+              {footerItems.map((item) => (
+                <div key={item.id} className="flex items-center gap-1.5">
+                  {item.type !== "text" && (
+                    <span className="shrink-0">
+                      {item.type === "facebook" && (
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          style={{
+                            color:
+                              footerIconColor === "colored"
+                                ? "#1877f2"
+                                : "#fff",
+                          }}
+                        >
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                      )}
+                      {item.type === "instagram" &&
+                        (footerIconColor === "colored" ? (
+                          <svg
+                            className="w-3.5 h-3.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <defs>
+                              <radialGradient
+                                id={`ig-f-${id}`}
+                                cx="30%"
+                                cy="107%"
+                                r="1.5"
+                              >
+                                <stop offset="0%" stopColor="#ffd676" />
+                                <stop offset="10%" stopColor="#f9a12e" />
+                                <stop offset="50%" stopColor="#e1306c" />
+                                <stop offset="90%" stopColor="#833ab4" />
+                              </radialGradient>
+                            </defs>
+                            <rect
+                              width="24"
+                              height="24"
+                              rx="6"
+                              fill={`url(#ig-f-${id})`}
+                            />
+                            <rect
+                              x="6.5"
+                              y="6.5"
+                              width="11"
+                              height="11"
+                              rx="3"
+                              stroke="#fff"
+                              strokeWidth="1.5"
+                            />
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="2.8"
+                              stroke="#fff"
+                              strokeWidth="1.5"
+                            />
+                            <circle cx="16.3" cy="7.7" r="0.8" fill="#fff" />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-3.5 h-3.5"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                            style={{ color: "#fff" }}
+                          >
+                            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                          </svg>
+                        ))}
+                      {item.type === "youtube" && (
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          style={{
+                            color:
+                              footerIconColor === "colored"
+                                ? "#ff0000"
+                                : "#fff",
+                          }}
+                        >
+                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                        </svg>
+                      )}
+                      {item.type === "twitter" && (
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          style={{
+                            color:
+                              footerIconColor === "colored"
+                                ? "#1d9bf0"
+                                : "#fff",
+                          }}
+                        >
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                      )}
+                      {item.type === "tiktok" && (
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                          style={{
+                            color:
+                              footerIconColor === "colored"
+                                ? "#EE1D52"
+                                : "#fff",
+                          }}
+                        >
+                          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.58a8.27 8.27 0 0 0 4.84 1.55V6.67a4.85 4.85 0 0 1-1.07.02z" />
+                        </svg>
+                      )}
+                      {item.type === "website" && (
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="none"
+                          stroke={
+                            footerIconColor === "colored" ? "#8b6834" : "white"
+                          }
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                          />
+                        </svg>
+                      )}
+                    </span>
+                  )}
+                  <span
+                    style={{
+                      color: fontStyles?.footer?.color || "#ffffff",
+                      fontSize: fontStyles?.footer?.fontSize || "12px",
+                      fontFamily: fontStyles?.footer?.fontFamily || "DM Sans",
+                      fontWeight: fontStyles?.footer?.fontWeight || "600",
+                    }}
+                  >
+                    {item.value}
                   </span>
-                )}
-                <span style={{ color: fontStyles?.footer?.color || "#ffffff", fontSize: fontStyles?.footer?.fontSize || "12px", fontFamily: fontStyles?.footer?.fontFamily || "DM Sans", fontWeight: fontStyles?.footer?.fontWeight || "600" }}>
-                  {item.value}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+                </div>
+              ))}
+            </div>
+          )}
 
         {/* Ad Banner - Full width at bottom, OUTSIDE the padding */}
         {visibilitySettings?.showAdBanner && adBannerImage && (

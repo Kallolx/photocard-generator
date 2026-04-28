@@ -58,7 +58,7 @@ export default function Home() {
   useEffect(() => {
     const pendingUrl = sessionStorage.getItem("pendingUrlGeneration");
     const pendingTheme = sessionStorage.getItem("pendingThemeGeneration");
-    
+
     // Check if we already have the generated data from the news page
     const pendingTitle = sessionStorage.getItem("pendingRemixTitle");
     const pendingContent = sessionStorage.getItem("pendingRemixContent");
@@ -72,26 +72,34 @@ export default function Home() {
     if (pendingUrl) {
       sessionStorage.removeItem("pendingUrlGeneration");
       setUrl(pendingUrl);
-      
+
       // If we have pre-fetched data, skip hitting the API and construct PhotocardData immediately
       if (pendingTitle && pendingImage) {
         sessionStorage.removeItem("pendingRemixTitle");
         sessionStorage.removeItem("pendingRemixContent");
         sessionStorage.removeItem("pendingRemixImage");
-        
+
         setPhotocardData({
-            title: pendingTitle,
-            image: pendingImage,
-            logo: "", // the url route doesn't have the source icon unfortunately, we can fallback
-            favicon: "",
-            siteName: "",
-            url: pendingUrl,
-            weekName: ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"][new Date().getDay()],
-            date: new Date().toLocaleDateString("bn-BD", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })
+          title: pendingTitle,
+          image: pendingImage,
+          logo: "", // the url route doesn't have the source icon unfortunately, we can fallback
+          favicon: "",
+          siteName: "",
+          url: pendingUrl,
+          weekName: [
+            "রবিবার",
+            "সোমবার",
+            "মঙ্গলবার",
+            "বুধবার",
+            "বৃহস্পতিবার",
+            "শুক্রবার",
+            "শনিবার",
+          ][new Date().getDay()],
+          date: new Date().toLocaleDateString("bn-BD", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
         });
       } else {
         // Auto-submit form briefly after rendering to fetch via API
@@ -126,21 +134,21 @@ export default function Home() {
   const [adBannerPosition, setAdBannerPosition] = useState({ x: 0, y: 0 });
   const [theme, setTheme] = useState<string>("duo");
   const [isDragMode, setIsDragMode] = useState(false);
-  const [sourceHighlightIndices, setSourceHighlightIndices] = useState<number[]>(
-    [0, 1],
-  );
-  const [blendHighlightIndices, setBlendHighlightIndices] = useState<number[]>(
-    [0, 1],
-  );
-  const [blendHighlightStyle, setBlendHighlightStyle] = useState<"boxed" | "colored">(
-    "colored",
-  );
-  const [bannerHighlightIndices, setBannerHighlightIndices] = useState<number[]>(
-    [0, 1],
-  );
-  const [bannerHighlightStyle, setBannerHighlightStyle] = useState<"boxed" | "colored">(
-    "colored",
-  );
+  const [sourceHighlightIndices, setSourceHighlightIndices] = useState<
+    number[]
+  >([0, 1]);
+  const [blendHighlightIndices, setBlendHighlightIndices] = useState<number[]>([
+    0, 1,
+  ]);
+  const [blendHighlightStyle, setBlendHighlightStyle] = useState<
+    "boxed" | "colored"
+  >("colored");
+  const [bannerHighlightIndices, setBannerHighlightIndices] = useState<
+    number[]
+  >([0, 1]);
+  const [bannerHighlightStyle, setBannerHighlightStyle] = useState<
+    "boxed" | "colored"
+  >("colored");
   const [elementLayout, setElementLayout] = useState<{
     topLeft: "logo" | "dateWeek" | "qrCode" | "cta";
     topRight: "logo" | "dateWeek" | "qrCode" | "cta";
@@ -249,8 +257,18 @@ export default function Home() {
   ]);
 
   const [footerOpacity, setFooterOpacity] = useState(100);
-  const [footerIconColor, setFooterIconColor] = useState<"white" | "colored">("white");
-  const [watermark, setWatermark] = useState<WatermarkSettings>({ text: "", opacity: 0.30, x: 0, y: 0, fontSize: 48, rotation: 0, enabled: true });
+  const [footerIconColor, setFooterIconColor] = useState<"white" | "colored">(
+    "white",
+  );
+  const [watermark, setWatermark] = useState<WatermarkSettings>({
+    text: "",
+    opacity: 0.3,
+    x: 0,
+    y: 0,
+    fontSize: 48,
+    rotation: 0,
+    enabled: true,
+  });
 
   // Editing state
   const [currentLogo, setCurrentLogo] = useState<string>("");
@@ -295,7 +313,10 @@ export default function Home() {
 
   // Update font styles when theme changes
   useEffect(() => {
-    if ((theme === "source" || theme === "blend" || theme === "banner") && isDragMode) {
+    if (
+      (theme === "source" || theme === "blend" || theme === "banner") &&
+      isDragMode
+    ) {
       setIsDragMode(false);
     }
   }, [theme, isDragMode]);
@@ -368,16 +389,41 @@ export default function Home() {
     } else if (theme === "overlay") {
       setFontStyles((prev) => ({
         ...prev,
-        week: { ...prev.week, fontSize: "16px", fontWeight: "600", color: "#ffffff" },
-        date: { ...prev.date, fontSize: "16px", fontWeight: "600", color: "#ffffff" },
-        headline: { ...prev.headline, fontSize: "27px", color: "#FFFFFF", textAlign: "center" },
+        week: {
+          ...prev.week,
+          fontSize: "16px",
+          fontWeight: "600",
+          color: "#ffffff",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "16px",
+          fontWeight: "600",
+          color: "#ffffff",
+        },
+        headline: {
+          ...prev.headline,
+          fontSize: "27px",
+          color: "#FFFFFF",
+          textAlign: "center",
+        },
       }));
       setBackground({ type: "solid", color: "#E53E3E" });
     } else if (theme === "source") {
       setFontStyles((prev) => ({
         ...prev,
-        week: { ...prev.week, fontSize: "15px", fontWeight: "500", color: "#4b5563" },
-        date: { ...prev.date, fontSize: "15px", fontWeight: "500", color: "#4b5563" },
+        week: {
+          ...prev.week,
+          fontSize: "15px",
+          fontWeight: "500",
+          color: "#4b5563",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "15px",
+          fontWeight: "500",
+          color: "#4b5563",
+        },
         headline: {
           ...prev.headline,
           fontSize: "29px",
@@ -390,30 +436,72 @@ export default function Home() {
     } else if (theme === "banner") {
       setFontStyles((prev) => ({
         ...prev,
-        week: { ...prev.week, fontSize: "12px", fontWeight: "500", color: "#FFFFFF" },
-        date: { ...prev.date, fontSize: "12px", fontWeight: "500", color: "#FFFFFF" },
-        headline: { ...prev.headline, fontSize: "28px", fontWeight: "700", color: "#FFFFFF", textAlign: "left" },
+        week: {
+          ...prev.week,
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "12px",
+          fontWeight: "500",
+          color: "#FFFFFF",
+        },
+        headline: {
+          ...prev.headline,
+          fontSize: "28px",
+          fontWeight: "700",
+          color: "#FFFFFF",
+          textAlign: "left",
+        },
       }));
     } else if (theme === "blend") {
       setFontStyles((prev) => ({
         ...prev,
-        week: { ...prev.week, fontSize: "11px", fontWeight: "500", color: "#4b5563" },
-        date: { ...prev.date, fontSize: "11px", fontWeight: "500", color: "#4b5563" },
-        headline: { ...prev.headline, fontSize: "29px", fontWeight: "700", color: "#111827", textAlign: "left" },
+        week: {
+          ...prev.week,
+          fontSize: "11px",
+          fontWeight: "500",
+          color: "#4b5563",
+        },
+        date: {
+          ...prev.date,
+          fontSize: "11px",
+          fontWeight: "500",
+          color: "#4b5563",
+        },
+        headline: {
+          ...prev.headline,
+          fontSize: "29px",
+          fontWeight: "700",
+          color: "#111827",
+          textAlign: "left",
+        },
       }));
     } else if (theme === "modern") {
       setFontStyles((prev) => ({
         ...prev,
         week: { ...prev.week, fontSize: "18px", color: "#FFFFFF" },
         date: { ...prev.date, fontSize: "18px", color: "#FFFFFF" },
-        headline: { ...prev.headline, fontSize: "29px", color: "#FFFFFF", textAlign: "center" },
+        headline: {
+          ...prev.headline,
+          fontSize: "29px",
+          color: "#FFFFFF",
+          textAlign: "center",
+        },
       }));
     } else if (theme === "classic") {
       setFontStyles((prev) => ({
         ...prev,
         week: { ...prev.week, fontSize: "18px", color: "#FFFFFF" },
         date: { ...prev.date, fontSize: "18px", color: "#FFFFFF" },
-        headline: { ...prev.headline, fontSize: "30px", color: "#FFFFFF", textAlign: "center" },
+        headline: {
+          ...prev.headline,
+          fontSize: "30px",
+          color: "#FFFFFF",
+          textAlign: "center",
+        },
       }));
     } else {
       // Reset to default for other themes
@@ -1542,7 +1630,7 @@ export default function Home() {
             />
 
             {/* Customization Panel */}
-            <div 
+            <div
               className="mt-6 flex-1 md:min-h-0 md:overflow-hidden"
               onClick={() => setIsUrlPanelCollapsed(true)}
             >
@@ -1607,8 +1695,12 @@ export default function Home() {
                 onImageChange={handleImageChange}
                 onTitleChange={handleTitleChange}
                 onDragModeToggle={() => setIsDragMode(!isDragMode)}
-                showDragTool={theme !== "source" && theme !== "blend" && theme !== "banner"}
-                showHighlightTool={theme === "source" || theme === "blend" || theme === "banner"}
+                showDragTool={
+                  theme !== "source" && theme !== "blend" && theme !== "banner"
+                }
+                showHighlightTool={
+                  theme === "source" || theme === "blend" || theme === "banner"
+                }
                 highlightWordIndices={
                   theme === "blend"
                     ? blendHighlightIndices
