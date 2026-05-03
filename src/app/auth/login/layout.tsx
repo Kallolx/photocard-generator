@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   description:
     "Sign in to your Newscard account to start creating stunning news cards, Islamic quote cards, and social media visuals.",
   alternates: {
-    canonical: "https://newscard-generator.vercel.app/auth/login",
+    canonical: "https://newscard.live/auth/login",
   },
   openGraph: {
     title: "Sign In | Newscard",
     description: "Sign in to your Newscard account and start creating beautiful social cards.",
-    url: "https://newscard-generator.vercel.app/auth/login",
+    url: "https://newscard.live/auth/login",
   },
 };
 

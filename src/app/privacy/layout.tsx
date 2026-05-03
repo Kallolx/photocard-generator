@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description:
     "Read the Newscard Privacy Policy to understand how we collect, use, and protect your personal data.",
   alternates: {
-    canonical: "https://newscard-generator.vercel.app/privacy",
+    canonical: "https://newscard.live/privacy",
   },
   robots: { index: true, follow: true },
 };

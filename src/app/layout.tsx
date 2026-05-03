@@ -13,7 +13,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import FloatingSupport from "@/components/FloatingSupport";
 import WhatsNewToast from "@/components/WhatsNewToast";
 
-const SITE_URL = "https://newscard-generator.vercel.app";
+const SITE_URL = "https://newscard.live";
 const SITE_NAME = "Newscard";
 const OG_IMAGE = `${SITE_URL}/icons/logo.png`;
 
@@ -24,15 +24,17 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Design beautiful news cards, Islamic quote cards, URL preview cards, video thumbnails, and more. Perfect for journalists, educators, and content creators in Bangladesh and beyond.",
+    "Design beautiful news cards, URL previews, recipe cards, followers cards, health cards, and more. Perfect for journalists, educators, and content creators in Bangladesh and beyond.",
   keywords: [
     "news card generator",
     "social card maker",
+    "recipe card generator",
+    "followers card maker",
+    "health card maker",
     "Islamic quote card",
     "Bangla news card",
     "photocard generator",
     "URL preview card",
-    "video thumbnail maker",
     "social media card",
     "content creator tool",
     "Bangladesh news card",
@@ -114,7 +116,7 @@ const jsonLd = {
   name: "Newscard",
   url: SITE_URL,
   description:
-    "Create beautiful news cards, Islamic quote cards, URL preview cards, video thumbnails, and more. Full Bangla text support. Perfect for content creators in Bangladesh.",
+    "Create beautiful news cards, URL preview cards, recipe cards, followers cards, and health cards. Full Bangla text support. Perfect for content creators in Bangladesh.",
   applicationCategory: "DesignApplication",
   operatingSystem: "Web",
   offers: {
@@ -126,9 +128,11 @@ const jsonLd = {
   },
   featureList: [
     "News card generator",
-    "Islamic quote card maker",
     "URL preview card",
-    "Video thumbnail creator",
+    "Recipe card maker",
+    "Followers card maker",
+    "Health card maker",
+    "Islamic quote card maker",
     "Bangla text support",
     "AI-powered content",
     "Background remover",

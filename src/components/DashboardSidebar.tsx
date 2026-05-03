@@ -1,20 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Link as LinkIcon,
-  VideoIcon,
-  Edit,
   Quote,
-  BarChart3,
-  GitCompare,
-  Megaphone,
-  Home,
   Image as ImageIcon,
-  FileText,
   Moon,
   Heart,
   Lock,
@@ -30,7 +23,14 @@ import {
   Languages,
   Newspaper,
   ChevronDown,
+  ChefHat,
+  Users,
+  HeartPulse,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import CompactCreditDisplay from "./CompactCreditDisplay";
+import UpgradeModal from "./UpgradeModal";
+import { CARD_TYPES, CardIconKey } from "@/lib/card-catalog";
 
 interface DashboardSidebarProps {
   isMobileMenuOpen: boolean;
@@ -56,44 +56,45 @@ export default function DashboardSidebar({
 
   useEffect(() => {
     setMounted(true);
-    // Auto-clear dot if user is already on the news page
     if (pathname === "/news") {
       setHasLatestNews(false);
     }
   }, [pathname]);
 
-  const cardCategories = [
-    {
-      name: "News & Social",
-      cards: [
-        { id: "url", label: "URL Newscard", href: "/url", icon: <LinkIcon className="w-4 h-4" />, locked: false },
-        { id: "comment", label: "Comment/Quote", href: "/comment", icon: <Quote className="w-4 h-4" />, locked: isFreeUser },
-        { id: "poll", label: "Poll Card", href: "/poll", icon: <BarChart3 className="w-4 h-4" />, locked: isFreeUser },
-        { id: "compare", label: "Compare Card", href: "/compare", icon: <GitCompare className="w-4 h-4" />, locked: isFreeUser },
-      ],
-    },
-    {
-      name: "Business & Marketing",
-      cards: [
-        { id: "video", label: "Video Card", href: "/videocard", icon: <VideoIcon className="w-4 h-4" />, locked: isFreeUser },
-        { id: "marketing", label: "Marketing Card", href: "/marketing", icon: <Megaphone className="w-4 h-4" />, locked: isFreeUser },
-        { id: "realestate", label: "Real Estate Card", href: "/realestate", icon: <Home className="w-4 h-4" />, locked: isFreeUser },
-        { id: "thumbnail", label: "NewsThumbnail", href: "/thumbnail", icon: <ImageIcon className="w-4 h-4" />, locked: isFreeUser },
-      ],
-    },
-    {
-      name: "Personal & Creative",
-      cards: [
-        { id: "custom", label: "Custom Card", href: "/custom", icon: <Edit className="w-4 h-4" />, locked: isFreeUser },
-        { id: "info", label: "Info Card", href: "/info", icon: <FileText className="w-4 h-4" />, locked: isFreeUser },
-        { id: "islamic", label: "Islamic Card", href: "/islamic", icon: <Moon className="w-4 h-4" />, locked: isFreeUser },
-        { id: "wish", label: "Wish Card", href: "/wish", icon: <Heart className="w-4 h-4" />, locked: isFreeUser },
-      ],
-    },
-  ];
+  const cardIconMap: Record<CardIconKey, React.ReactNode> = {
+    news: <Newspaper className="w-4 h-4" />,
+    url: <LinkIcon className="w-4 h-4" />,
+    comment: <Quote className="w-4 h-4" />,
+    recipe: <ChefHat className="w-4 h-4" />,
+    followers: <Users className="w-4 h-4" />,
+    health: <HeartPulse className="w-4 h-4" />,
+    thumbnail: <ImageIcon className="w-4 h-4" />,
+    islamic: <Moon className="w-4 h-4" />,
+    wish: <Heart className="w-4 h-4" />,
+  };
 
-  const allCardTypes = cardCategories.flatMap((c) => c.cards);
-  const isOnCardType = allCardTypes.some((c) => c.href === pathname);
+  const allCardTypes = CARD_TYPES.map((card) => ({
+    ...card,
+    icon: cardIconMap[card.iconKey],
+    locked: card.requiresPro ? isFreeUser : false,
+  }));
+
+  const primaryOrder = ["news", "url", "comment", "thumbnail"];
+  const disabledCardIds = ["followers", "health", "recipe"];
+  const orderedCardTypes = [
+    ...primaryOrder.flatMap((id) => {
+      const match = allCardTypes.find((card) => card.id === id);
+      return match ? [match] : [];
+    }),
+    ...allCardTypes.filter((card) => !primaryOrder.includes(card.id)),
+  ]
+    .filter((card) => card.id !== "news")
+    .map((card) => ({
+      ...card,
+      locked: card.locked || disabledCardIds.includes(card.id),
+    }));
+
+  const isOnCardType = allCardTypes.some((card) => card.href === pathname);
 
   const otherTools = [
     { label: "Background Remover", href: "/background-remover", icon: <Scissors className="w-5 h-5" />, locked: isFreeUser },
@@ -146,7 +147,6 @@ export default function DashboardSidebar({
 
   return (
     <>
-      {/* Sidebar Overlay (Mobile) */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-[#2c2419]/50 z-40 lg:hidden backdrop-blur-sm transition-opacity"
@@ -154,16 +154,11 @@ export default function DashboardSidebar({
         />
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`
-          fixed lg:static inset-y-0 left-0 z-50
-          w-72 h-full bg-white border-r border-[#d4c4b0]/40 flex flex-col
-          transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none
-          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-72 h-full bg-white border-r border-[#d4c4b0]/40 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
       >
-        {/* Sidebar Header (Logo) */}
         <div className="h-14 lg:h-16 flex items-center px-6 border-b border-[#d4c4b0]/30 shadow-sm relative">
           <Link href="/dashboard" className="inline-block">
             <Image
@@ -182,7 +177,6 @@ export default function DashboardSidebar({
           </button>
         </div>
 
-        {/* Sidebar Navigation */}
         <div className="flex-1 overflow-y-auto py-6 px-4 no-scrollbar">
           <div className="space-y-1 mb-8">
             <p className="px-4 text-xs font-bold text-[#b49e82] uppercase tracking-wider mb-2">
@@ -207,12 +201,10 @@ export default function DashboardSidebar({
                   e.preventDefault();
                   onUpgrade("Today's News Feed");
                 }
-                // Clear dot once user visits
                 setHasLatestNews(false);
               }}
             />
 
-            {/* Card Types accordion */}
             <div>
               <button
                 onClick={() => setCardTypesOpen(!cardTypesOpen)}
@@ -227,53 +219,50 @@ export default function DashboardSidebar({
                   <span>Card Types</span>
                 </div>
                 <ChevronDown
-                  className={`w-4 h-4 transition-transform duration-200 ${
-                    cardTypesOpen ? "rotate-180" : ""
-                  }`}
+                  className={`w-4 h-4 transition-transform duration-200 ${cardTypesOpen ? "rotate-180" : ""}`}
                 />
               </button>
 
               {cardTypesOpen && (
-                <div className="ml-4 border-l-2 border-[#d4c4b0]/50 pl-3 mt-1 mb-2 space-y-5">
-                  {cardCategories.map((cat) => (
-                    <div key={cat.name}>
-                      <p className="px-2 pt-1 pb-2 text-[9px] font-black text-[#b49e82] uppercase tracking-[0.15em]">
-                        {cat.name}
-                      </p>
-                      <div className="space-y-0.5">
-                        {cat.cards.map((card) => {
-                          const isActive = pathname === card.href;
-                          return (
-                            <Link
-                              key={card.id}
-                              href={card.locked ? "#" : card.href}
-                              onClick={(e) => {
-                                if (card.locked) {
-                                  e.preventDefault();
-                                  onUpgrade(card.label);
-                                }
-                              }}
-                              className={`flex items-center justify-between px-3 py-2 text-xs font-semibold transition-all ${
-                                isActive
-                                  ? "bg-[#8b6834] text-white"
-                                  : card.locked
-                                    ? "text-[#b49e82] hover:bg-[#f5f0e8] hover:text-[#5d4e37]"
-                                    : "text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419]"
-                              }`}
-                            >
-                              <span className="flex items-center gap-2.5">
-                                <span className={isActive ? "text-white/80" : card.locked ? "text-[#d4c4b0]" : "text-[#8b6834]"}>
-                                  {card.icon}
-                                </span>
-                                {card.label}
-                              </span>
-                              {card.locked && <Lock className="w-3 h-3 shrink-0 text-[#d4c4b0]" />}
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
+                <div className="ml-4 border-l-2 border-[#d4c4b0]/50 pl-3 mt-1 mb-2 space-y-0.5">
+                  {orderedCardTypes.map((card) => {
+                    const isActive = pathname === card.href;
+                    return (
+                      <Link
+                        key={card.id}
+                        href={card.locked ? "#" : card.href}
+                        onClick={(e) => {
+                          if (card.locked) {
+                            e.preventDefault();
+                            onUpgrade(card.label);
+                          }
+                        }}
+                        className={`flex items-center justify-between px-3 py-2 text-xs font-semibold transition-all ${
+                          isActive
+                            ? "bg-[#8b6834] text-white"
+                            : card.locked
+                              ? "text-[#b49e82] hover:bg-[#f5f0e8] hover:text-[#5d4e37]"
+                              : "text-[#5d4e37] hover:bg-[#f5f0e8] hover:text-[#2c2419]"
+                        }`}
+                      >
+                        <span className="flex items-center gap-2.5 min-w-0">
+                          <span
+                            className={
+                              isActive
+                                ? "text-white/80"
+                                : card.locked
+                                  ? "text-[#d4c4b0]"
+                                  : "text-[#8b6834]"
+                            }
+                          >
+                            {card.icon}
+                          </span>
+                          <span className="truncate">{card.label}</span>
+                        </span>
+                        {card.locked && <Lock className="w-3 h-3 shrink-0 text-[#d4c4b0]" />}
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -311,22 +300,15 @@ export default function DashboardSidebar({
               label="Settings"
               isActive={pathname === "/settings"}
             />
-            <NavItem
-              href="#"
-              icon={<HelpCircle className="w-5 h-5" />}
-              label="Help Center"
-            />
+            <NavItem href="#" icon={<HelpCircle className="w-5 h-5" />} label="Help Center" />
           </div>
 
-          {/* Free User Upgrade Banner */}
           {mounted && isFreeUser && (
             <div className="mt-8 mx-4 p-4 rounded-none bg-gradient-to-br from-[#8b6834]/10 to-[#8b6834]/5 border border-[#8b6834]/20 flex flex-col items-center text-center">
               <div className="w-10 h-10 rounded-none bg-[#8b6834] flex items-center justify-center text-white mb-3">
                 <Zap className="w-5 h-5" />
               </div>
-              <h4 className="text-sm font-bold text-[#2c2419] mb-1">
-                Unlock Premium
-              </h4>
+              <h4 className="text-sm font-bold text-[#2c2419] mb-1">Unlock Premium</h4>
               <p className="text-xs text-[#5d4e37] mb-3">
                 Get access to all card types and remove watermarks.
               </p>
@@ -340,7 +322,6 @@ export default function DashboardSidebar({
           )}
         </div>
 
-        {/* Sidebar Footer (User Info & Logout) */}
         <div className="p-4 border-t border-[#d4c4b0]/40 bg-[#faf8f5]/50">
           {mounted && (
             <div className="flex items-center gap-3 mb-4 p-3 rounded-none bg-white border border-[#d4c4b0]/40">
@@ -348,9 +329,7 @@ export default function DashboardSidebar({
                 {user?.name?.charAt(0).toUpperCase() || "U"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-[#2c2419] truncate">
-                  {user?.name}
-                </p>
+                <p className="text-sm font-bold text-[#2c2419] truncate">{user?.name}</p>
                 <p className="text-xs text-[#5d4e37] truncate">{user?.email}</p>
               </div>
             </div>

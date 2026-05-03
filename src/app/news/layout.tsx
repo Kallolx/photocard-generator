@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     "বাংলা নিউজ কার্ড",
   ],
   alternates: {
-    canonical: "https://newscard-generator.vercel.app/news",
+    canonical: "https://newscard.live/news",
   },
   openGraph: {
     title: "Live News Card Generator | Newscard",
     description: "Browse live Bangladeshi news and create shareable social cards instantly.",
-    url: "https://newscard-generator.vercel.app/news",
+    url: "https://newscard.live/news",
   },
 };
 

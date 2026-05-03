@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const SITE_URL = "https://newscard-generator.vercel.app";
+const SITE_URL = "https://newscard.live";
 
 export default function robots(): MetadataRoute.Robots {
   return {

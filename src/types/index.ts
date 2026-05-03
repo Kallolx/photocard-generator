@@ -139,3 +139,30 @@ export interface IslamicCardFontStyles {
   source: FontStyles;
   footer: FontStyles;
 }
+
+export interface BaseUrlCardProps {
+  data: PhotocardData;
+  isGenerating?: boolean;
+  background?: BackgroundOptions;
+  id?: string;
+  fullSize?: boolean;
+  frameBorderColor?: string;
+  frameBorderThickness?: number;
+  adBannerImage?: string | null;
+  adBannerZoom?: number;
+  adBannerPosition?: { x: number; y: number };
+  fontStyles?: CardFontStyles;
+  visibilitySettings?: VisibilitySettings;
+  footerItems?: FooterItem[];
+  footerOpacity?: number;
+  footerIconColor?: "white" | "colored";
+  watermark?: WatermarkSettings;
+  isLogoFavicon?: boolean;
+  elementLayout?: any;
+  onLayoutChange?: (layout: any) => void;
+  onVisibilityChange?: (settings: any) => void;
+  onLogoUpload?: (file: File) => void;
+  onFaviconUpload?: (file: File) => void;
+  onRestoreDefaults?: () => void;
+}
+

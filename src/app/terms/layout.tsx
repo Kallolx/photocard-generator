@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description:
     "Read the Newscard Terms of Service — the rules and conditions governing the use of our social card generation platform.",
   alternates: {
-    canonical: "https://newscard-generator.vercel.app/terms",
+    canonical: "https://newscard.live/terms",
   },
   robots: { index: true, follow: true },
 };

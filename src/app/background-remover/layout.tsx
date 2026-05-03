@@ -12,12 +12,12 @@ export const metadata: Metadata = {
     "photo background remove",
   ],
   alternates: {
-    canonical: "https://newscard-generator.vercel.app/background-remover",
+    canonical: "https://newscard.live/background-remover",
   },
   openGraph: {
     title: "AI Background Remover | Newscard",
     description: "Remove backgrounds from images instantly using AI — free and fast.",
-    url: "https://newscard-generator.vercel.app/background-remover",
+    url: "https://newscard.live/background-remover",
   },
 };
 

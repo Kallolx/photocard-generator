@@ -511,7 +511,7 @@ export default function CustomizationPanel({
     {
       id: "duo",
       name: "Duo",
-      locked: isFreeUser,
+      locked: false,
       thumbnail: "/themes/cus-7.png",
     },
     {

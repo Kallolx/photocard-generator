@@ -30,11 +30,6 @@ interface SourceUrlCardProps {
   footerIconColor?: "white" | "colored";
   watermark?: WatermarkSettings;
   isLogoFavicon?: boolean;
-  isDragMode?: boolean;
-  onLogoUpload?: (file: File) => void;
-  onFaviconUpload?: (file: File) => void;
-  onVisibilityChange?: (settings: VisibilitySettings) => void;
-  onRestoreDefaults?: () => void;
   highlightIndices?: number[];
 }
 
@@ -88,7 +83,6 @@ export default function SourceUrlCard({
     showAdBanner: true,
     showFooter: false,
   },
-  isLogoFavicon = false,
   highlightIndices = [],
 }: SourceUrlCardProps) {
   const SOURCE_IMAGE_HEIGHT = "290px";

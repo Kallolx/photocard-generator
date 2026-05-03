@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     "ইংরেজি থেকে বাংলা",
   ],
   alternates: {
-    canonical: "https://newscard-generator.vercel.app/bangla-converter",
+    canonical: "https://newscard.live/bangla-converter",
   },
   openGraph: {
     title: "Bangla Text Converter | Newscard",
     description: "Convert English text to Bangla instantly. Free online Bangla typing and transliteration tool.",
-    url: "https://newscard-generator.vercel.app/bangla-converter",
+    url: "https://newscard.live/bangla-converter",
   },
 };
 

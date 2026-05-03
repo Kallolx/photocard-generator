@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const SITE_URL = "https://newscard-generator.vercel.app";
+const SITE_URL = "https://newscard.live";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -56,16 +56,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     },
     {
-      url: `${SITE_URL}/custom`,
+      url: `${SITE_URL}/recipe`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
-      url: `${SITE_URL}/poll`,
+      url: `${SITE_URL}/followers`,
       lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.6,
+      changeFrequency: "weekly",
+      priority: 0.7,
     },
     {
       url: `${SITE_URL}/url`,
@@ -74,7 +74,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
-      url: `${SITE_URL}/videocard`,
+      url: `${SITE_URL}/health`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,

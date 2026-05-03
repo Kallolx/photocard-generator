@@ -12,12 +12,12 @@ export const metadata: Metadata = {
     "Open Graph card",
   ],
   alternates: {
-    canonical: "https://newscard-generator.vercel.app/url",
+    canonical: "https://newscard.live/url",
   },
   openGraph: {
     title: "URL Preview Card Generator | Newscard",
     description: "Generate beautiful link preview cards from any URL for social media sharing.",
-    url: "https://newscard-generator.vercel.app/url",
+    url: "https://newscard.live/url",
   },
 };
 

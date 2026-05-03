@@ -7,7 +7,6 @@ import {
   X,
   Plus,
   Type,
-  Move,
   Highlighter,
   Lock,
   Sparkles,
@@ -26,19 +25,15 @@ interface EditingToolbarProps {
   currentLogo: string;
   currentImage: string;
   currentTitle: string;
-  isDragMode?: boolean;
   isPersonOverlayMode?: boolean;
   onLogoChange: (logo: string, isFavicon: boolean) => void;
-  onAssetsApply?: (logoUrl?: string, faviconUrl?: string) => void; // Added onAssetsApply
+  onAssetsApply?: (logoUrl?: string, faviconUrl?: string) => void;
   onImageChange: (image: string) => void;
   onTitleChange: (title: string) => void;
-  onDragModeToggle?: () => void;
   onPersonOverlayToggle?: () => void;
-  // Optional visibility props for each tool
   showImageTool?: boolean;
   showLogoTool?: boolean;
   showTitleTool?: boolean;
-  showDragTool?: boolean;
   showPersonOverlayTool?: boolean;
   showHighlightTool?: boolean;
   highlightWordIndices?: number[];
@@ -58,19 +53,16 @@ export default function EditingToolbar({
   currentLogo,
   currentImage,
   currentTitle,
-  isDragMode = false,
   isPersonOverlayMode = false,
   onLogoChange,
   onAssetsApply, // Added onAssetsApply
   onImageChange,
   onTitleChange,
-  onDragModeToggle,
   onPersonOverlayToggle,
   // Default to showing all tools for backward compatibility
   showImageTool = true,
   showLogoTool = true,
   showTitleTool = true,
-  showDragTool = true,
   showPersonOverlayTool = false, // Only show for comment cards
   showHighlightTool = false,
   highlightWordIndices = [],
@@ -294,25 +286,6 @@ export default function EditingToolbar({
           </button>
         )}
 
-        {/* Drag Mode Toggle */}
-        {showDragTool && onDragModeToggle && (
-          <button
-            onClick={onDragModeToggle}
-            className={`p-3 border-2 border-[#d4c4b0] transition-colors group relative ${
-              isDragMode
-                ? "bg-[#8b6834] hover:bg-[#2c2419]"
-                : "bg-[#e8dcc8] hover:bg-[#d4c4b0]"
-            }`}
-            title="Drag Mode"
-          >
-            <Move
-              className={`w-5 h-5 ${isDragMode ? "text-white" : "text-[#2c2419]"}`}
-            />
-            <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-[#2c2419] text-[#faf8f5] px-2 py-1 text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-              {isDragMode ? "Drag Mode ON" : "Drag Mode OFF"}
-            </div>
-          </button>
-        )}
 
         {/* Highlight Selector */}
         {showHighlightTool && onHighlightWordIndicesChange && (

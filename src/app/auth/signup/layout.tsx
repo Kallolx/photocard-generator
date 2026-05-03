@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   description:
     "Sign up free and start creating stunning news cards, Islamic quote cards, URL preview cards, and video thumbnails. No credit card required.",
   alternates: {
-    canonical: "https://newscard-generator.vercel.app/auth/signup",
+    canonical: "https://newscard.live/auth/signup",
   },
   openGraph: {
     title: "Create Free Account | Newscard",
     description: "Sign up free and create professional social cards in seconds. No credit card required.",
-    url: "https://newscard-generator.vercel.app/auth/signup",
+    url: "https://newscard.live/auth/signup",
   },
 };
 

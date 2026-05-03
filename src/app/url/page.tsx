@@ -133,7 +133,6 @@ export default function Home() {
   const [adBannerZoom, setAdBannerZoom] = useState<number>(100);
   const [adBannerPosition, setAdBannerPosition] = useState({ x: 0, y: 0 });
   const [theme, setTheme] = useState<string>("duo");
-  const [isDragMode, setIsDragMode] = useState(false);
   const [sourceHighlightIndices, setSourceHighlightIndices] = useState<
     number[]
   >([0, 1]);
@@ -311,15 +310,6 @@ export default function Home() {
     }
   }, [photocardData]);
 
-  // Update font styles when theme changes
-  useEffect(() => {
-    if (
-      (theme === "source" || theme === "blend" || theme === "banner") &&
-      isDragMode
-    ) {
-      setIsDragMode(false);
-    }
-  }, [theme, isDragMode]);
 
   useEffect(() => {
     if (theme === "vertical") {
@@ -674,7 +664,7 @@ export default function Home() {
     setCurrentTitle(title);
   };
 
-  // Logo upload from drag menu
+  // Logo upload
   const handleLogoUpload = (file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -1029,7 +1019,6 @@ export default function Home() {
       footerIconColor,
       watermark,
       isLogoFavicon,
-      isDragMode,
       onVisibilityChange: setVisibilitySettings,
       onLogoUpload: handleLogoUpload,
       onFaviconUpload: handleFaviconUpload,
@@ -1330,7 +1319,6 @@ export default function Home() {
                 fontStyles={fontStyles}
                 visibilitySettings={visibilitySettings}
                 isLogoFavicon={isLogoFavicon}
-                isDragMode={false}
                 elementLayout={verticalElementLayout}
               />,
             );
@@ -1349,7 +1337,6 @@ export default function Home() {
                 fontStyles={fontStyles}
                 visibilitySettings={visibilitySettings}
                 isLogoFavicon={isLogoFavicon}
-                isDragMode={false}
                 elementLayout={elementLayout}
               />,
             );
@@ -1466,7 +1453,6 @@ export default function Home() {
                 fontStyles={fontStyles}
                 visibilitySettings={visibilitySettings}
                 isLogoFavicon={isLogoFavicon}
-                isDragMode={false}
                 elementLayout={elementLayout}
               />,
             );
@@ -1689,15 +1675,10 @@ export default function Home() {
                 currentLogo={currentLogo || mockData.logo}
                 currentImage={currentImage || mockData.image}
                 currentTitle={currentTitle || mockData.title}
-                isDragMode={isDragMode}
                 onLogoChange={handleLogoChange}
                 onAssetsApply={handleAssetsApply}
                 onImageChange={handleImageChange}
                 onTitleChange={handleTitleChange}
-                onDragModeToggle={() => setIsDragMode(!isDragMode)}
-                showDragTool={
-                  theme !== "source" && theme !== "blend" && theme !== "banner"
-                }
                 showHighlightTool={
                   theme === "source" || theme === "blend" || theme === "banner"
                 }

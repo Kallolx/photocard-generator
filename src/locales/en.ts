@@ -50,7 +50,7 @@ export const en = {
     newsroom: {
       title: "Multiple Card Types",
       description:
-        "Create news cards, Islamic quote cards, URL preview cards, video thumbnails, poll cards, and collages — all in one place",
+        "Create news cards, recipe cards, followers cards, health cards, Islamic quote cards, URL preview cards, and collages — all in one place",
     },
     aiPower: {
       title: "AI-Powered Content",
@@ -239,7 +239,7 @@ export const en = {
       {
         heading: "1. Introduction",
         content:
-          "Welcome to Newscard ('we', 'our', or 'us'). We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website Newscard.com and use our news card generation services. Please read this policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.",
+          "Welcome to Newscard ('we', 'our', or 'us'). We respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website Newscard.live and use our news card generation services. Please read this policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.",
       },
       {
         heading: "2. Information We Collect",
