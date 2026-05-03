@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Sparkles, ChevronRight, PlayCircle, X, Play } from "lucide-react";
 
@@ -11,10 +12,18 @@ interface HeroSectionProps {
 export default function HeroSection({ t }: HeroSectionProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showVideo, setShowVideo] = useState(false);
+  const cardImages = [
+    "/cards/1.png",
+    "/cards/2.png",
+    "/cards/3.png",
+    "/cards/4.png",
+    "/cards/5.png",
+    "/cards/6.png",
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % 4);
+      setActiveIndex((prev) => (prev + 1) % cardImages.length);
     }, 2500);
     return () => clearInterval(interval);
   }, []);
@@ -82,41 +91,31 @@ export default function HeroSection({ t }: HeroSectionProps) {
             </div>
           </div>
 
-          <div className="relative h-[600px] hidden lg:flex items-center justify-center">
-            {[0, 1, 2, 3].map((index) => {
-              const offset = (index - activeIndex + 4) % 4;
-              if (offset > 2 && offset !== 3) return null;
+          <div className="relative h-[520px] hidden  lg:flex items-center justify-center w-full max-w-[460px] mx-auto">
+            {cardImages.map((src, index, arr) => {
+              const len = arr.length;
+              const offset = (index - activeIndex + len) % len;
+              if (offset > 2) return null; // show up to 3 stacked
 
               return (
                 <div
-                  key={index}
-                  className={`absolute w-full max-w-sm aspect-[4/5] bg-white border-4 border-[#2c2419] rounded-none transition-all duration-700 ease-in-out p-1`}
+                  key={src}
+                  className="absolute inset-0 overflow-hidden rounded-[32px] bg-white border border-black/5 shadow-[0_24px_60px_-24px_rgba(44,36,25,0.35)] transition-all duration-700 ease-in-out"
                   style={{
                     zIndex: 30 - offset * 10,
-                    transform: `translateY(-${offset * 25}px) translateX(${offset * 15}px) rotate(${offset * 1}deg)`,
+                    transform: `translateY(-${offset * 14}px) translateX(${offset * 8}px) scale(${1 - offset * 0.04}) rotate(${offset * 1}deg)`,
                     opacity: offset > 2 ? 0 : 1,
                   }}
                 >
-                  <div className="w-full h-full border-2 border-[#d4c4b0]/40 bg-white flex flex-col p-6">
-                    <div className="h-48 bg-[#f5f0e8] border-2 border-[#d4c4b0]/20 mb-6 relative overflow-hidden">
-                      <div className="absolute top-4 left-4 bg-[#8b6834] px-3 py-1 text-[8px] font-black text-white uppercase tracking-widest rounded-none">
-                        Template {index + 1}
-                      </div>
-                    </div>
-
-                    <div className="space-y-4 flex-1">
-                      <div className="h-6 bg-[#2c2419] rounded-none w-full"></div>
-                      <div className="h-6 bg-[#2c2419] rounded-none w-4/5"></div>
-                      <div className="h-4 bg-[#d4c4b0]/40 rounded-none w-full mt-4"></div>
-                      <div className="h-4 bg-[#d4c4b0]/40 rounded-none w-3/4"></div>
-                    </div>
-
-                    <div className="mt-auto pt-6 border-t-2 border-[#d4c4b0]/20 flex items-center justify-between">
-                      <div className="w-10 h-10 bg-[#8b6834] rounded-none flex items-center justify-center">
-                        <Sparkles className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="h-4 bg-[#2c2419] rounded-none w-24"></div>
-                    </div>
+                  <div className="relative w-full h-full overflow-hidden rounded-[32px] bg-white">
+                    <Image
+                      src={src}
+                      alt={`Template ${index + 1}`}
+                      fill
+                      sizes="(min-width: 1024px) 38vw, 100vw"
+                      className="object-contain object-center rounded-[32px]"
+                      priority={index === activeIndex}
+                    />
                   </div>
                 </div>
               );
