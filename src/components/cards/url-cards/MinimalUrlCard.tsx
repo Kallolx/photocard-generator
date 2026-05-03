@@ -37,6 +37,12 @@ interface MinimalUrlCardProps {
     bottomLeft: "favicon" | "dateWeek" | "qrCode" | "cta";
     bottomRight: "favicon" | "dateWeek" | "qrCode" | "cta";
   };
+  onLayoutChange?: (layout: {
+    topLeft: "favicon" | "dateWeek" | "qrCode" | "cta";
+    topRight: "favicon" | "dateWeek" | "qrCode" | "cta";
+    bottomLeft: "favicon" | "dateWeek" | "qrCode" | "cta";
+    bottomRight: "favicon" | "dateWeek" | "qrCode" | "cta";
+  }) => void;
 }
 
 // Helper function to get text shadow based on preset

@@ -30,6 +30,12 @@ interface VerticalUrlCardProps {
     rightTop: 'logo' | 'cta' | 'qrCode' | 'empty';
     rightBottom: 'logo' | 'cta' | 'qrCode' | 'empty';
   };
+  onLayoutChange?: (layout: {
+    left: 'logo' | 'cta' | 'qrCode' | 'empty';
+    right: 'logo' | 'cta' | 'qrCode' | 'empty';
+    rightTop: 'logo' | 'cta' | 'qrCode' | 'empty';
+    rightBottom: 'logo' | 'cta' | 'qrCode' | 'empty';
+  }) => void;
 }
 
 // Helper function to check if a color is light or dark

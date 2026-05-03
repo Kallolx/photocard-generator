@@ -38,6 +38,13 @@ interface Modern2UrlCardProps {
     bottomRight: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
     center: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
   };
+  onLayoutChange?: (layout: {
+    topLeft: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
+    topRight: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
+    bottomLeft: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
+    bottomRight: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
+    center: "logo" | "dateWeek" | "qrCode" | "cta" | "favicon";
+  }) => void;
 }
 
 export default function Modern2UrlCard({
